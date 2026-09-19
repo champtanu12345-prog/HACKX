@@ -1,0 +1,73 @@
+{
+  "vessels": [
+    {
+      "mmsi": "419000123",
+      "imo": "9384712",
+      "name": "MT ARABIAN STAR",
+      "callsign": "AVX9",
+      "vessel_type": "Crude Oil Tanker",
+      "flag_country": "Panama",
+      "length_m": 274.0,
+      "width_m": 48.0,
+      "draught_m": 16.2,
+      "positions": [
+        { "timestamp": "2026-09-13T16:00:00Z", "latitude": 18.520, "longitude": 71.950, "sog": 14.8, "cog": 34.0, "nav_status": "Under way using engine" },
+        { "timestamp": "2026-09-13T18:00:00Z", "latitude": 18.780, "longitude": 72.120, "sog": 14.2, "cog": 35.5, "nav_status": "Under way using engine" },
+        { "timestamp": "2026-09-13T20:00:00Z", "latitude": 18.980, "longitude": 72.280, "sog": 9.5, "cog": 36.0, "nav_status": "Under way using engine" },
+        { "timestamp": "2026-09-13T21:30:00Z", "latitude": 19.040, "longitude": 72.330, "sog": 3.8, "cog": 45.0, "nav_status": "Restricted maneuverability" },
+        { "timestamp": "2026-09-14T00:00:00Z", "latitude": 19.120, "longitude": 72.410, "sog": 4.2, "cog": 52.0, "nav_status": "Under way using engine" },
+        { "timestamp": "2026-09-14T02:30:00Z", "latitude": 19.280, "longitude": 72.580, "sog": 13.9, "cog": 35.0, "nav_status": "Under way using engine" }
+      ],
+      "anomalies": [
+        {
+          "anomaly_type": "AIS_GAP_DARK_SHIP",
+          "start_time": "2026-09-13T21:35:00Z",
+          "end_time": "2026-09-13T23:55:00Z",
+          "severity": "CRITICAL",
+          "details": "AIS transponder inactive for 2h 20m inside Mumbai High separation scheme."
+        },
+        {
+          "anomaly_type": "SUDDEN_DECELERATION",
+          "start_time": "2026-09-13T21:00:00Z",
+          "end_time": "2026-09-13T22:30:00Z",
+          "severity": "HIGH",
+          "details": "SOG dropped 73% from 14.2 kn to 3.8 kn without anchor deployment or mechanical distress call."
+        }
+      ]
+    },
+    {
+      "mmsi": "352001456",
+      "imo": "9421159",
+      "name": "PACIFIC GLORY",
+      "callsign": "3FXP2",
+      "vessel_type": "Chemical Tanker",
+      "flag_country": "Liberia",
+      "length_m": 182.0,
+      "width_m": 27.5,
+      "draught_m": 9.8,
+      "positions": [
+        { "timestamp": "2026-09-13T17:00:00Z", "latitude": 18.600, "longitude": 72.450, "sog": 12.5, "cog": 355.0, "nav_status": "Under way using engine" },
+        { "timestamp": "2026-09-13T19:30:00Z", "latitude": 18.950, "longitude": 72.480, "sog": 12.1, "cog": 356.0, "nav_status": "Under way using engine" },
+        { "timestamp": "2026-09-13T22:00:00Z", "latitude": 19.250, "longitude": 72.500, "sog": 12.3, "cog": 354.0, "nav_status": "Under way using engine" }
+      ],
+      "anomalies": []
+    },
+    {
+      "mmsi": "219018442",
+      "imo": "9632064",
+      "name": "MAERSK SENTOSA",
+      "callsign": "OUXM2",
+      "vessel_type": "Container Ship",
+      "flag_country": "Denmark",
+      "length_m": 366.0,
+      "width_m": 48.2,
+      "draught_m": 14.5,
+      "positions": [
+        { "timestamp": "2026-09-13T15:00:00Z", "latitude": 18.400, "longitude": 72.000, "sog": 19.4, "cog": 170.0, "nav_status": "Under way using engine" },
+        { "timestamp": "2026-09-13T17:30:00Z", "latitude": 18.850, "longitude": 72.080, "sog": 19.1, "cog": 171.0, "nav_status": "Under way using engine" },
+        { "timestamp": "2026-09-13T20:00:00Z", "latitude": 19.300, "longitude": 72.150, "sog": 19.5, "cog": 169.0, "nav_status": "Under way using engine" }
+      ],
+      "anomalies": []
+    }
+  ]
+}

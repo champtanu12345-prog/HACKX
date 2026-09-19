@@ -1,0 +1,7 @@
+numpy>=1.24.0
+shapely>=2.0.3
+opencv-python-headless>=4.8.0
+# Deep learning & geospatial stack for SAR imagery
+# torch>=2.0.0
+# rasterio>=1.3.0
+# geopandas>=0.14.0

@@ -1,0 +1,469 @@
+@import 'leaflet/dist/leaflet.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background-color: #F4F5F7;
+  color: #111827;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Subtle Light Scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #F4F5F7;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #D1D5DB;
+  border-radius: 2px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #9CA3AF;
+}
+
+/* Operational 1px Border Utilities */
+.tactical-border {
+  border: 1px solid #CBD5E1;
+}
+
+.tactical-border-b {
+  border-bottom: 1px solid #CBD5E1;
+}
+
+.tactical-border-r {
+  border-right: 1px solid #CBD5E1;
+}
+
+.tactical-border-t {
+  border-top: 1px solid #CBD5E1;
+}
+
+.tactical-border-l {
+  border-left: 1px solid #CBD5E1;
+}
+
+/* Indian National Tricolor Ribbon */
+.tricolor-bar {
+  background: linear-gradient(
+    to right,
+    #FF9933 0%,
+    #FF9933 33.33%,
+    #FFFFFF 33.33%,
+    #FFFFFF 66.66%,
+    #138808 66.66%,
+    #138808 100%
+  );
+  height: 3px;
+  width: 100%;
+}
+
+.tricolor-bar-thick {
+  background: linear-gradient(
+    to right,
+    #FF9933 0%,
+    #FF9933 33.33%,
+    #FFFFFF 33.33%,
+    #FFFFFF 66.66%,
+    #138808 66.66%,
+    #138808 100%
+  );
+  height: 4px;
+  width: 100%;
+}
+
+/* Government of India Official Letterhead & Stamp Utilities */
+.gov-dossier-stamp {
+  border: 2px solid;
+  text-transform: uppercase;
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  padding: 3px 8px;
+  display: inline-flex;
+  align-items: center;
+  border-radius: 2px;
+}
+
+.gov-dossier-stamp-critical {
+  border-color: #B91C1C;
+  color: #991B1B;
+  background-color: #FEF2F2;
+}
+
+.gov-dossier-stamp-verified {
+  border-color: #15803D;
+  color: #166534;
+  background-color: #F0FDF4;
+}
+
+.gov-dossier-stamp-gold {
+  border-color: #D4AF37;
+  color: #854D0E;
+  background-color: #FEFCE8;
+}
+
+.gov-gold-border {
+  border: 1px solid #D4AF37;
+}
+
+.gov-gold-glow {
+  box-shadow: 0 0 10px rgba(212, 175, 55, 0.25);
+}
+
+.radar-hud-glass {
+  background: rgba(0, 23, 55, 0.88);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(212, 175, 55, 0.35);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+/* Continuous Marquee Ticker Animation */
+@keyframes ticker {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  100% {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+.animate-ticker {
+  display: inline-flex;
+  white-space: nowrap;
+  animation: ticker 40s linear infinite;
+}
+
+.animate-ticker:hover {
+  animation-play-state: paused;
+}
+
+/* Printable Legal Dossier Page Formatting */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  #printable-dossier-container,
+  #printable-dossier-container * {
+    visibility: visible;
+  }
+  #printable-dossier-container {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    margin: 0;
+    padding: 20px;
+    background: white !important;
+    color: black !important;
+  }
+}
+
+.gov-dossier-stamp-official {
+  border-color: #0B2545;
+  color: #0B2545;
+  background-color: #F1F5F9;
+}
+
+/* High Contrast Keyboard Accessibility Focus Rings */
+button:focus-visible,
+select:focus-visible,
+input:focus-visible,
+a:focus-visible {
+  outline: 2px solid #0F52BA !important;
+  outline-offset: 1px !important;
+}
+
+/* Leaflet Container & Attribution Overrides */
+.leaflet-container {
+  width: 100%;
+  height: 100%;
+  background-color: #E5E7EB !important;
+  font-family: 'Inter', sans-serif !important;
+}
+
+.leaflet-control-attribution {
+  background-color: rgba(255, 255, 255, 0.9) !important;
+  color: #4B5563 !important;
+  font-size: 10px !important;
+  border: 1px solid #D1D5DB !important;
+  border-radius: 2px !important;
+  padding: 2px 6px !important;
+}
+
+.leaflet-control-attribution a {
+  color: #0F52BA !important;
+  text-decoration: none !important;
+}
+
+.leaflet-popup-content-wrapper {
+  background: #FFFFFF !important;
+  color: #111827 !important;
+  border-radius: 3px !important;
+  border: 1px solid #D1D5DB !important;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
+  padding: 2px !important;
+}
+
+.leaflet-popup-tip {
+  background: #FFFFFF !important;
+}
+
+/* Operational Data Table Standards */
+.operational-table th {
+  background-color: #F9FAFB;
+  color: #4B5563;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  padding: 7px 10px;
+  border-bottom: 1px solid #E5E7EB;
+}
+
+.operational-table td {
+  padding: 7px 10px;
+  border-bottom: 1px solid #F3F4F6;
+  font-size: 12px;
+  color: #1F2937;
+}
+
+.operational-table tr:hover td {
+  background-color: #F9FAFB;
+}
+
+/* Leaflet Custom DivIcon Markers */
+.vessel-marker-pin {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease-out;
+}
+
+.pulse-ring {
+  animation: pulse-ring 2s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+}
+
+@keyframes pulse-ring {
+  0% {
+    transform: scale(0.95);
+    opacity: 0.8;
+  }
+  50% {
+    transform: scale(1.15);
+    opacity: 0.3;
+  }
+  100% {
+    transform: scale(0.95);
+    opacity: 0.8;
+  }
+}
+
+/* Radar Sweep 360 Rotation */
+@keyframes radar-sweep {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-radar-sweep {
+  animation: radar-sweep 4s linear infinite;
+  transform-origin: center center;
+}
+
+/* Tactical Laser Scanner Sweep */
+@keyframes laser-scan {
+  0% {
+    top: 0%;
+    opacity: 0.8;
+  }
+  50% {
+    top: 98%;
+    opacity: 1;
+  }
+  100% {
+    top: 0%;
+    opacity: 0.8;
+  }
+}
+
+.animate-laser-scan {
+  animation: laser-scan 3s ease-in-out infinite;
+}
+
+/* Sonar Ping Wave Expansion */
+@keyframes sonar-wave {
+  0% {
+    transform: scale(0.2);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(2.4);
+    opacity: 0;
+  }
+}
+
+.animate-sonar-wave {
+  animation: sonar-wave 2.5s cubic-bezier(0, 0.2, 0.8, 1) infinite;
+}
+
+/* Glowing Pulse Keyframes */
+@keyframes saffron-glow-pulse {
+  0%, 100% {
+    box-shadow: 0 0 15px rgba(255, 153, 51, 0.35);
+  }
+  50% {
+    box-shadow: 0 0 25px rgba(255, 153, 51, 0.7);
+  }
+}
+
+.animate-saffron-pulse {
+  animation: saffron-glow-pulse 2s infinite ease-in-out;
+}
+
+@keyframes danger-pulse {
+  0%, 100% {
+    box-shadow: 0 0 10px rgba(220, 38, 38, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 25px rgba(220, 38, 38, 0.8);
+  }
+}
+
+.animate-danger-pulse {
+  animation: danger-pulse 1.5s infinite ease-in-out;
+}
+
+/* Ocean Wave Undulation for Spill Plumes */
+@keyframes spill-undulate {
+  0%, 100% {
+    filter: drop-shadow(0 0 4px rgba(220, 38, 38, 0.6));
+    opacity: 0.85;
+  }
+  50% {
+    filter: drop-shadow(0 0 12px rgba(220, 38, 38, 0.9));
+    opacity: 1;
+  }
+}
+
+.animate-spill-glow {
+  animation: spill-undulate 2.5s infinite ease-in-out;
+}
+
+/* Cybernetic Startup Boot Sequence Animations */
+@keyframes boot-grid-pan {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 40px 40px;
+  }
+}
+
+.animate-boot-grid {
+  background-image: 
+    linear-gradient(to right, rgba(16, 185, 129, 0.07) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(16, 185, 129, 0.07) 1px, transparent 1px);
+  background-size: 32px 32px;
+  animation: boot-grid-pan 20s linear infinite;
+}
+
+@keyframes gold-emblem-halo {
+  0%, 100% {
+    filter: drop-shadow(0 0 15px rgba(255, 215, 0, 0.4));
+    transform: scale(1);
+  }
+  50% {
+    filter: drop-shadow(0 0 30px rgba(255, 215, 0, 0.8));
+    transform: scale(1.02);
+  }
+}
+
+.animate-gold-halo {
+  animation: gold-emblem-halo 3s ease-in-out infinite;
+}
+
+@keyframes boot-fade-out {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+    filter: blur(0px);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.04);
+    filter: blur(8px);
+    pointer-events: none;
+  }
+}
+
+.animate-boot-exit {
+  animation: boot-fade-out 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+@keyframes blink-cursor {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+.animate-cursor-blink {
+  animation: blink-cursor 0.8s step-end infinite;
+}
+
+/* Green Ocean Wave Portal Theme Utilities (Option 2) */
+.bg-ocean-wave-green {
+  background: linear-gradient(180deg, #ECFDF5 0%, #D1FAE5 35%, #A7F3D0 70%, #059669 100%);
+}
+
+.bg-ocean-wave-emerald-deep {
+  background: linear-gradient(135deg, #064E26 0%, #032B13 100%);
+}
+
+.card-ocean-green {
+  background: #FFFFFF;
+  border: 1.5px solid #A7F3D0;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px -2px rgba(6, 78, 38, 0.08), 0 2px 6px -1px rgba(6, 78, 38, 0.04);
+  transition: all 0.2s ease-in-out;
+}
+
+.card-ocean-green:hover {
+  border-color: #34D399;
+  box-shadow: 0 8px 25px -3px rgba(6, 78, 38, 0.12);
+}
+
+.ocean-wave-pill-green {
+  background: linear-gradient(135deg, #10B981 0%, #064E26 100%);
+  color: #FFFFFF;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(6, 78, 38, 0.25);
+  transition: all 0.2s ease;
+}
+
+.ocean-wave-pill-green:hover {
+  background: linear-gradient(135deg, #059669 0%, #032B13 100%);
+  box-shadow: 0 4px 12px rgba(6, 78, 38, 0.35);
+  transform: translateY(-1px);
+}
+
+
+

@@ -1,0 +1,31 @@
+# Dependencies
+node_modules/
+frontend/node_modules/
+.venv/
+venv/
+env/
+
+# Production builds & dist
+dist/
+frontend/dist/
+build/
+
+# Python cache & tests
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Environment files
+.env
+
+# SQLite temporary lock files
+*.db-shm
+*.db-wal
+
+# OS files
+.DS_Store
+Thumbs.db
+*.log
