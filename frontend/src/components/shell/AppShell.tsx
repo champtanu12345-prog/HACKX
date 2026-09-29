@@ -453,13 +453,6 @@ export const AppShell: React.FC = () => {
               <span>🏛️ Public Portal</span>
             </button>
             <button
-              onClick={() => setCurrentView('sagar-mitra')}
-              className="px-3 py-1 rounded-md font-bold text-xs transition-all cursor-pointer flex items-center space-x-1.5 text-cyan-200 hover:text-white hover:bg-cyan-900/60"
-            >
-              <Bot className="w-3.5 h-3.5 text-cyan-400" />
-              <span>✦ Sagar Mitra AI</span>
-            </button>
-            <button
               onClick={() => setCurrentView('overview')}
               className="px-3 py-1 rounded-md font-bold text-xs transition-all cursor-pointer flex items-center space-x-1.5 bg-gradient-to-r from-[#10B981] to-[#064E26] text-white shadow-md border border-emerald-300"
             >
