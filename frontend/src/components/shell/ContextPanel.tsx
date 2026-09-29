@@ -11,6 +11,7 @@ import {
   CheckCircle2,
   Download,
   Loader2,
+  Waves,
 } from 'lucide-react';
 import {
   LineChart,
@@ -35,6 +36,7 @@ interface ContextPanelProps {
   onGenerateReport?: (vesselName: string) => void;
   onExportEvidence?: (vesselName: string) => void;
   onOpenDossier?: (vesselId?: string) => void;
+  onOpenContainmentSimulator?: () => void;
   className?: string;
 }
 
@@ -46,6 +48,7 @@ export const ContextPanel: React.FC<ContextPanelProps> = ({
   onGenerateReport,
   onExportEvidence,
   onOpenDossier,
+  onOpenContainmentSimulator,
   className = '',
 }) => {
   const [activeTab, setActiveTab] = useState<'vessel' | 'slick' | 'truth'>('vessel');
@@ -461,6 +464,18 @@ export const ContextPanel: React.FC<ContextPanelProps> = ({
                 <span className="text-charcoal-800 font-mono">{scenario.environment.seaState}</span>
               </div>
             </div>
+
+            {/* 1-Click Launch Containment Simulator */}
+            {onOpenContainmentSimulator && (
+              <button
+                onClick={onOpenContainmentSimulator}
+                className="w-full mt-2 py-2 px-3 rounded-[2px] bg-gradient-to-r from-[#006837] to-[#044322] hover:from-[#007a41] hover:to-[#05532b] text-white font-sans font-bold text-xs flex items-center justify-center space-x-2 transition-all border border-emerald-400 shadow-md cursor-pointer"
+                title="Launch Containment Booms, Skimmers & Dispersant Spray Simulator"
+              >
+                <Waves className="w-4 h-4 text-[#FFD700] animate-pulse" />
+                <span>रोकथाम बूम एवं स्किमर / CONTAINMENT SIMULATOR</span>
+              </button>
+            )}
           </div>
         )}
 

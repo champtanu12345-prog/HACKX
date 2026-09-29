@@ -38,6 +38,7 @@ import { useMapProvider } from './MapProvider';
 import { MapLayerControls, MapLayerState } from './MapLayerControls';
 import { RadarSweepOverlay } from './RadarSweepOverlay';
 import { LagrangianParticleFlow } from './LagrangianParticleFlow';
+import { OceanStreamlinesLayer } from './OceanStreamlinesLayer';
 import { TimeScrubberBar } from './TimeScrubberBar';
 
 // Haversine Great Circle Distance
@@ -200,6 +201,8 @@ export const LeafletMapWorkspace: React.FC<LeafletMapWorkspaceProps> = ({
     originEllipse: true,
     vesselTracks: true,
     darkAnomalies: true,
+    oceanStreamlines: true,
+    containmentAssets: true,
   });
 
   const handleToggleLayer = (key: keyof MapLayerState) => {
@@ -679,6 +682,76 @@ export const LeafletMapWorkspace: React.FC<LeafletMapWorkspaceProps> = ({
           forecastCoords={forecastLineCoords}
           particleCount={75}
         />
+
+        {/* H. Real-time INCOIS Ocean Surface Current & NOAA Wind Streamline Particles */}
+        <OceanStreamlinesLayer
+          isVisible={layersState.oceanStreamlines !== false}
+          particleDensity={130}
+          flowSpeed={1.0}
+        />
+
+        {/* I. Containment Booms & Oleophilic Skimmers Deployment Layer */}
+        {layersState.containmentAssets !== false && scenario.spill && (
+          <>
+            {/* Offshore Inflatable Boom Arc */}
+            <Polyline
+              positions={[
+                [spillCentroid[0] + 0.025, spillCentroid[1] - 0.035],
+                [spillCentroid[0] + 0.035, spillCentroid[1] - 0.015],
+                [spillCentroid[0] + 0.032, spillCentroid[1] + 0.020],
+                [spillCentroid[0] + 0.015, spillCentroid[1] + 0.040],
+              ]}
+              pathOptions={{
+                color: '#EA580C',
+                weight: 4.5,
+                opacity: 0.95,
+                lineCap: 'round',
+                lineJoin: 'round',
+              }}
+            >
+              <Tooltip permanent direction="top">
+                <div className="bg-orange-950/90 text-white font-mono text-[10px] font-bold px-2 py-0.5 rounded border border-orange-500 shadow-md">
+                  ⚓ RO-BOOM 1500 (1,800M CONTAINMENT ARC)
+                </div>
+              </Tooltip>
+            </Polyline>
+
+            {/* Skimmer Unit Markers */}
+            {[
+              {
+                id: 'skimmer-1',
+                name: 'Skimmer Alfa (Desmi 150)',
+                lat: spillCentroid[0] + 0.012,
+                lng: spillCentroid[1] - 0.010,
+              },
+              {
+                id: 'skimmer-2',
+                name: 'Skimmer Bravo (Desmi 150)',
+                lat: spillCentroid[0] + 0.018,
+                lng: spillCentroid[1] + 0.008,
+              },
+            ].map((sk) => (
+              <CircleMarker
+                key={sk.id}
+                center={[sk.lat, sk.lng]}
+                radius={7}
+                pathOptions={{
+                  color: '#EA580C',
+                  fillColor: '#F59E0B',
+                  fillOpacity: 1,
+                  weight: 2,
+                }}
+              >
+                <Tooltip direction="right">
+                  <div className="text-xs font-mono font-bold text-orange-900 bg-white p-1 rounded shadow">
+                    <div>{sk.name}</div>
+                    <div className="text-emerald-700 font-bold">RECOVERING: 75 m³/h</div>
+                  </div>
+                </Tooltip>
+              </CircleMarker>
+            ))}
+          </>
+        )}
       </MapContainer>
 
       {/* Interactive Tactical S-Band Radar HUD Overlay */}

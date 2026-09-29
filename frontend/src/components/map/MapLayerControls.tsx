@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Layers, Eye, EyeOff, Satellite, Waves, Compass, MapPin, Ship, AlertTriangle, Globe } from 'lucide-react';
+import { Layers, Eye, EyeOff, Satellite, Waves, Compass, MapPin, Ship, AlertTriangle, Globe, Wind, LifeBuoy } from 'lucide-react';
 
 export interface MapLayerState {
   sarFootprint: boolean;
@@ -8,6 +8,8 @@ export interface MapLayerState {
   originEllipse: boolean;
   vesselTracks: boolean;
   darkAnomalies: boolean;
+  oceanStreamlines?: boolean;
+  containmentAssets?: boolean;
 }
 
 interface MapLayerControlsProps {
@@ -59,6 +61,18 @@ export const MapLayerControls: React.FC<MapLayerControlsProps> = ({
       label: 'उपग्रह स्वाथ / SAR Footprint',
       icon: <Satellite className="w-3.5 h-3.5 text-emerald-500" />,
       color: 'border-emerald-500 bg-emerald-500/10 text-emerald-700',
+    },
+    {
+      key: 'oceanStreamlines' as keyof MapLayerState,
+      label: 'महासागरीय धाराएँ / INCOIS Currents',
+      icon: <Wind className="w-3.5 h-3.5 text-teal-500" />,
+      color: 'border-teal-500 bg-teal-500/10 text-teal-700',
+    },
+    {
+      key: 'containmentAssets' as keyof MapLayerState,
+      label: 'रोकथाम बूम एवं स्किमर / Booms & Skimmers',
+      icon: <LifeBuoy className="w-3.5 h-3.5 text-orange-500" />,
+      color: 'border-orange-500 bg-orange-500/10 text-orange-700',
     },
   ];
 

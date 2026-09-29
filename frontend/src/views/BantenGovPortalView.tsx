@@ -83,11 +83,13 @@ interface AnnouncementItem {
 interface BantenGovPortalViewProps {
   onLaunchWorkstation?: () => void;
   onOpenLogin?: () => void;
+  onOpenCitizenReport?: () => void;
 }
 
 export const BantenGovPortalView: React.FC<BantenGovPortalViewProps> = ({
   onLaunchWorkstation,
   onOpenLogin,
+  onOpenCitizenReport,
 }) => {
   // Mode: fullscreen browser mode (default for free scrolling) vs showcase frame
   const [viewMode, setViewMode] = useState<'showcase' | 'fullscreen'>('fullscreen');
@@ -228,8 +230,12 @@ export const BantenGovPortalView: React.FC<BantenGovPortalViewProps> = ({
       title: 'Public Spill & Pollution Incident Portal',
       category: 'public',
       action: () => {
-        const el = document.getElementById('public-info');
-        el?.scrollIntoView({ behavior: 'smooth' });
+        if (onOpenCitizenReport) {
+          onOpenCitizenReport();
+        } else {
+          const el = document.getElementById('public-info');
+          el?.scrollIntoView({ behavior: 'smooth' });
+        }
       },
     },
     {
@@ -536,6 +542,18 @@ export const BantenGovPortalView: React.FC<BantenGovPortalViewProps> = ({
               <Activity className="w-3.5 h-3.5 text-[#FFD700]" />
               <span className="hidden sm:inline">Tactical Workstation</span>
               <span className="sm:hidden">Workstation</span>
+            </button>
+          )}
+
+          {/* Citizen Coastal Pollution & Tarball Report Trigger */}
+          {onOpenCitizenReport && (
+            <button
+              onClick={onOpenCitizenReport}
+              className="bg-gradient-to-r from-red-600 to-rose-700 hover:from-red-700 hover:to-rose-800 text-white px-3 py-1.5 rounded-lg text-xs font-bold shadow-md hover:shadow-lg transition-all flex items-center space-x-1.5 cursor-pointer transform hover:-translate-y-0.5 animate-pulse"
+              title="Citizen Coastal Pollution & Tarballs Reporting (Instant Geo-Tag)"
+            >
+              <AlertCircle className="w-3.5 h-3.5 text-amber-200" />
+              <span>Report Spill</span>
             </button>
           )}
 
@@ -2351,6 +2369,16 @@ export const BantenGovPortalView: React.FC<BantenGovPortalViewProps> = ({
           >
             RTI
           </button>
+          {onOpenCitizenReport && (
+            <button
+              type="button"
+              onClick={onOpenCitizenReport}
+              className="px-2.5 py-1 rounded-lg bg-red-600/80 hover:bg-red-600 text-white font-bold transition-colors cursor-pointer flex items-center space-x-1"
+            >
+              <AlertCircle className="w-3 h-3 text-amber-200" />
+              <span>Report</span>
+            </button>
+          )}
         </div>
 
         {/* Scroll To Top & Scroll To Bottom Quick Buttons */}

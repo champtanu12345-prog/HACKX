@@ -40,6 +40,9 @@ import { LoginModal } from '../auth/LoginModal';
 import { AnimatedDribbbleLoginPage } from '../auth/AnimatedDribbbleLoginPage';
 import { BantenGovPortalView } from '../../views/BantenGovPortalView';
 import { SagarMitraAIAssistantView } from '../../views/SagarMitraAIAssistantView';
+import { NavareaEmergencyTicker } from '../common/NavareaEmergencyTicker';
+import { ContainmentSimulatorModal } from '../tactical/ContainmentSimulatorModal';
+import { CitizenPollutionReportModal } from '../portal/CitizenPollutionReportModal';
 
 export const AppShell: React.FC = () => {
   const [isBooting, setIsBooting] = useState<boolean>(false);
@@ -66,6 +69,27 @@ export const AppShell: React.FC = () => {
     const saved = localStorage.getItem('hackx_warp_active');
     return saved !== null ? saved === 'true' : true;
   });
+
+  // Combat Information Center (CIC) Night Mode State
+  const [isNightMode, setIsNightMode] = useState<boolean>(() => {
+    return localStorage.getItem('hackx_night_mode') === 'true';
+  });
+  const [isContainmentModalOpen, setIsContainmentModalOpen] = useState<boolean>(false);
+  const [isCitizenReportModalOpen, setIsCitizenReportModalOpen] = useState<boolean>(false);
+
+  const handleToggleNightMode = () => {
+    setIsNightMode((prev) => {
+      const next = !prev;
+      localStorage.setItem('hackx_night_mode', String(next));
+      setNotification(
+        next
+          ? (lang === 'hi' ? '🌙 सीआईसी नाइट कॉम्बैट मोड सक्रिय' : '🌙 CIC Night Combat Mode Activated')
+          : (lang === 'hi' ? '☀️ डेलाइट जीआईजीडब्ल्यू संचालन मोड सक्रिय' : '☀️ Daylight GIGW Operations Mode Activated')
+      );
+      setTimeout(() => setNotification(null), 3000);
+      return next;
+    });
+  };
 
   const handleToggleWarp = () => {
     setIsWarpActive((prev) => {
@@ -394,6 +418,7 @@ export const AppShell: React.FC = () => {
       <BantenGovPortalView
         onLaunchWorkstation={() => setCurrentView('overview')}
         onOpenLogin={() => setIsLoginModalOpen(true)}
+        onOpenCitizenReport={() => setIsCitizenReportModalOpen(true)}
       />
     );
   }
@@ -401,7 +426,11 @@ export const AppShell: React.FC = () => {
   return (
     <div
       className={`flex flex-col h-screen w-screen overflow-hidden font-sans select-none relative ${
-        isWarpActive ? 'bg-[#050505]/90 text-slate-100' : 'bg-[#F4F6F9] text-slate-900'
+        isNightMode
+          ? 'bg-[#030712] text-slate-100 cic-combat-mode'
+          : isWarpActive
+          ? 'bg-[#050505]/90 text-slate-100'
+          : 'bg-[#F4F6F9] text-slate-900'
       } ${
         fontSizeLevel === 1 ? 'text-[13px]' : fontSizeLevel === -1 ? 'text-[11px]' : 'text-xs'
       }`}
@@ -435,6 +464,15 @@ export const AppShell: React.FC = () => {
         currentUser={currentUser}
         onOpenLogin={() => setIsLoginModalOpen(true)}
         onLogout={handleLogout}
+      />
+
+      {/* NAVAREA VIII Live Emergency Bulletin Ticker with Night Mode & Launchers */}
+      <NavareaEmergencyTicker
+        isNightMode={isNightMode}
+        onToggleNightMode={handleToggleNightMode}
+        onOpenContainmentSimulator={() => setIsContainmentModalOpen(true)}
+        onOpenCitizenReport={() => setIsCitizenReportModalOpen(true)}
+        lang={lang}
       />
 
       {/* Prominent Universal Mode Switcher Bar */}
@@ -621,6 +659,7 @@ export const AppShell: React.FC = () => {
                 if (vesselId) setSelectedVesselId(vesselId);
                 setIsDossierModalOpen(true);
               }}
+              onOpenContainmentSimulator={() => setIsContainmentModalOpen(true)}
             />
           </div>
 
@@ -720,6 +759,26 @@ export const AppShell: React.FC = () => {
           setSelectedVesselId(vesselId);
           setIsContextOpen(true);
         }}
+        lang={lang}
+      />
+
+      {/* 13. Interactive Oil Spill Containment Simulator (Booms & Skimmers) */}
+      <ContainmentSimulatorModal
+        isOpen={isContainmentModalOpen}
+        onClose={() => setIsContainmentModalOpen(false)}
+        onDeployToMap={(cfg) => {
+          setNotification(
+            `[PRT FLEET DEPLOYED] ${cfg.boomLengthMeters}m booms & ${cfg.activeSkimmers} skimmers deployed. Efficiency: ${cfg.containmentEfficiency}%.`
+          );
+          setTimeout(() => setNotification(null), 5000);
+        }}
+        lang={lang}
+      />
+
+      {/* 14. Citizen Coastal Pollution Reporting Portal Modal */}
+      <CitizenPollutionReportModal
+        isOpen={isCitizenReportModalOpen}
+        onClose={() => setIsCitizenReportModalOpen(false)}
         lang={lang}
       />
     </div>
