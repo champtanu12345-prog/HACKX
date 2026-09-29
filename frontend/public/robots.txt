@@ -1,0 +1,6 @@
+# robots.txt for HACKX - Indian Coast Guard Maritime Intelligence Portal
+User-agent: *
+Allow: /
+Disallow: /api/
+
+Sitemap: https://hackx.vercel.app/sitemap.xml

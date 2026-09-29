@@ -35,6 +35,7 @@ cors_origins = [str(origin).rstrip("/") for origin in settings.BACKEND_CORS_ORIG
 app.add_middleware(
     CORSMiddleware,
     allow_origins=cors_origins,
+    allow_origin_regex=r"https://.*\.vercel\.app|https://.*\.onrender\.com|https://.*\.netlify\.app|http://localhost:.*|http://127.0.0.1:.*|https://.*",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
