@@ -11,6 +11,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Globe,
+  Sparkles,
 } from 'lucide-react';
 import { Badge } from '../common/Badge';
 
@@ -23,7 +24,8 @@ export type NavView =
   | 'investigations'
   | 'petroleum'
   | 'sources'
-  | 'settings';
+  | 'settings'
+  | 'hero';
 
 interface SidebarProps {
   currentView: NavView;
@@ -47,8 +49,16 @@ export const Sidebar: React.FC<SidebarProps> = ({
 }) => {
   const primaryNavItems = [
     {
+      id: 'hero' as NavView,
+      label: '✨ HackX 3D Hero',
+      shortLabel: '3D Hero',
+      icon: <Sparkles className="w-4 h-4 text-cyan-500" />,
+      badge: 'CONCEPT',
+      badgeVariant: 'info' as const,
+    },
+    {
       id: 'portal' as NavView,
-      label: '🏛️ तटरक्षक पोर्टल / ICG Portal',
+      label: '🏛️ ICG Portal',
       shortLabel: 'Portal',
       icon: <Globe className="w-4 h-4 text-emerald-600" />,
       badge: 'OFFICIAL',
@@ -56,7 +66,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
     },
     {
       id: 'overview' as NavView,
-      label: '01 अवलोकन / Overview',
+      label: '• Overview',
       shortLabel: 'Overview',
       icon: <LayoutDashboard className="w-4 h-4" />,
       badge: '3',
@@ -64,7 +74,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
     },
     {
       id: 'petroleum' as NavView,
-      label: '02 राष्ट्रीय पेट्रोलियम / P...',
+      label: '• Petroleum SCADA',
       shortLabel: 'Petroleum',
       icon: <Flame className="w-4 h-4 text-amber-600" />,
       badge: 'DGH SCADA',
@@ -72,7 +82,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
     },
     {
       id: 'spills' as NavView,
-      label: '03 तेल रिसाव / Spills',
+      label: '• Oil Spills',
       shortLabel: 'Spills',
       icon: <Waves className="w-4 h-4" />,
       badge: '3',
@@ -80,7 +90,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
     },
     {
       id: 'drift' as NavView,
-      label: '04 बहाव विश्लेषण / Drift',
+      label: '• Drift Analysis',
       shortLabel: 'Drift',
       icon: <Wind className="w-4 h-4" />,
       badge: '1',
@@ -88,7 +98,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
     },
     {
       id: 'attribution' as NavView,
-      label: '05 पोत आरोपण / Attribution',
+      label: '• Vessel Attribution',
       shortLabel: 'Attribution',
       icon: <Ship className="w-4 h-4" />,
       badge: '1',
@@ -96,7 +106,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
     },
     {
       id: 'investigations' as NavView,
-      label: '06 साक्ष्य डॉजियर / Dossiers',
+      label: '• Evidence Dossiers',
       shortLabel: 'Dossiers',
       icon: <FileText className="w-4 h-4" />,
     },
@@ -105,13 +115,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
   const secondaryNavItems = [
     {
       id: 'sources' as NavView,
-      label: '07 डेटा स्रोत / Sensor Feeds',
+      label: '• Sensor Feeds',
       shortLabel: 'Feeds',
       icon: <Radio className="w-4 h-4" />,
     },
     {
       id: 'settings' as NavView,
-      label: '08 सेटिंग / Settings',
+      label: '• System Settings',
       shortLabel: 'Settings',
       icon: <Settings className="w-4 h-4" />,
     },
@@ -126,11 +136,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
         title={isCollapsed ? item.label : undefined}
         className={`w-full flex items-center px-3 py-2.5 text-xs font-sans transition-all text-left relative cursor-pointer ${
           isActive
-            ? 'bg-[#F0FDF4] text-[#0D5204] font-extrabold border-l-4 border-l-[#138808] shadow-2xs'
-            : 'text-slate-700 hover:bg-emerald-50/60 hover:text-[#0D5204] border-l-4 border-l-transparent font-medium'
+            ? 'bg-gradient-to-r from-orange-50/90 to-white text-[#C2410C] font-extrabold border-l-4 border-l-[#EA580C] shadow-2xs'
+            : 'text-slate-700 hover:bg-orange-50/50 hover:text-[#C2410C] border-l-4 border-l-transparent font-medium'
         }`}
       >
-        <span className={`flex-shrink-0 ${isActive ? 'text-[#0D5204]' : 'text-slate-500'}`}>
+        <span className={`flex-shrink-0 ${isActive ? 'text-[#EA580C]' : 'text-slate-500'}`}>
           {item.icon}
         </span>
 
@@ -158,7 +168,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
       <div className="py-2 space-y-0.5">
         {!isCollapsed && (
           <div className="px-3.5 py-1 text-[9.5px] font-mono font-bold text-slate-400 uppercase tracking-wider">
-            अभियान नियंत्रण / MISSION OPS
+            MISSION OPERATIONS
           </div>
         )}
         {primaryNavItems.map(renderNavButton)}
@@ -168,7 +178,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
         {!isCollapsed && (
           <div className="px-3.5 py-1 text-[9.5px] font-mono font-bold text-slate-400 uppercase tracking-wider">
-            प्रणाली प्रबंधन / SYSTEM
+            SYSTEM MANAGEMENT
           </div>
         )}
         {secondaryNavItems.map(renderNavButton)}
@@ -177,12 +187,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
       {/* Bottom Footer & Official ICG Motto Badge */}
       <div className="p-2.5 border-t border-slate-300 bg-slate-50/80 text-[11px] font-sans">
         {!isCollapsed && (
-          <div className="px-2 py-1.5 mb-2 rounded bg-[#064E26] text-white border border-emerald-500/40 text-center shadow-xs">
-            <div className="text-[11px] font-serif font-bold text-[#FFD700] tracking-wide">
-              वयं रक्षामः
-            </div>
-            <div className="text-[9px] font-classic text-slate-100 tracking-widest uppercase mt-0.5 font-bold">
+          <div className="px-2 py-1.5 mb-2 rounded bg-slate-900 text-white border border-slate-700 text-center shadow-xs">
+            <div className="text-[11px] font-mono font-bold text-cyan-400 tracking-wider">
               INDIAN COAST GUARD
+            </div>
+            <div className="text-[9px] font-mono text-slate-400 tracking-wider uppercase mt-0.5">
+              MRCC MUMBAI (WEST)
             </div>
           </div>
         )}

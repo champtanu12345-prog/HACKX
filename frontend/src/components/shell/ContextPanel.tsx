@@ -94,20 +94,18 @@ export const ContextPanel: React.FC<ContextPanelProps> = ({
 
   return (
     <aside
-      className={`w-96 bg-[#F8FAFC] border-l-2 border-slate-300 flex flex-col select-none text-xs z-20 transition-all font-sans shadow-lg ${className}`}
+      className={`w-80 bg-[#F8FAFC] border-l-2 border-slate-300 flex flex-col select-none text-xs z-20 transition-all font-sans shadow-lg ${className}`}
     >
-      {/* Panel Top Header: Official Indian Coast Guard Dossier Header */}
-      <div className="bg-[#064E26] text-white px-3 py-2 border-b-2 border-[#032B13] flex items-center justify-between shadow-xs">
+      {/* Panel Top Header: Official Legal Dossier Header */}
+      <div className="bg-slate-900 text-white px-3 py-2 border-b border-slate-700 flex items-center justify-between shadow-xs">
         <div className="flex items-center space-x-2">
           <StateEmblemIndia size="xs" variant="gold" />
           <div>
-            <div className="font-serif font-bold text-xs text-[#FFD700] tracking-wide flex items-center space-x-1.5">
-              <span>भारतीय तटरक्षक</span>
-              <span className="text-emerald-400 font-sans">|</span>
-              <span className="font-classic text-[11px] text-white font-bold tracking-wider">LEGAL DOSSIER</span>
+            <div className="font-classic text-xs text-white font-bold tracking-wider">
+              LEGAL DOSSIER
             </div>
-            <div className="text-[9.5px] font-mono text-emerald-200 tracking-tight">
-              MARITIME EVIDENCE AUDIT // MARPOL ANNEX-I
+            <div className="text-[9.5px] font-mono text-cyan-300 tracking-tight">
+              MARITIME EVIDENCE AUDIT // MARPOL
             </div>
           </div>
         </div>
@@ -115,45 +113,45 @@ export const ContextPanel: React.FC<ContextPanelProps> = ({
           <button
             onClick={onToggleOpen}
             title="Collapse Panel"
-            className="p-1 rounded-[2px] hover:bg-white/10 text-emerald-100 hover:text-white transition-colors cursor-pointer"
+            className="p-1 rounded-[2px] hover:bg-white/10 text-slate-400 hover:text-white transition-colors cursor-pointer"
           >
             <ChevronRight className="w-4 h-4" />
           </button>
         </div>
       </div>
 
-      {/* Tabs Selector with Official Government Tabs */}
+      {/* Tabs Selector with English Tabs */}
       <div className="grid grid-cols-3 bg-slate-100 border-b border-slate-300 text-[11px] text-center font-bold">
         <button
           onClick={() => setActiveTab('vessel')}
           className={`py-2 transition-all border-b-2 cursor-pointer ${
             activeTab === 'vessel'
-              ? 'border-b-[#0D5204] text-[#064E26] bg-white font-extrabold shadow-2xs'
-              : 'border-b-transparent text-slate-600 hover:text-[#064E26] hover:bg-emerald-50/50'
+              ? 'border-b-sky-600 text-sky-900 bg-white font-extrabold shadow-2xs'
+              : 'border-b-transparent text-slate-600 hover:text-sky-800 hover:bg-sky-50/50'
           }`}
         >
-          संदेही पोत / Target
+          Target Vessel
         </button>
         <button
           onClick={() => setActiveTab('slick')}
           className={`py-2 transition-all border-b-2 cursor-pointer ${
             activeTab === 'slick'
-              ? 'border-b-[#0D5204] text-[#064E26] bg-white font-extrabold shadow-2xs'
-              : 'border-b-transparent text-slate-600 hover:text-[#064E26] hover:bg-emerald-50/50'
+              ? 'border-b-sky-600 text-sky-900 bg-white font-extrabold shadow-2xs'
+              : 'border-b-transparent text-slate-600 hover:text-sky-800 hover:bg-sky-50/50'
           }`}
         >
-          रिसाव डेटा / Slick
+          Slick Data
         </button>
         <button
           onClick={() => setActiveTab('truth')}
           className={`py-2 transition-all border-b-2 cursor-pointer ${
             activeTab === 'truth'
-              ? 'border-b-[#0D5204] text-[#064E26] bg-white font-extrabold shadow-2xs'
-              : 'border-b-transparent text-slate-600 hover:text-[#064E26] hover:bg-emerald-50/50'
+              ? 'border-b-emerald-600 text-emerald-900 bg-white font-extrabold shadow-2xs'
+              : 'border-b-transparent text-slate-600 hover:text-emerald-800 hover:bg-emerald-50/50'
           }`}
           title="Simulation benchmark reference dataset"
         >
-          वैधानिक / Reference
+          Legal Reference
         </button>
       </div>
 
@@ -163,14 +161,14 @@ export const ContextPanel: React.FC<ContextPanelProps> = ({
           <>
             {!selectedVessel ? (
               /* When no vessel is selected: Empty State */
-              <div className="card-ocean-green p-6 text-center space-y-2.5 my-4">
-                <div className="w-10 h-10 rounded-full bg-emerald-50 text-[#064E26] mx-auto flex items-center justify-center border border-emerald-200 shadow-2xs">
+              <div className="card-white-navy p-6 text-center space-y-2.5 my-4">
+                <div className="w-10 h-10 rounded-full bg-blue-50 text-blue-600 mx-auto flex items-center justify-center border border-blue-200 shadow-2xs">
                   <Anchor className="w-5 h-5" />
                 </div>
-                <div className="font-bold text-xs uppercase tracking-wider text-[#064E26]">
+                <div className="font-bold text-xs uppercase tracking-wider text-blue-900">
                   INVESTIGATION
                 </div>
-                <p className="text-xs text-charcoal-600 max-w-[220px] mx-auto leading-relaxed">
+                <p className="text-xs text-slate-500 max-w-[220px] mx-auto leading-relaxed">
                   Select a vessel or map feature to inspect evidence.
                 </p>
               </div>
@@ -178,11 +176,11 @@ export const ContextPanel: React.FC<ContextPanelProps> = ({
               /* When a vessel is selected: Full Contextual Investigation */
               <>
                 {/* 1. Header & Technical ID */}
-                <div className="card-ocean-green p-3.5 space-y-2.5">
+                <div className="card-white-navy p-3.5 space-y-2.5">
                   {/* Case Ref and Legal Header */}
-                  <div className="flex items-center justify-between border-b border-emerald-100 pb-2">
+                  <div className="flex items-center justify-between border-b border-slate-100 pb-2">
                     <div>
-                      <div className="text-[9.5px] font-mono font-bold text-[#064E26] uppercase tracking-wider">
+                      <div className="text-[9.5px] font-mono font-bold text-blue-900 uppercase tracking-wider">
                         केस संदर्भ / CASE REF: ICG/MRCC-MUM/2026/SP-0041
                       </div>
                       <div className="text-[9px] text-slate-500 font-sans mt-0.5">
@@ -196,8 +194,8 @@ export const ContextPanel: React.FC<ContextPanelProps> = ({
 
                   <div className="flex items-start justify-between">
                     <div>
-                      <div className="font-serif font-bold text-sm text-[#064E26] flex items-center space-x-1.5">
-                        <Anchor className="w-4 h-4 text-[#064E26]" />
+                      <div className="font-serif font-bold text-sm text-slate-900 flex items-center space-x-1.5">
+                        <Anchor className="w-4 h-4 text-blue-600" />
                         <span>{selectedVessel.name}</span>
                       </div>
                       <div className="text-[11px] text-slate-600 font-mono mt-0.5">
@@ -207,18 +205,18 @@ export const ContextPanel: React.FC<ContextPanelProps> = ({
                   </div>
 
                   {/* Correlation Score & Priority */}
-                  <div className="bg-[#ECFDF5] p-2.5 rounded-xl border border-emerald-300 space-y-1.5">
+                  <div className="bg-slate-50 p-2.5 rounded-xl border border-slate-200 space-y-1.5">
                     <div className="flex items-center justify-between">
-                      <span className="text-[11px] font-mono font-bold text-[#064E26] uppercase tracking-wide">
+                      <span className="text-[11px] font-mono font-bold text-slate-700 uppercase tracking-wide">
                         सहसंबंध स्कोर / CORRELATION INDEX
                       </span>
-                      <span className="font-mono font-extrabold text-lg text-red-700">
+                      <span className="font-mono font-extrabold text-lg text-rose-700">
                         {selectedVessel.suspicionScore.toFixed(1)} / 100
                       </span>
                     </div>
-                    <div className="flex items-center justify-between text-xs pt-1.5 border-t border-emerald-200">
-                      <span className="text-slate-700 font-medium">तटरक्षक जांच प्राथमिकता:</span>
-                      <span className="font-mono font-bold text-red-700 uppercase tracking-wide text-[11px] bg-red-100/80 px-1.5 py-0.5 rounded border border-red-300">
+                    <div className="flex items-center justify-between text-xs pt-1.5 border-t border-slate-200">
+                      <span className="text-slate-600 font-medium">तटरक्षक जांच प्राथमिकता:</span>
+                      <span className="font-mono font-bold text-rose-700 uppercase tracking-wide text-[11px] bg-rose-50 px-1.5 py-0.5 rounded border border-rose-200">
                         {selectedVessel.suspicionScore >= 80 ? 'CRITICAL (अति-उच्च)' : 'HIGH (उच्च)'}
                       </span>
                     </div>
@@ -226,8 +224,8 @@ export const ContextPanel: React.FC<ContextPanelProps> = ({
                 </div>
 
                 {/* 2. Correlation Breakdown (Compact Horizontal Bars) */}
-                <div className="card-ocean-green p-3 space-y-2.5">
-                  <div className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#064E26] pb-1 border-b border-emerald-100">
+                <div className="card-white-amber p-3 space-y-2.5">
+                  <div className="text-[10px] font-mono font-bold uppercase tracking-wider text-amber-900 pb-1 border-b border-slate-100">
                     Correlation breakdown
                   </div>
 
@@ -279,39 +277,39 @@ export const ContextPanel: React.FC<ContextPanelProps> = ({
                 </div>
 
                 {/* 3. Key Evidence List */}
-                <div className="card-ocean-green p-3 space-y-2">
-                  <div className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#064E26] pb-1 border-b border-emerald-100">
+                <div className="card-white-purple p-3 space-y-2">
+                  <div className="text-[10px] font-mono font-bold uppercase tracking-wider text-purple-900 pb-1 border-b border-slate-100">
                     KEY EVIDENCE
                   </div>
-                  <ul className="space-y-1.5 text-[11px] text-charcoal-700">
+                  <ul className="space-y-1.5 text-[11px] text-slate-700">
                     <li className="flex items-start space-x-1.5">
-                      <span className="text-[#064E26] font-bold">•</span>
+                      <span className="text-purple-600 font-bold">•</span>
                       <span>1.5 km from reconstructed source</span>
                     </li>
                     <li className="flex items-start space-x-1.5">
-                      <span className="text-[#064E26] font-bold">•</span>
+                      <span className="text-purple-600 font-bold">•</span>
                       <span>±12 min from estimated release time</span>
                     </li>
                     <li className="flex items-start space-x-1.5">
-                      <span className="text-[#064E26] font-bold">•</span>
+                      <span className="text-purple-600 font-bold">•</span>
                       <span>Heading aligned with reconstructed trajectory</span>
                     </li>
                     <li className="flex items-start space-x-1.5">
-                      <span className="text-amber-700 font-bold">•</span>
+                      <span className="text-amber-600 font-bold">•</span>
                       <span>AIS transmission gap detected</span>
                     </li>
                     <li className="flex items-start space-x-1.5">
-                      <span className="text-red-700 font-bold">•</span>
+                      <span className="text-rose-600 font-bold">•</span>
                       <span>Sudden speed reduction observed</span>
                     </li>
                   </ul>
                 </div>
 
                 {/* 4. SOG Transit Speed Profile Chart */}
-                <div className="card-ocean-green p-3 space-y-1">
-                  <div className="flex items-center justify-between text-[10px] font-bold text-[#064E26] uppercase tracking-wider">
+                <div className="card-white-teal p-3 space-y-1">
+                  <div className="flex items-center justify-between text-[10px] font-bold text-teal-900 uppercase tracking-wider">
                     <span className="flex items-center space-x-1">
-                      <TrendingDown className="w-3 h-3 text-[#064E26]" />
+                      <TrendingDown className="w-3 h-3 text-teal-600" />
                       <span>Transit Speed Profile (SOG)</span>
                     </span>
                     <span className="text-[9px] text-slate-500 font-mono">knots vs UTC</span>

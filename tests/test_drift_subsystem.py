@@ -160,3 +160,58 @@ def test_api_simulate_endpoint():
     custom_data = resp_custom.json()
     assert custom_data["run_type"] == "FORECAST"
     assert len(custom_data["trajectory_points"]) == 5
+
+
+def test_live_environment_endpoint():
+    """Verify GET /api/v1/drift/live-environment endpoint returns marine and atmospheric conditions."""
+    resp = client.get("/api/v1/drift/live-environment?latitude=18.9&longitude=72.6")
+    assert resp.status_code == 200
+    data = resp.json()
+    assert "marine" in data
+    assert "weather" in data
+    assert "current_speed_knots" in data["marine"]
+    assert "wind_speed_knots" in data["weather"]
+    assert "source" in data["marine"]
+    assert "source" in data["weather"]
+
+
+def test_simulate_with_live_weather():
+    """Verify POST /api/v1/drift/simulate with use_live_weather=True dynamically populates live vectors."""
+    resp = client.post(
+        "/api/v1/drift/simulate",
+        json={
+            "spill_lat": 18.9,
+            "spill_lon": 72.6,
+            "run_type": "HINDCAST",
+            "duration_hours": 3.0,
+            "use_live_weather": True,
+        },
+    )
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["run_type"] == "HINDCAST"
+    assert len(data["trajectory_points"]) == 4
+    assert "parameters" in data
+    assert "ocean_metadata" in data["parameters"] or "is_live_environmental_data" in data["parameters"]
+
+
+def test_forecast_coastal_vulnerability_attachment():
+    """Verify forecast simulation automatically attaches coastal vulnerability analysis."""
+    resp = client.post(
+        "/api/v1/drift/simulate",
+        json={
+            "scenario_id": "scenario_a",
+            "run_type": "FORECAST",
+            "duration_hours": 12.0,
+        },
+    )
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["run_type"] == "FORECAST"
+    assert "parameters" in data
+    assert "coastal_vulnerability" in data["parameters"]
+    cv = data["parameters"]["coastal_vulnerability"]
+    assert "threat_level" in cv
+    assert "containment_guidance" in cv
+
+

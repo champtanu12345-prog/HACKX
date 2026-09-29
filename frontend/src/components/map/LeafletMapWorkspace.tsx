@@ -29,6 +29,8 @@ import {
   Radio,
   Sparkles,
   Clock,
+  Play,
+  Film,
 } from 'lucide-react';
 import { MaritimeScenario, DEMO_SCENARIOS } from '../../data/maritimeDemoData';
 import { InvestigationDetail, SuspectAttribution } from '../../types';
@@ -192,7 +194,7 @@ export const LeafletMapWorkspace: React.FC<LeafletMapWorkspaceProps> = ({
 
   // Advanced GIS Layer Visibility State
   const [layersState, setLayersState] = useState<MapLayerState>({
-    sarFootprint: true,
+    sarFootprint: false,
     spillPlume: true,
     driftParticles: true,
     originEllipse: true,
@@ -216,8 +218,8 @@ export const LeafletMapWorkspace: React.FC<LeafletMapWorkspaceProps> = ({
   const [isMeasuring, setIsMeasuring] = useState(false);
   const [measurePoints, setMeasurePoints] = useState<[number, number][]>([]);
 
-  // Interactive Animated Tactical Radar Sweep State
-  const [isRadarActive, setIsRadarActive] = useState<boolean>(true);
+  // Tactical Radar Sweep State (disabled by default)
+  const [isRadarActive, setIsRadarActive] = useState<boolean>(false);
 
   // Coordinate Display
   const [cursorPos, setCursorPos] = useState<{ lat: number; lon: number } | null>(null);
@@ -225,9 +227,9 @@ export const LeafletMapWorkspace: React.FC<LeafletMapWorkspaceProps> = ({
   // View reset trigger
   const [resetTrigger, setResetTrigger] = useState(0);
 
-  // Interactive 24-Hour Time Scrubber State
+  // Interactive 24-Hour Time Scrubber State (hidden by default; only appears when playing footage)
   const [timeOffsetHours, setTimeOffsetHours] = useState<number>(0);
-  const [isTimeSliderActive, setIsTimeSliderActive] = useState<boolean>(true);
+  const [isTimeSliderActive, setIsTimeSliderActive] = useState<boolean>(false);
 
   // Dynamic vessel position calculation based on time scrubber
   const getVesselCurrentPos = (vessel: (typeof scenario.vessels)[0]): [number, number] => {
@@ -307,16 +309,6 @@ export const LeafletMapWorkspace: React.FC<LeafletMapWorkspaceProps> = ({
     return pts;
   }, [investigation, scenario, spillCentroid]);
 
-  // SAR Acquisition Footprint Swath Bounding Box (Sentinel-1 SAR IW Swath ~250km)
-  const sarFootprintCoords: [number, number][] = useMemo(() => {
-    const [cLat, cLon] = spillCentroid;
-    return [
-      [cLat - 0.18, cLon - 0.22],
-      [cLat - 0.18, cLon + 0.22],
-      [cLat + 0.18, cLon + 0.22],
-      [cLat + 0.18, cLon - 0.22],
-    ];
-  }, [spillCentroid]);
 
   // Candidate Vessels List
   const candidateVessels = useMemo(() => {
@@ -440,30 +432,6 @@ export const LeafletMapWorkspace: React.FC<LeafletMapWorkspaceProps> = ({
           />
         ))}
 
-        {/* SAR Swath Acquisition Footprint */}
-        {layersState.sarFootprint && (
-          <Polygon
-            positions={sarFootprintCoords}
-            pathOptions={{
-              color: '#059669',
-              weight: 1.5,
-              dashArray: '6, 6',
-              fillColor: '#10B981',
-              fillOpacity: 0.04,
-            }}
-          >
-            <Tooltip sticky direction="top">
-              <div className="text-xs font-sans p-0.5">
-                <div className="font-bold text-emerald-700 uppercase tracking-wide">
-                  SAR SATELLITE SWATH FOOTPRINT
-                </div>
-                <div className="text-slate-600 font-medium">
-                  Sentinel-1 C-SAR IW Acquisition Zone (~250km Swath)
-                </div>
-              </div>
-            </Tooltip>
-          </Polygon>
-        )}
 
         {/* A. Oil Spill Polygon & Centroid */}
         {layersState.spillPlume && showOilSpill && visibleSpill && (
@@ -723,6 +691,18 @@ export const LeafletMapWorkspace: React.FC<LeafletMapWorkspaceProps> = ({
 
       {/* 2. Top-Right Professional GIS Map Controls Toolbar */}
       <div className="absolute top-3 right-3 z-[1000] flex flex-col space-y-1.5">
+        {/* Historical Footage Player Toggle */}
+        <button
+          onClick={() => setIsTimeSliderActive(!isTimeSliderActive)}
+          className={`w-8 h-8 border rounded-sm shadow-sm flex items-center justify-center transition-all cursor-pointer ${
+            isTimeSliderActive
+              ? 'bg-[#0a121e] text-amber-400 border-amber-500 shadow-[0_0_10px_rgba(245,158,11,0.3)]'
+              : 'bg-white hover:bg-gray-50 text-charcoal-700 border-gray-300'
+          }`}
+          title={isTimeSliderActive ? 'Close Footage Player' : 'Play Historical 24h Footage'}
+        >
+          <Film className={`w-4 h-4 ${isTimeSliderActive ? 'text-amber-400' : 'text-slate-600'}`} />
+        </button>
         {/* Radar Sweep HUD Toggle */}
         <button
           onClick={() => setIsRadarActive(!isRadarActive)}
@@ -894,9 +874,9 @@ export const LeafletMapWorkspace: React.FC<LeafletMapWorkspaceProps> = ({
         </div>
       )}
 
-      {/* 4. Docked Tactical GIS Legend (Bottom Left) */}
-      <div className="absolute bottom-5 left-3 z-[1000] bg-white/95 backdrop-blur-xs border border-slate-300 rounded-[2px] shadow-md px-3 py-2 text-[11px] font-sans text-slate-800 select-none">
-        <div className="font-mono font-bold text-[10px] text-slate-600 uppercase tracking-wider mb-1.5 pb-0.5 border-b border-slate-200">
+      {/* 4. Docked Tactical GIS Legend (Bottom Left - White Card with Indigo Accent) */}
+      <div className="absolute bottom-5 left-3 z-[1000] bg-white/98 backdrop-blur-md border border-slate-200 border-t-3 border-t-indigo-600 rounded-xl shadow-xl px-3.5 py-2.5 text-[11px] font-sans text-slate-800 select-none">
+        <div className="font-mono font-bold text-[10px] text-indigo-900 uppercase tracking-wider mb-2 pb-1 border-b border-slate-100">
           MAP LEGEND
         </div>
         <div className="grid grid-cols-2 gap-x-5 gap-y-1.5">
@@ -929,8 +909,8 @@ export const LeafletMapWorkspace: React.FC<LeafletMapWorkspaceProps> = ({
         </div>
       </div>
 
-      {/* 5. Real-Time Geodetic Cursor HUD (Bottom Right) */}
-      <div className="absolute bottom-2 right-3 z-[1000] bg-white/95 border border-slate-300 rounded-[2px] px-2 py-0.5 text-[10.5px] font-mono text-slate-700 shadow-xs font-bold">
+      {/* 5. Real-Time Geodetic Cursor HUD (Bottom Right - White Card with Teal Accent) */}
+      <div className="absolute bottom-2 right-3 z-[1000] bg-white/98 backdrop-blur-md border border-slate-200 border-t-2 border-t-teal-600 rounded-lg px-2.5 py-1 text-[10.5px] font-mono text-slate-700 shadow-md font-bold">
         LAT: {cursorPos?.lat ? cursorPos.lat.toFixed(4) : '19.6021'}° | LON: {cursorPos?.lon ? cursorPos.lon.toFixed(4) : '71.1475'}° WGS84
       </div>
 
@@ -941,16 +921,30 @@ export const LeafletMapWorkspace: React.FC<LeafletMapWorkspaceProps> = ({
         className="bottom-8 right-3"
       />
 
-      {/* 7. Interactive 24-Hour Historical Time Scrubber Bar */}
-      {isTimeSliderActive && (
-        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-[1000] w-full max-w-lg px-2 pointer-events-none">
+      {/* 7. Interactive 24-Hour Historical Time Scrubber Bar (Only appears when playing/active) */}
+      {isTimeSliderActive ? (
+        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-[1000] w-full max-w-xl px-3 pointer-events-none transition-all duration-300">
           <div className="pointer-events-auto">
             <TimeScrubberBar
               currentOffsetHours={timeOffsetHours}
               onOffsetChange={setTimeOffsetHours}
               observationTimeUtc={scenario.spill.acquisitionTime || '2026-09-15T01:28:00Z'}
+              onClose={() => setIsTimeSliderActive(false)}
+              autoPlay={true}
             />
           </div>
+        </div>
+      ) : (
+        <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-[1000] pointer-events-none">
+          <button
+            onClick={() => setIsTimeSliderActive(true)}
+            className="pointer-events-auto px-4 py-1.5 rounded-full bg-[#0a121e]/90 hover:bg-[#0c1824] text-amber-300 border border-amber-500/40 shadow-xl backdrop-blur-md font-mono text-[11px] font-bold flex items-center space-x-2 transition-all hover:scale-105 cursor-pointer hover:border-amber-400 group"
+            title="Open Historical 24-Hour Footage Player"
+          >
+            <Play className="w-3.5 h-3.5 text-amber-400 fill-amber-400 group-hover:scale-110 transition-transform" />
+            <span>PLAY FOOTAGE // 24H RECONSTRUCTION</span>
+            <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-ping" />
+          </button>
         </div>
       )}
     </div>

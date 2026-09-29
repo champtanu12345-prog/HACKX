@@ -111,9 +111,9 @@ export const TacticalAlertDispatchModal: React.FC<TacticalAlertDispatchModalProp
 
   return (
     <div className="fixed inset-0 z-[2000] flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 select-none animate-fadeIn font-sans">
-      <div className="bg-white border-2 border-[#064E26] w-full max-w-2xl rounded-[3px] shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+      <div className="bg-white border-2 border-[#EA580C] w-full max-w-2xl rounded-[3px] shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
         {/* Header */}
-        <div className="bg-[#032B13] text-white px-4 py-3 flex items-center justify-between border-b-2 border-emerald-600/50">
+        <div className="bg-gradient-to-r from-[#9A3412] to-[#0B2545] text-white px-4 py-3 flex items-center justify-between border-b-2 border-[#EA580C]">
           <div className="flex items-center space-x-3">
             <div className="w-8 h-8 rounded bg-red-600/20 border border-red-500/60 flex items-center justify-center text-red-400">
               <ShieldAlert className="w-5 h-5 animate-pulse" />
@@ -123,12 +123,12 @@ export const TacticalAlertDispatchModal: React.FC<TacticalAlertDispatchModalProp
                 <span className="font-serif font-bold text-sm text-[#FFD700] tracking-wide">
                   तटरक्षक सामरिक अलर्ट प्रेषण
                 </span>
-                <span className="text-emerald-400">|</span>
+                <span className="text-orange-400">|</span>
                 <span className="font-classic text-xs font-bold text-white tracking-wider">
                   TACTICAL EMERGENCY DISPATCH
                 </span>
               </div>
-              <div className="text-[10px] font-mono text-emerald-200 mt-0.5">
+              <div className="text-[10px] font-mono text-orange-200 mt-0.5">
                 ICG-MRCC MUMBAI // MARITIME LAW ENFORCEMENT ESCALATION
               </div>
             </div>
@@ -172,14 +172,14 @@ export const TacticalAlertDispatchModal: React.FC<TacticalAlertDispatchModalProp
               </div>
               <div>
                 <span className="text-slate-500 block font-medium">प्राथमिक संदेही:</span>
-                <span className="font-bold text-[#064E26] truncate block">{topSuspect?.name || 'N/A'}</span>
+                <span className="font-bold text-[#C2410C] truncate block">{topSuspect?.name || 'N/A'}</span>
               </div>
             </div>
           </div>
 
           {/* Dispatch Channel Selectors */}
           <div className="space-y-2">
-            <div className="text-[11px] font-mono font-bold uppercase tracking-wider text-[#064E26] flex items-center justify-between">
+            <div className="text-[11px] font-mono font-bold uppercase tracking-wider text-[#0B2545] flex items-center justify-between">
               <span>अलर्ट चैनल चयन / TRANSMISSION CHANNELS</span>
               <span className="text-[10px] text-slate-500">All channels encrypted</span>
             </div>
@@ -189,7 +189,7 @@ export const TacticalAlertDispatchModal: React.FC<TacticalAlertDispatchModalProp
               onClick={() => toggleChannel('webhook')}
               className={`p-2.5 rounded border transition-all cursor-pointer flex items-start space-x-3 ${
                 selectedChannels.webhook
-                  ? 'bg-emerald-50/60 border-emerald-500 shadow-xs'
+                  ? 'bg-orange-50/60 border-orange-400 shadow-xs'
                   : 'bg-white border-slate-200 opacity-60'
               }`}
             >
@@ -197,15 +197,15 @@ export const TacticalAlertDispatchModal: React.FC<TacticalAlertDispatchModalProp
                 type="checkbox"
                 checked={selectedChannels.webhook}
                 onChange={() => {}}
-                className="mt-0.5 rounded text-[#064E26] cursor-pointer"
+                className="mt-0.5 rounded text-[#EA580C] cursor-pointer"
               />
               <div className="flex-1">
                 <div className="flex items-center space-x-2">
-                  <Globe className="w-3.5 h-3.5 text-[#064E26]" />
+                  <Globe className="w-3.5 h-3.5 text-[#EA580C]" />
                   <span className="font-bold text-slate-900 text-xs">
                     MRCC Operations Center Webhook (NMDA Gateway)
                   </span>
-                  <span className="text-[9.5px] bg-emerald-100 text-emerald-800 px-1 rounded font-mono font-bold">
+                  <span className="text-[9.5px] bg-orange-100 text-orange-800 px-1 rounded font-mono font-bold">
                     HMAC-SHA256
                   </span>
                 </div>
@@ -347,7 +347,7 @@ export const TacticalAlertDispatchModal: React.FC<TacticalAlertDispatchModalProp
         {/* Footer Actions */}
         <div className="bg-slate-100 border-t border-slate-300 px-4 py-3 flex items-center justify-between">
           <div className="flex items-center space-x-1.5 text-[10.5px] text-slate-500 font-mono">
-            <Lock className="w-3 h-3 text-[#064E26]" />
+            <Lock className="w-3 h-3 text-[#EA580C]" />
             <span>ICG Military Cryptographic Mesh v2.4</span>
           </div>
 
@@ -363,7 +363,7 @@ export const TacticalAlertDispatchModal: React.FC<TacticalAlertDispatchModalProp
             <button
               onClick={handleTransmit}
               disabled={isSending}
-              className="px-4 py-1.5 rounded-[2px] bg-[#0D5204] hover:bg-[#064E26] disabled:opacity-50 text-white font-sans font-bold text-xs flex items-center space-x-2 cursor-pointer shadow-md"
+              className="px-4 py-1.5 rounded-[2px] bg-[#EA580C] hover:bg-[#C2410C] disabled:opacity-50 text-white font-sans font-bold text-xs flex items-center space-x-2 cursor-pointer shadow-md"
             >
               {isSending ? (
                 <>

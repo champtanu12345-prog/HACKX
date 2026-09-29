@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hyperdrive Warp Canvas — Glowing Cyan & Fiery Amber</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+  <style>
+    /* RESET & BASE */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow-x: hidden;
+      background-color: #050505;
+      color: #F8FAFC;
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* WARP-DRIVE CANVAS: Non-blocking, Fixed, Fullscreen Background */
+    #warp-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none; /* NON-BLOCKING: All clicks pass directly through */
+      z-index: -1;          /* Behind all UI content */
+      background: #050505;
+      display: block;
+    }
+
+    /* FOREGROUND DEMO CONTENT & INTERACTIVE HUD */
+    .app-viewport {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+      padding: 2.5rem 3rem;
+      pointer-events: auto;
+    }
+
+    /* Header Nav */
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+    }
+
+    .badge-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.4rem 0.85rem;
+      border-radius: 9999px;
+      background: rgba(0, 240, 255, 0.08);
+      border: 1px solid rgba(0, 240, 255, 0.3);
+      color: #00F0FF;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      box-shadow: 0 0 20px rgba(0, 240, 255, 0.2);
+    }
+
+    .badge-pulse {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #00F0FF;
+      box-shadow: 0 0 10px #00F0FF;
+      animation: pulse 1.8s infinite ease-in-out;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.75); }
+    }
+
+    .status-hud {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+      color: #94A3B8;
+    }
+
+    .status-hud span strong {
+      color: #FFFFFF;
+    }
+
+    /* Main Hero Centerpiece */
+    .hero-center {
+      max-width: 860px;
+      margin: 3rem 0;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .hero-title {
+      font-size: clamp(2.5rem, 5.5vw, 4.75rem);
+      font-weight: 800;
+      line-height: 1.05;
+      letter-spacing: -0.03em;
+    }
+
+    .text-gradient {
+      background: linear-gradient(135deg, #00F0FF 0%, #FFFFFF 50%, #FF6A00 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      filter: drop-shadow(0 0 35px rgba(0, 240, 255, 0.35));
+    }
+
+    .hero-description {
+      font-size: 1.15rem;
+      line-height: 1.6;
+      color: #CBD5E1;
+      max-width: 680px;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 1rem;
+      margin-top: 0.5rem;
+    }
+
+    .btn-warp {
+      appearance: none;
+      border: none;
+      outline: none;
+      cursor: pointer;
+      padding: 0.9rem 2rem;
+      border-radius: 12px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.9rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.75rem;
+      user-select: none;
+    }
+
+    .btn-warp-primary {
+      background: linear-gradient(135deg, #00F0FF 0%, #0088FF 100%);
+      color: #050505;
+      box-shadow: 0 0 30px rgba(0, 240, 255, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.5);
+    }
+
+    .btn-warp-primary:hover {
+      transform: translateY(-2px) scale(1.02);
+      box-shadow: 0 0 45px rgba(0, 240, 255, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+    }
+
+    .btn-warp-primary:active {
+      transform: translateY(1px) scale(0.98);
+    }
+
+    .btn-warp-amber {
+      background: rgba(255, 106, 0, 0.12);
+      border: 1px solid rgba(255, 106, 0, 0.4);
+      color: #FF6A00;
+      box-shadow: 0 0 25px rgba(255, 106, 0, 0.2);
+    }
+
+    .btn-warp-amber:hover {
+      background: rgba(255, 106, 0, 0.2);
+      border-color: #FF6A00;
+      transform: translateY(-2px);
+      box-shadow: 0 0 35px rgba(255, 106, 0, 0.5);
+    }
+
+    /* Floating Interactive Controls Glass Panel */
+    .controls-glass-panel {
+      background: rgba(15, 23, 42, 0.65);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 16px;
+      padding: 1.25rem 1.75rem;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1.5rem;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+      width: 100%;
+      max-width: 1000px;
+    }
+
+    .control-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .control-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      color: #94A3B8;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .control-slider {
+      appearance: none;
+      -webkit-appearance: none;
+      width: 140px;
+      height: 6px;
+      border-radius: 9999px;
+      background: rgba(255, 255, 255, 0.15);
+      outline: none;
+      transition: background 0.2s;
+    }
+
+    .control-slider::-webkit-slider-thumb {
+      appearance: none;
+      -webkit-appearance: none;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #00F0FF;
+      cursor: pointer;
+      box-shadow: 0 0 10px #00F0FF;
+      transition: transform 0.15s;
+    }
+
+    .control-slider::-webkit-slider-thumb:hover {
+      transform: scale(1.25);
+    }
+
+    .pill-btn-group {
+      display: flex;
+      background: rgba(0, 0, 0, 0.4);
+      padding: 3px;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .pill-btn {
+      background: transparent;
+      border: none;
+      color: #94A3B8;
+      padding: 0.4rem 0.8rem;
+      border-radius: 6px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .pill-btn.active {
+      background: rgba(255, 255, 255, 0.15);
+      color: #FFFFFF;
+      font-weight: 700;
+    }
+
+    .pill-btn:hover:not(.active) {
+      color: #FFFFFF;
+    }
+
+    /* Mouse hint info */
+    .mouse-hint {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      color: #64748B;
+    }
+
+    .mouse-hint svg {
+      color: #00F0FF;
+    }
+
+    @media (max-width: 768px) {
+      .app-viewport {
+        padding: 1.5rem;
+      }
+      .controls-glass-panel {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .control-slider {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HTML5 CANVAS: Interactive, Non-blocking, Pitch Black Hyperdrive Warp -->
+  <canvas id="warp-canvas"></canvas>
+
+  <!-- UI OVERLAY -->
+  <div class="app-viewport">
+    
+    <!-- Header -->
+    <header>
+      <div class="badge-tag">
+        <span class="badge-pulse"></span>
+        WARP-DRIVE HYPERSPACE ENGINE // 60 FPS
+      </div>
+
+      <div class="status-hud">
+        <span>PARTICLES: <strong id="hud-particles">700</strong></span>
+        <span>WARP VELOCITY: <strong id="hud-speed">1.0x</strong></span>
+        <span>FPS: <strong id="hud-fps" style="color: #00F0FF;">60</strong></span>
+      </div>
+    </header>
+
+    <!-- Hero Content -->
+    <div class="hero-center">
+      <h1 class="hero-title">
+        Warp Horizon <br/>
+        <span class="text-gradient">Interactive Hyperspace</span>
+      </h1>
+      <p class="hero-description">
+        Hundreds of relativistic light streaks radiating outward into the deep void.
+        Dynamic dual-tone photon trails blending vibrant cyan (#00F0FF) with fiery amber (#FF6A00),
+        rendered onto an ultra-fast HTML5 Canvas with fluid parallax perspective shifting.
+      </p>
+
+      <div class="hero-actions">
+        <button id="btn-burst" class="btn-warp btn-warp-primary">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+          </svg>
+          Engage Hyper-Boost (Hold Space or Click)
+        </button>
+
+        <button id="btn-color-flip" class="btn-warp btn-warp-amber">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <path d="m4.93 4.93 4.24 4.24"></path>
+            <path d="m14.83 9.17 4.24-4.24"></path>
+            <path d="m14.83 14.83 4.24 4.24"></path>
+            <path d="m9.17 14.83-4.24 4.24"></path>
+          </svg>
+          Invert Color Ratio
+        </button>
+      </div>
+    </div>
+
+    <!-- Bottom Controls & Interactivity Bar -->
+    <div class="controls-glass-panel">
+      <!-- Particle Density -->
+      <div class="control-group">
+        <div class="control-label">
+          <span>Density</span>
+          <span id="label-count" style="color: #00F0FF;">700</span>
+        </div>
+        <input id="slider-count" type="range" min="200" max="1500" step="50" value="700" class="control-slider" />
+      </div>
+
+      <!-- Warp Speed -->
+      <div class="control-group">
+        <div class="control-label">
+          <span>Speed Factor</span>
+          <span id="label-speed" style="color: #FF6A00;">22</span>
+        </div>
+        <input id="slider-speed" type="range" min="8" max="60" step="2" value="22" class="control-slider" />
+      </div>
+
+      <!-- Streak Trail Length -->
+      <div class="control-group">
+        <div class="control-label">
+          <span>Trail Stretch</span>
+          <span id="label-trail">0.65</span>
+        </div>
+        <input id="slider-trail" type="range" min="0.2" max="1.4" step="0.05" value="0.65" class="control-slider" />
+      </div>
+
+      <!-- Perspective Sensitivity -->
+      <div class="control-group">
+        <div class="control-label">
+          <span>Parallax Shift</span>
+          <span id="label-parallax">0.25</span>
+        </div>
+        <input id="slider-parallax" type="range" min="0.05" max="0.6" step="0.05" value="0.25" class="control-slider" />
+      </div>
+
+      <!-- Mode Selector -->
+      <div class="control-group">
+        <div class="control-label">Palette Mode</div>
+        <div class="pill-btn-group">
+          <button class="pill-btn active" data-mode="dualtone">Dual-Tone</button>
+          <button class="pill-btn" data-mode="cyan">Cyan Dominant</button>
+          <button class="pill-btn" data-mode="amber">Amber Dominant</button>
+        </div>
+      </div>
+
+      <!-- Mouse Guidance -->
+      <div class="mouse-hint">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="5" y="2" width="14" height="20" rx="7"></rect>
+          <path d="M12 6v4"></path>
+        </svg>
+        Move cursor to steer perspective horizon
+      </div>
+    </div>
+
+  </div>
+
+  <!-- WARP-DRIVE CANVAS SCRIPT -->
+  <script>
+    (function () {
+      'use strict';
+
+      const canvas = document.getElementById('warp-canvas');
+      const ctx = canvas.getContext('2d', { alpha: false });
+
+      const hudParticles = document.getElementById('hud-particles');
+      const hudSpeed = document.getElementById('hud-speed');
+      const hudFps = document.getElementById('hud-fps');
+      const sliderCount = document.getElementById('slider-count');
+      const sliderSpeed = document.getElementById('slider-speed');
+      const sliderTrail = document.getElementById('slider-trail');
+      const sliderParallax = document.getElementById('slider-parallax');
+      const labelCount = document.getElementById('label-count');
+      const labelSpeed = document.getElementById('label-speed');
+      const labelTrail = document.getElementById('label-trail');
+      const labelParallax = document.getElementById('label-parallax');
+      const btnBurst = document.getElementById('btn-burst');
+      const btnColorFlip = document.getElementById('btn-color-flip');
+      const pillBtns = document.querySelectorAll('.pill-btn');
+
+      const config = {
+        starCount: 700,
+        baseSpeed: 22,
+        boostMultiplier: 1.0,
+        trailLength: 0.65,
+        parallaxFactor: 0.25,
+        maxDepth: 1800,
+        fov: 320,
+        colorMode: 'dualtone',
+        colorRatio: 0.5,
+      };
+
+      const PALETTES = {
+        cyan: {
+          r: 0,
+          g: 240,
+          b: 255,
+          hex: '#00F0FF',
+          glow: 'rgba(0, 240, 255, 0.8)',
+          core: 'rgba(230, 252, 255, 0.95)'
+        },
+        amber: {
+          r: 255,
+          g: 106,
+          b: 0,
+          hex: '#FF6A00',
+          glow: 'rgba(255, 106, 0, 0.85)',
+          core: 'rgba(255, 240, 220, 0.95)'
+        }
+      };
+
+      let width = window.innerWidth;
+      let height = window.innerHeight;
+      let dpr = Math.min(window.devicePixelRatio || 1, 2);
+      let centerX = width / 2;
+      let centerY = height / 2;
+
+      let mouseX = centerX;
+      let mouseY = centerY;
+      let targetVanishingX = centerX;
+      let targetVanishingY = centerY;
+      let vanishingX = centerX;
+      let vanishingY = centerY;
+      let isBoosting = false;
+
+      let lastTime = performance.now();
+      let frameCount = 0;
+      let lastFpsUpdate = lastTime;
+
+      class WarpStreak {
+        constructor() {
+          this.reset(true);
+        }
+
+        reset(initial = false) {
+          const angle = Math.random() * Math.PI * 2;
+          const distance = Math.pow(Math.random(), 0.7) * (Math.max(width, height) * 0.9) + 40;
+          
+          this.x = Math.cos(angle) * distance;
+          this.y = Math.sin(angle) * distance;
+          this.z = initial ? Math.random() * config.maxDepth : config.maxDepth;
+          this.pz = this.z;
+
+          this.speedMultiplier = 0.85 + Math.random() * 0.4;
+          this.width = 0.5 + Math.random() * 1.5;
+
+          this.assignColor();
+        }
+
+        assignColor() {
+          let isCyan = true;
+          if (config.colorMode === 'dualtone') {
+            isCyan = Math.random() < config.colorRatio;
+          } else if (config.colorMode === 'amber') {
+            isCyan = Math.random() < 0.15;
+          } else {
+            isCyan = Math.random() < 0.85;
+          }
+
+          this.palette = isCyan ? PALETTES.cyan : PALETTES.amber;
+          this.alpha = 0.5 + Math.random() * 0.5;
+        }
+
+        update(effectiveSpeed) {
+          this.pz = this.z;
+          this.z -= effectiveSpeed * this.speedMultiplier;
+
+          if (this.z <= 12) {
+            this.reset(false);
+          }
+        }
+
+        draw() {
+          const fov = config.fov;
+          const kCurrent = fov / this.z;
+          const sx = this.x * kCurrent + vanishingX;
+          const sy = this.y * kCurrent + vanishingY;
+
+          const trailZ = this.z + (this.pz - this.z) * (config.trailLength * 3.5);
+          const kPrev = fov / Math.max(trailZ, 1);
+          const px = this.x * kPrev + vanishingX;
+          const py = this.y * kPrev + vanishingY;
+
+          if (
+            (sx < -100 && px < -100) ||
+            (sx > width + 100 && px > width + 100) ||
+            (sy < -100 && py < -100) ||
+            (sy > height + 100 && py > height + 100)
+          ) {
+            if (this.z < config.maxDepth * 0.5) {
+              this.reset(false);
+            }
+            return;
+          }
+
+          const proximity = 1 - Math.min(this.z / config.maxDepth, 1);
+          const streakWidth = (this.width + proximity * 3.2) * (isBoosting ? 1.4 : 1.0);
+
+          const dx = sx - px;
+          const dy = sy - py;
+          const len = Math.sqrt(dx * dx + dy * dy);
+          if (len < 1.0) return;
+
+          const gradient = ctx.createLinearGradient(px, py, sx, sy);
+          const { r, g, b } = this.palette;
+          
+          gradient.addColorStop(0, `rgba(${r}, ${g}, ${b}, 0)`);
+          gradient.addColorStop(0.65, `rgba(${r}, ${g}, ${b}, ${0.5 + proximity * 0.4})`);
+          gradient.addColorStop(1, `rgba(255, 255, 255, ${Math.min(0.95, 0.7 + proximity * 0.3)})`);
+
+          ctx.beginPath();
+          ctx.moveTo(px, py);
+          ctx.lineTo(sx, sy);
+          ctx.strokeStyle = gradient;
+          ctx.lineWidth = streakWidth;
+          ctx.lineCap = 'round';
+          ctx.stroke();
+
+          if (proximity > 0.65 && !isBoosting) {
+            ctx.beginPath();
+            ctx.arc(sx, sy, streakWidth * 0.8, 0, Math.PI * 2);
+            ctx.fillStyle = this.palette.core;
+            ctx.fill();
+          }
+        }
+      }
+
+      let particles = [];
+      function initParticles() {
+        particles = [];
+        for (let i = 0; i < config.starCount; i++) {
+          particles.push(new WarpStreak());
+        }
+      }
+
+      function handleResize() {
+        width = window.innerWidth;
+        height = window.innerHeight;
+        dpr = Math.min(window.devicePixelRatio || 1, 2);
+
+        canvas.width = Math.floor(width * dpr);
+        canvas.height = Math.floor(height * dpr);
+
+        ctx.setTransform(1, 0, 0, 1, 0, 0);
+        ctx.scale(dpr, dpr);
+
+        centerX = width / 2;
+        centerY = height / 2;
+        targetVanishingX = centerX;
+        targetVanishingY = centerY;
+      }
+
+      window.addEventListener('mousemove', (e) => {
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+
+        const deltaX = (mouseX - centerX);
+        const deltaY = (mouseY - centerY);
+
+        targetVanishingX = centerX + deltaX * config.parallaxFactor;
+        targetVanishingY = centerY + deltaY * config.parallaxFactor;
+      }, { passive: true });
+
+      window.addEventListener('touchmove', (e) => {
+        if (e.touches.length > 0) {
+          const t = e.touches[0];
+          mouseX = t.clientX;
+          mouseY = t.clientY;
+          const deltaX = (mouseX - centerX);
+          const deltaY = (mouseY - centerY);
+          targetVanishingX = centerX + deltaX * config.parallaxFactor;
+          targetVanishingY = centerY + deltaY * config.parallaxFactor;
+        }
+      }, { passive: true });
+
+      window.addEventListener('mouseleave', () => {
+        targetVanishingX = centerX;
+        targetVanishingY = centerY;
+      });
+
+      window.addEventListener('keydown', (e) => {
+        if (e.code === 'Space' && e.target === document.body) {
+          e.preventDefault();
+          isBoosting = true;
+        }
+      });
+      window.addEventListener('keyup', (e) => {
+        if (e.code === 'Space') {
+          isBoosting = false;
+        }
+      });
+
+      btnBurst.addEventListener('mousedown', () => { isBoosting = true; });
+      window.addEventListener('mouseup', () => { isBoosting = false; });
+      btnBurst.addEventListener('touchstart', (e) => { e.preventDefault(); isBoosting = true; });
+      window.addEventListener('touchend', () => { isBoosting = false; });
+
+      btnColorFlip.addEventListener('click', () => {
+        config.colorRatio = config.colorRatio === 0.5 ? 0.8 : (config.colorRatio === 0.8 ? 0.2 : 0.5);
+        particles.forEach(p => p.assignColor());
+      });
+
+      sliderCount.addEventListener('input', (e) => {
+        const val = parseInt(e.target.value, 10);
+        config.starCount = val;
+        labelCount.textContent = val;
+        hudParticles.textContent = val;
+        while (particles.length < val) particles.push(new WarpStreak());
+        if (particles.length > val) particles.length = val;
+      });
+
+      sliderSpeed.addEventListener('input', (e) => {
+        const val = parseInt(e.target.value, 10);
+        config.baseSpeed = val;
+        labelSpeed.textContent = val;
+      });
+
+      sliderTrail.addEventListener('input', (e) => {
+        const val = parseFloat(e.target.value);
+        config.trailLength = val;
+        labelTrail.textContent = val.toFixed(2);
+      });
+
+      sliderParallax.addEventListener('input', (e) => {
+        const val = parseFloat(e.target.value);
+        config.parallaxFactor = val;
+        labelParallax.textContent = val.toFixed(2);
+      });
+
+      pillBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          pillBtns.forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          config.colorMode = btn.dataset.mode;
+          particles.forEach(p => p.assignColor());
+        });
+      });
+
+      function animate(now) {
+        const dt = Math.min((now - lastTime) / 1000, 0.1);
+        lastTime = now;
+
+        frameCount++;
+        if (now - lastFpsUpdate >= 500) {
+          const fps = Math.round((frameCount * 1000) / (now - lastFpsUpdate));
+          hudFps.textContent = fps;
+          frameCount = 0;
+          lastFpsUpdate = now;
+        }
+
+        vanishingX += (targetVanishingX - vanishingX) * 0.08;
+        vanishingY += (targetVanishingY - vanishingY) * 0.08;
+
+        const targetMultiplier = isBoosting ? 3.2 : 1.0;
+        config.boostMultiplier += (targetMultiplier - config.boostMultiplier) * 0.15;
+        const currentSpeed = config.baseSpeed * config.boostMultiplier;
+        hudSpeed.textContent = config.boostMultiplier.toFixed(1) + 'x';
+
+        // 1. Background Clear with Persistence for Radial Motion Blur
+        ctx.globalCompositeOperation = 'source-over';
+        ctx.fillStyle = isBoosting ? 'rgba(5, 5, 5, 0.38)' : 'rgba(5, 5, 5, 0.28)';
+        ctx.fillRect(0, 0, width, height);
+
+        // 2. Central Hyperspace Horizon Glow
+        const glowRadius = isBoosting ? 260 : 160;
+        const centralGlow = ctx.createRadialGradient(
+          vanishingX, vanishingY, 0,
+          vanishingX, vanishingY, glowRadius
+        );
+        centralGlow.addColorStop(0, 'rgba(0, 240, 255, 0.12)');
+        centralGlow.addColorStop(0.35, 'rgba(255, 106, 0, 0.06)');
+        centralGlow.addColorStop(1, 'rgba(5, 5, 5, 0)');
+
+        ctx.fillStyle = centralGlow;
+        ctx.beginPath();
+        ctx.arc(vanishingX, vanishingY, glowRadius, 0, Math.PI * 2);
+        ctx.fill();
+
+        // 3. Render High-Speed Streaks with Additive Lighter Blending
+        ctx.globalCompositeOperation = 'lighter';
+        for (let i = 0; i < particles.length; i++) {
+          const p = particles[i];
+          p.update(currentSpeed);
+          p.draw();
+        }
+
+        requestAnimationFrame(animate);
+      }
+
+      window.addEventListener('resize', handleResize);
+      handleResize();
+      initParticles();
+      requestAnimationFrame(animate);
+
+    })();
+  </script>
+</body>
+</html>

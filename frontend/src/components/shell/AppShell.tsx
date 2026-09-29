@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Globe, Activity, Shield, Waves } from 'lucide-react';
+import { Globe, Activity, Shield, Waves, Sparkles } from 'lucide-react';
 import { TopBar } from './TopBar';
 import { Sidebar, NavView } from './Sidebar';
 import { ContextPanel } from './ContextPanel';
 import { GovMasthead } from '../common/GovMasthead';
 import { GovFooter } from '../common/GovFooter';
+import { WarpBackgroundCanvas } from '../common/WarpBackgroundCanvas';
 import { TypewriterCommandTeletype } from '../common/TypewriterCommandTeletype';
 import { LegalDossierModal } from '../common/LegalDossierModal';
 import { TacticalAnalysisScanner } from '../workflow/TacticalAnalysisScanner';
@@ -21,7 +22,9 @@ import { DEMO_SCENARIOS, MaritimeScenario } from '../../data/maritimeDemoData';
 import { AnalysisProgressBar } from '../workflow/AnalysisProgressBar';
 import { TacticalAlertDispatchModal } from '../workflow/TacticalAlertDispatchModal';
 import { EvaluatorGuidedTour } from '../workflow/EvaluatorGuidedTour';
+import { InvestigationPipelineWizard } from '../workflow/InvestigationPipelineWizard';
 import { StartupBootSequence } from '../common/StartupBootSequence';
+import { TacticalCopilot } from '../common/TacticalCopilot';
 import { tacticalAudio } from '../../utils/audioAlerts';
 import {
   getDemoScenario,
@@ -32,24 +35,101 @@ import {
   getInvestigationById,
 } from '../../api/client';
 import { AnalysisStage, InvestigationDetail } from '../../types';
+import { AuthUser, getStoredSession, clearSession } from '../../api/auth';
+import { LoginModal } from '../auth/LoginModal';
+import { HackXHeroSection } from '../hero/HackXHeroSection';
 
 export const AppShell: React.FC = () => {
   const [isBooting, setIsBooting] = useState<boolean>(false);
-  const [currentView, setCurrentView] = useState<NavView>('portal');
+  const [currentView, setCurrentView] = useState<NavView>('hero');
   const [currentScenarioId, setCurrentScenarioId] = useState<string>('scenario_a');
   const [activeScenarioData, setActiveScenarioData] = useState<MaritimeScenario>(
     DEMO_SCENARIOS.scenario_a
   );
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState<boolean>(false);
-  const [isContextOpen, setIsContextOpen] = useState<boolean>(true);
+  const [isContextOpen, setIsContextOpen] = useState<boolean>(false);
   const [selectedVesselId, setSelectedVesselId] = useState<string | undefined>(undefined);
   const [notification, setNotification] = useState<string | null>(null);
   const [isLoadingScenario, setIsLoadingScenario] = useState<boolean>(false);
-  const [fontSizeLevel, setFontSizeLevel] = useState<number>(0);
-  const [lang, setLang] = useState<'en' | 'hi'>('en');
+  const [fontSizeLevel, setFontSizeLevel] = useState<number>(() => {
+    const saved = localStorage.getItem('hackx_font_size');
+    return saved ? parseInt(saved, 10) : 0;
+  });
+  const [lang, setLang] = useState<'en' | 'hi'>(() => {
+    return (localStorage.getItem('hackx_lang') as 'en' | 'hi') || 'en';
+  });
+
+  // Interactive HTML5 Canvas Warp-Drive Hyperspace Background State
+  const [isWarpActive, setIsWarpActive] = useState<boolean>(() => {
+    const saved = localStorage.getItem('hackx_warp_active');
+    return saved !== null ? saved === 'true' : true;
+  });
+
+  const handleToggleWarp = () => {
+    setIsWarpActive((prev) => {
+      const next = !prev;
+      localStorage.setItem('hackx_warp_active', String(next));
+      setNotification(
+        next
+          ? (lang === 'hi' ? '✨ वार्प-ड्राइव पृष्ठभूमि सक्रिय (60 FPS)' : '✨ Warp-Drive Hyperspace Canvas Active (60 FPS)')
+          : (lang === 'hi' ? 'वार्प पृष्ठभूमि निष्क्रिय' : 'Warp Canvas Disabled')
+      );
+      setTimeout(() => setNotification(null), 3500);
+      return next;
+    });
+  };
+
+  // Apply GIGW 3.0 font scaling on <html>
+  useEffect(() => {
+    const root = document.documentElement;
+    root.classList.remove('font-scale-sm', 'font-scale-base', 'font-scale-lg');
+    if (fontSizeLevel === -1) {
+      root.classList.add('font-scale-sm');
+      root.style.fontSize = '13.5px';
+    } else if (fontSizeLevel === 1) {
+      root.classList.add('font-scale-lg');
+      root.style.fontSize = '18.5px';
+    } else {
+      root.classList.add('font-scale-base');
+      root.style.fontSize = '16px';
+    }
+    localStorage.setItem('hackx_font_size', String(fontSizeLevel));
+  }, [fontSizeLevel]);
+
+  // Persist language changes
+  const handleToggleLang = () => {
+    setLang((prev) => {
+      const next = prev === 'en' ? 'hi' : 'en';
+      localStorage.setItem('hackx_lang', next);
+      setNotification(
+        next === 'hi'
+          ? 'भाषा बदली गई: हिन्दी (राजभाषा पोर्टल सक्रिय)'
+          : 'Language Switched: English (Official Portal Active)'
+      );
+      setTimeout(() => setNotification(null), 3000);
+      return next;
+    });
+  };
+  const [currentUser, setCurrentUser] = useState<AuthUser | null>(() => {
+    return getStoredSession().user;
+  });
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState<boolean>(false);
+
+  const handleLogout = () => {
+    clearSession();
+    setCurrentUser(null);
+    setNotification(
+      lang === 'hi'
+        ? 'सफलतापूर्वक लॉग आउट किया गया।'
+        : 'Logged out successfully.'
+    );
+    setTimeout(() => setNotification(null), 3500);
+  };
+
   const [isDossierModalOpen, setIsDossierModalOpen] = useState<boolean>(false);
   const [isAlertModalOpen, setIsAlertModalOpen] = useState<boolean>(false);
   const [isTourModalOpen, setIsTourModalOpen] = useState<boolean>(false);
+  const [isPipelineWizardOpen, setIsPipelineWizardOpen] = useState<boolean>(false);
   const [isSoundActive, setIsSoundActive] = useState<boolean>(tacticalAudio.isEnabled());
 
   // Real Investigation Workflow State
@@ -273,12 +353,58 @@ export const AppShell: React.FC = () => {
     highRiskCount: scenario.vessels.filter((v) => v.suspicionScore >= 70).length,
   };
 
+  if (currentView === 'hero') {
+    return (
+      <div className="relative w-screen h-screen overflow-x-hidden overflow-y-auto bg-[#EBF3F8]">
+        {/* Floating Quick Navigation to Tactical Workstation & ICG Portal */}
+        <div className="fixed top-4 right-5 z-50 flex items-center space-x-2.5">
+          <button
+            onClick={() => setCurrentView('overview')}
+            className="px-3.5 py-1.5 rounded-full bg-slate-900/85 hover:bg-slate-900 text-cyan-300 hover:text-white text-xs font-mono border border-cyan-400/40 shadow-xl backdrop-blur-md flex items-center space-x-1.5 transition-all hover:scale-105 cursor-pointer"
+            title="Switch to Tactical Oil Spill Command Workstation"
+          >
+            <Activity className="w-3.5 h-3.5 text-cyan-400" />
+            <span>Tactical Workstation ↗</span>
+          </button>
+          <button
+            onClick={() => setCurrentView('portal')}
+            className="px-3.5 py-1.5 rounded-full bg-emerald-950/85 hover:bg-emerald-900 text-emerald-300 hover:text-white text-xs font-mono border border-emerald-500/40 shadow-xl backdrop-blur-md flex items-center space-x-1.5 transition-all hover:scale-105 cursor-pointer"
+            title="Switch to Indian Coast Guard Portal"
+          >
+            <Globe className="w-3.5 h-3.5 text-amber-400" />
+            <span>ICG Portal</span>
+          </button>
+        </div>
+
+        {/* The HackX Ultra-Modern Glassmorphic Hero UI */}
+        <HackXHeroSection
+          onLaunch={() => setCurrentView('overview')}
+          onConnect={() => setCurrentView('overview')}
+        />
+      </div>
+    );
+  }
+
   return (
     <div
-      className={`flex flex-col h-screen w-screen bg-[#F4F6F9] text-slate-900 overflow-hidden font-sans select-none ${
+      className={`flex flex-col h-screen w-screen overflow-hidden font-sans select-none relative ${
+        isWarpActive ? 'bg-[#050505]/90 text-slate-100' : 'bg-[#F4F6F9] text-slate-900'
+      } ${
         fontSizeLevel === 1 ? 'text-[13px]' : fontSizeLevel === -1 ? 'text-[11px]' : 'text-xs'
       }`}
     >
+      {/* HTML5 Canvas Warp-Drive Background (Non-blocking, fixed, pointer-events: none) */}
+      {isWarpActive && (
+        <WarpBackgroundCanvas
+          starCount={700}
+          speed={22}
+          trailLength={0.65}
+          parallaxFactor={0.25}
+          colorMode="dualtone"
+          backgroundColor="#050505"
+        />
+      )}
+
       {/* Toast Notification HUD */}
       {notification && (
         <div className="absolute top-28 right-6 z-50 bg-[#0B2545] text-white border border-amber-500/60 px-4 py-2.5 rounded-[2px] font-sans text-xs font-bold shadow-xl transition-all flex items-center space-x-2.5">
@@ -292,14 +418,26 @@ export const AppShell: React.FC = () => {
         fontSizeLevel={fontSizeLevel}
         onFontSizeChange={(lvl) => setFontSizeLevel(lvl)}
         lang={lang}
-        onToggleLang={() => setLang((prev) => (prev === 'en' ? 'hi' : 'en'))}
+        onToggleLang={handleToggleLang}
+        currentUser={currentUser}
+        onOpenLogin={() => setIsLoginModalOpen(true)}
+        onLogout={handleLogout}
       />
 
       {/* Prominent Universal Mode Switcher Bar */}
-      <div className="bg-[#02210F] border-b-2 border-emerald-500/60 px-4 py-1.5 flex flex-wrap items-center justify-between gap-2 text-xs text-white z-30 select-none shadow-sm">
+      <div className="bg-[#02210F]/95 backdrop-blur-sm border-b-2 border-emerald-500/60 px-4 py-1.5 flex flex-wrap items-center justify-between gap-2 text-xs text-white z-30 select-none shadow-sm">
         <div className="flex items-center space-x-2 font-mono text-[11px]">
-          <span className="text-emerald-400 font-bold uppercase tracking-wider hidden sm:inline">प्रणाली मोड / VIEW MODE:</span>
+          <span className="text-emerald-400 font-bold uppercase tracking-wider hidden sm:inline">
+            VIEW MODE:
+          </span>
           <div className="flex items-center bg-[#064E26] p-0.5 rounded-lg border border-emerald-400/40 shadow-inner">
+            <button
+              onClick={() => setCurrentView('hero')}
+              className="px-3 py-1 rounded-md font-bold text-xs transition-all cursor-pointer flex items-center space-x-1.5 text-cyan-200 hover:text-white hover:bg-cyan-900/50"
+            >
+              <Sparkles className="w-3.5 h-3.5 text-cyan-300" />
+              <span>✨ HackX 3D Hero</span>
+            </button>
             <button
               onClick={() => setCurrentView('portal')}
               className={`px-3 py-1 rounded-md font-bold text-xs transition-all cursor-pointer flex items-center space-x-1.5 ${
@@ -309,7 +447,7 @@ export const AppShell: React.FC = () => {
               }`}
             >
               <Globe className="w-3.5 h-3.5 text-[#FFD700]" />
-              <span>🏛️ तटरक्षक मुख्य पोर्टल / Official Portal</span>
+              <span>🏛️ ICG Portal</span>
             </button>
             <button
               onClick={() => setCurrentView('overview')}
@@ -320,8 +458,30 @@ export const AppShell: React.FC = () => {
               }`}
             >
               <Activity className="w-3.5 h-3.5 text-[#FFD700]" />
-              <span>⚡ सामरिक कार्यक्षेत्र / Tactical Workstation</span>
+              <span>⚡ Tactical Workstation</span>
             </button>
+            {/* Warp-Drive Hyperspace Background Toggle */}
+            <button
+              onClick={handleToggleWarp}
+              className={`px-2.5 py-1 rounded-md font-bold text-xs transition-all cursor-pointer flex items-center space-x-1.5 ml-1 border ${
+                isWarpActive
+                  ? 'bg-gradient-to-r from-[#00F0FF]/30 to-[#FF6A00]/30 text-white shadow-md border-[#00F0FF]/70 shadow-[0_0_12px_rgba(0,240,255,0.4)]'
+                  : 'text-emerald-200 hover:text-white hover:bg-emerald-800/50 border-emerald-500/30'
+              }`}
+              title="Toggle Interactive Canvas Warp-Drive Background"
+            >
+              <Sparkles className={`w-3.5 h-3.5 ${isWarpActive ? 'text-[#00F0FF] animate-pulse' : 'text-emerald-300'}`} />
+              <span>{isWarpActive ? '🌌 Warp ON' : '🌌 Warp OFF'}</span>
+            </button>
+            <a
+              href="/warp-background.html"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-2 py-1 rounded text-[10.5px] text-cyan-300 hover:text-white hover:bg-emerald-800/40 flex items-center space-x-1 transition-all ml-0.5"
+              title="Open Standalone Fullscreen Warp Canvas HUD"
+            >
+              <span>↗</span>
+            </a>
           </div>
         </div>
 
@@ -329,7 +489,9 @@ export const AppShell: React.FC = () => {
         <div className="flex items-center space-x-3 text-[10.5px] font-mono">
           <div className="flex items-center space-x-1.5 text-emerald-300">
             <span className="w-2 h-2 rounded-full bg-[#10B981] animate-pulse" />
-            <span className="font-bold">MRCC MUMBAI // SECTOR MH-4 ACTIVE</span>
+            <span className="font-bold">
+              MRCC MUMBAI // SECTOR MH-4 ACTIVE
+            </span>
           </div>
         </div>
       </div>
@@ -337,7 +499,18 @@ export const AppShell: React.FC = () => {
       {currentView === 'portal' ? (
         /* Full-Screen Indian Coast Guard Green Ocean Wave Portal View */
         <div className="flex-1 flex flex-col min-h-0 overflow-hidden relative">
-          <PublicPortalView onLaunchWorkstation={() => setCurrentView('overview')} />
+          <PublicPortalView
+            lang={lang}
+            currentUser={currentUser}
+            onOpenLogin={() => setIsLoginModalOpen(true)}
+            onLaunchWorkstation={() => setCurrentView('overview')}
+            onOpenGuidedTour={() => setIsTourModalOpen(true)}
+            onOpenDossier={() => setIsDossierModalOpen(true)}
+            onSelectScenario={(scId) => {
+              handleSelectScenario(scId);
+              setCurrentView('overview');
+            }}
+          />
         </div>
       ) : (
         /* Tactical Maritime Intelligence Workstation View */
@@ -353,6 +526,10 @@ export const AppShell: React.FC = () => {
             isReplaying={isReplaying}
             onOpenGuidedTour={() => {
               setIsTourModalOpen(true);
+              tacticalAudio.playSonarPing();
+            }}
+            onOpenPipelineWizard={() => {
+              setIsPipelineWizardOpen(true);
               tacticalAudio.playSonarPing();
             }}
             onOpenAlertDispatch={() => {
@@ -399,7 +576,11 @@ export const AppShell: React.FC = () => {
             />
 
             {/* Central Active View */}
-            <main className="flex-1 flex flex-col min-w-0 min-h-0 overflow-hidden relative bg-[#F0FDF4]">
+            <main
+              className={`flex-1 flex flex-col min-w-0 min-h-0 overflow-hidden relative transition-colors ${
+                isWarpActive ? 'bg-[#050505]/75 backdrop-blur-[2px]' : 'bg-[#F0FDF4]'
+              }`}
+            >
               {currentView === 'overview' && (
                 <OverviewView
                   scenario={scenario}
@@ -463,7 +644,7 @@ export const AppShell: React.FC = () => {
       )}
 
       {/* 4. GIGW 3.0 Official Government Footer */}
-      <GovFooter />
+      <GovFooter lang={lang} />
 
       {/* 5. Full-Screen Tamper-Evident Legal Dossier Modal */}
       <LegalDossierModal
@@ -514,6 +695,52 @@ export const AppShell: React.FC = () => {
       {isBooting && (
         <StartupBootSequence onComplete={() => setIsBooting(false)} />
       )}
+
+      {/* 10. Multi-Provider User Login Modal (Gmail, Phone OTP, Official ICG) */}
+      <LoginModal
+        isOpen={isLoginModalOpen}
+        onClose={() => setIsLoginModalOpen(false)}
+        onSuccess={(user) => {
+          setCurrentUser(user);
+          setNotification(
+            lang === 'hi'
+              ? `लॉगिन सफल: ${user.name} (${user.role}) - डेटाबेस में सुरक्षित`
+              : `Logged in as: ${user.name} (${user.role}) - Saved in Database`
+          );
+          setTimeout(() => setNotification(null), 5000);
+        }}
+        lang={lang}
+      />
+
+      {/* 11. 5-Step End-to-End Investigation Pipeline Wizard */}
+      <InvestigationPipelineWizard
+        isOpen={isPipelineWizardOpen}
+        onClose={() => setIsPipelineWizardOpen(false)}
+        scenario={scenario}
+        onOpenLegalDossier={() => {
+          setIsPipelineWizardOpen(false);
+          setIsDossierModalOpen(true);
+        }}
+        onSelectVessel={(vesselId) => {
+          setSelectedVesselId(vesselId);
+          setIsContextOpen(true);
+        }}
+      />
+
+      {/* 12. Autonomous Maritime Intelligence Tactical Copilot (Sagar Mitra) */}
+      <TacticalCopilot
+        scenario={scenario}
+        currentView={currentView}
+        onNavigate={(view) => setCurrentView(view)}
+        onSelectScenario={(scId) => handleSelectScenario(scId)}
+        onOpenDossier={() => setIsDossierModalOpen(true)}
+        onOpenTour={() => setIsTourModalOpen(true)}
+        onSelectVessel={(vesselId) => {
+          setSelectedVesselId(vesselId);
+          setIsContextOpen(true);
+        }}
+        lang={lang}
+      />
     </div>
   );
 };

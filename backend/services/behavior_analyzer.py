@@ -72,7 +72,61 @@ class VesselBehaviorAnalyzer:
                     )
                 )
 
-        # 2. Sudden Speed Drop Detection
+        # 2. Kinematic AIS Spoofing: Speed Teleportation (> 35 knots for merchant vessels)
+        from backend.services.scoring_engine import haversine_distance_nm
+        for i in range(len(sorted_pos) - 1):
+            p1 = sorted_pos[i]
+            p2 = sorted_pos[i + 1]
+            lat1 = float(p1.get("latitude") if p1.get("latitude") is not None else p1.get("lat") or 0.0)
+            lon1 = float(p1.get("longitude") if p1.get("longitude") is not None else p1.get("lon") or 0.0)
+            lat2 = float(p2.get("latitude") if p2.get("latitude") is not None else p2.get("lat") or 0.0)
+            lon2 = float(p2.get("longitude") if p2.get("longitude") is not None else p2.get("lon") or 0.0)
+
+            t1 = self._parse_time(p1.get("timestamp") or p1.get("timestamp_utc") or p1.get("time"))
+            t2 = self._parse_time(p2.get("timestamp") or p2.get("timestamp_utc") or p2.get("time"))
+            delta_seconds = abs((t2 - t1).total_seconds())
+            delta_hours = delta_seconds / 3600.0
+            delta_min = delta_seconds / 60.0
+
+            if delta_seconds >= 10.0 and delta_hours <= 24.0:
+                dist_nm = haversine_distance_nm(lat1, lon1, lat2, lon2)
+                implied_speed = dist_nm / delta_hours
+
+                # 2.1 Speed Teleportation Anomaly
+                if implied_speed > 35.0:
+                    anomalies.append(
+                        BehavioralAnomalyReport(
+                            anomaly_type="SPEED_TELEPORTATION",
+                            severity="CRITICAL",
+                            start_time=t1,
+                            end_time=t2,
+                            details=(
+                                f"Kinematically impossible transit velocity of {implied_speed:.1f} kn calculated between coordinates "
+                                f"({lat1:.3f}°N, {lon1:.3f}°E) and ({lat2:.3f}°N, {lon2:.3f}°E) over {delta_min:.1f} min; "
+                                f"indicates deliberate GNSS coordinate manipulation or AIS spoofing."
+                            ),
+                            metric_value=round(implied_speed, 1),
+                        )
+                    )
+
+                # 2.2 MMSI Collision / Ghost Vessel (Simultaneous Distant Positions)
+                if delta_min <= 30.0 and dist_nm >= 25.0:
+                    mmsi_val = str(p1.get("mmsi") or p2.get("mmsi") or "Target")
+                    anomalies.append(
+                        BehavioralAnomalyReport(
+                            anomaly_type="MMSI_COLLISION",
+                            severity="CRITICAL",
+                            start_time=t1,
+                            end_time=t2,
+                            details=(
+                                f"Dual disparate positions recorded for MMSI {mmsi_val} separated by {dist_nm:.1f} NM "
+                                f"within {delta_min:.1f} min; indicates cloned transponder identity or ghost vessel transmission."
+                            ),
+                            metric_value=round(dist_nm, 1),
+                        )
+                    )
+
+        # 3. Sudden Speed Drop Detection
         for i in range(len(sorted_pos) - 1):
             s1 = float(sorted_pos[i].get("sog") or sorted_pos[i].get("speed") or sorted_pos[i].get("sog_knots") or 0.0)
             s2 = float(sorted_pos[i + 1].get("sog") or sorted_pos[i + 1].get("speed") or sorted_pos[i + 1].get("sog_knots") or 0.0)
@@ -94,16 +148,36 @@ class VesselBehaviorAnalyzer:
                     )
                 )
 
-        # 3. Unusual Course Alterations
+        # 4. Unusual Course Alterations & Course Inconsistency Spoofing
         for i in range(len(sorted_pos) - 1):
             c1 = float(sorted_pos[i].get("cog") or sorted_pos[i].get("course") or sorted_pos[i].get("cog_degrees") or 0.0)
             c2 = float(sorted_pos[i + 1].get("cog") or sorted_pos[i + 1].get("course") or sorted_pos[i + 1].get("cog_degrees") or 0.0)
+            s1 = float(sorted_pos[i].get("sog") or sorted_pos[i].get("speed") or sorted_pos[i].get("sog_knots") or 0.0)
+            s2 = float(sorted_pos[i + 1].get("sog") or sorted_pos[i + 1].get("speed") or sorted_pos[i + 1].get("sog_knots") or 0.0)
             t1 = self._parse_time(sorted_pos[i].get("timestamp") or sorted_pos[i].get("timestamp_utc") or sorted_pos[i].get("time"))
             t2 = self._parse_time(sorted_pos[i + 1].get("timestamp") or sorted_pos[i + 1].get("timestamp_utc") or sorted_pos[i + 1].get("time"))
+            delta_min = abs((t2 - t1).total_seconds()) / 60.0
 
             # Calculate angular difference on a circle
             course_diff = abs((c2 - c1 + 180.0) % 360.0 - 180.0)
-            if course_diff >= 35.0:
+
+            # 4.1 Course Inconsistency / Instantaneous 180-degree Reversal (Spoofing)
+            if course_diff >= 150.0 and delta_min <= 20.0 and (s1 > 4.5 or s2 > 4.5):
+                anomalies.append(
+                    BehavioralAnomalyReport(
+                        anomaly_type="COURSE_INCONSISTENCY",
+                        severity="CRITICAL",
+                        start_time=t1,
+                        end_time=t2,
+                        details=(
+                            f"Instantaneous heading inversion of {course_diff:.1f}° ({c1:.0f}° to {c2:.0f}°) recorded within "
+                            f"{delta_min:.1f} min while maintaining {max(s1, s2):.1f} kn speed without realistic turning radius; "
+                            f"indicates synthetic AIS ping injection or track manipulation."
+                        ),
+                        metric_value=round(course_diff, 1),
+                    )
+                )
+            elif course_diff >= 35.0:
                 anomalies.append(
                     BehavioralAnomalyReport(
                         anomaly_type="UNUSUAL_COURSE_CHANGE",
@@ -115,7 +189,7 @@ class VesselBehaviorAnalyzer:
                     )
                 )
 
-        # 4. Loitering Behavior
+        # 5. Loitering Behavior
         low_speed_pings = [
             p for p in sorted_pos
             if float(p.get("sog") or p.get("speed") or p.get("sog_knots") or 0.0) < 3.5
@@ -140,7 +214,7 @@ class VesselBehaviorAnalyzer:
                     )
                 )
 
-        # 5. Route Deviations (if corridor heading provided)
+        # 6. Route Deviations (if corridor heading provided)
         if corridor_heading_deg is not None:
             for p in sorted_pos:
                 cog = float(p.get("cog") or p.get("course") or p.get("cog_degrees") or 0.0)

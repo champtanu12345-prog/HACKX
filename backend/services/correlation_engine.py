@@ -44,7 +44,7 @@ class AISCorrelationEngine:
         except Exception:
             return datetime.now(timezone.utc)
 
-    def correlate_vessels(
+    def correlate_vessels_pipeline(
         self,
         vessels: List[Dict[str, Any]],
         source_lat: float,
@@ -52,26 +52,29 @@ class AISCorrelationEngine:
         source_time: datetime,
         search_radius_nm: float = 30.0,
         time_window_hours: float = 24.0,
-    ) -> List[CandidateVesselCorrelation]:
-        """Filters and ranks vessels near the estimated spill source locus.
+    ) -> Dict[str, Any]:
+        """Two-Stage 4D Spatiotemporal Corridor Filtering and Ranking Pipeline.
         
-        Args:
-            vessels: List of vessel dictionaries with static metadata and positions.
-            source_lat: Reconstructed source latitude (WGS84).
-            source_lon: Reconstructed source longitude (WGS84).
-            source_time: Estimated discharge time in UTC.
-            search_radius_nm: Maximum Closest Point of Approach (CPA) radius in NM.
-            time_window_hours: Maximum allowable time delta from discharge in hours.
-            
-        Returns:
-            Ranked list of CandidateVesselCorrelation objects.
+        Stage 1: Coarse 4D Spatiotemporal Cone & Bounding Box Filtering
+        Stage 2: Fine CPA, Trajectory Alignment, and Multi-Criteria Anomaly Scoring
         """
         source_time = self._parse_time(source_time)
         candidates: List[CandidateVesselCorrelation] = []
+        filtered_records: List[Dict[str, Any]] = []
+        reasons_counter = {"distance_exceeded": 0, "temporal_exceeded": 0, "no_positions": 0}
 
         for v in vessels:
             positions = v.get("positions", [])
             if not positions:
+                filtered_records.append({
+                    "mmsi": str(v.get("mmsi")),
+                    "name": str(v.get("name", "Unknown")),
+                    "vessel_type": str(v.get("vessel_type", "Cargo")),
+                    "reason": "NO_TELEMETRY_POSITIONS",
+                    "cpa_distance_nm": None,
+                    "time_delta_hours": None,
+                })
+                reasons_counter["no_positions"] += 1
                 continue
 
             # Evaluate distance and time at each ping
@@ -109,11 +112,32 @@ class AISCorrelationEngine:
                     )
                 )
 
-            # Filter irrelevant vessels outside search radius or temporal window
-            if min_dist_nm > search_radius_nm or best_time_diff_hours > time_window_hours:
+            # Stage 1: 4D Spatiotemporal Cone & Bounding Filter
+            if best_time_diff_hours > time_window_hours:
+                filtered_records.append({
+                    "mmsi": str(v.get("mmsi")),
+                    "name": str(v.get("name", "Unknown")),
+                    "vessel_type": str(v.get("vessel_type", "Cargo")),
+                    "reason": f"TEMPORAL_WINDOW_EXCEEDED (delta {best_time_diff_hours:.1f}h > {time_window_hours:.1f}h)",
+                    "cpa_distance_nm": round(min_dist_nm, 2),
+                    "time_delta_hours": round(best_time_diff_hours, 1),
+                })
+                reasons_counter["temporal_exceeded"] += 1
                 continue
 
-            # Detect behavioral anomalies
+            if min_dist_nm > search_radius_nm:
+                filtered_records.append({
+                    "mmsi": str(v.get("mmsi")),
+                    "name": str(v.get("name", "Unknown")),
+                    "vessel_type": str(v.get("vessel_type", "Cargo")),
+                    "reason": f"DISTANCE_THRESHOLD_EXCEEDED (CPA {min_dist_nm:.1f} NM > {search_radius_nm:.1f} NM)",
+                    "cpa_distance_nm": round(min_dist_nm, 2),
+                    "time_delta_hours": round(best_time_diff_hours, 1),
+                })
+                reasons_counter["distance_exceeded"] += 1
+                continue
+
+            # Stage 2: Fine CPA, Trajectory Alignment & Behavioral Scoring
             anomalies = behavior_analyzer.analyze_vessel_trajectory(positions)
             existing_anomalies = v.get("anomalies", [])
             existing_types = {a.anomaly_type for a in anomalies}
@@ -195,7 +219,37 @@ class AISCorrelationEngine:
 
         # Sort candidates descending by correlation score
         candidates.sort(key=lambda c: c.overall_score, reverse=True)
-        return candidates
+
+        return {
+            "total_vessels_evaluated": len(vessels),
+            "stage1_filtered_count": len(filtered_records),
+            "stage2_retained_candidates_count": len(candidates),
+            "filtering_ratio_pct": round((len(filtered_records) / max(1, len(vessels))) * 100.0, 1),
+            "candidates": candidates,
+            "filtered_vessels": filtered_records,
+            "filter_reasons_breakdown": reasons_counter,
+        }
+
+    def correlate_vessels(
+        self,
+        vessels: List[Dict[str, Any]],
+        source_lat: float,
+        source_lon: float,
+        source_time: datetime,
+        search_radius_nm: float = 30.0,
+        time_window_hours: float = 24.0,
+    ) -> List[CandidateVesselCorrelation]:
+        """Backwards-compatible wrapper returning strictly the ranked candidate list."""
+        pipeline_res = self.correlate_vessels_pipeline(
+            vessels=vessels,
+            source_lat=source_lat,
+            source_lon=source_lon,
+            source_time=source_time,
+            search_radius_nm=search_radius_nm,
+            time_window_hours=time_window_hours,
+        )
+        return pipeline_res["candidates"]
 
 
 correlation_engine = AISCorrelationEngine()
+

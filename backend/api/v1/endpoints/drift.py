@@ -14,11 +14,43 @@ from backend.schemas.drift import (
     DriftSimulationRequest,
     DriftSimulationResponse,
     SimulationTrajectoryPoint,
+    LiveEnvironmentResponse,
 )
 from backend.services.drift.drift_service import drift_service
 from backend.services.correlation_service import correlation_service
 
 router = APIRouter()
+
+
+@router.get("/drift/live-environment", response_model=LiveEnvironmentResponse)
+def get_live_environment(
+    latitude: float,
+    longitude: float,
+    timestamp: Optional[datetime] = None,
+):
+    """Fetches real live ocean currents and 10m surface winds from Open-Meteo Marine & Atmospheric APIs.
+    
+    Data provenance:
+    - Ocean Circulation: Copernicus Marine Service (CMEMS) Global Ocean Physics Reanalysis / NOAA HyCOM
+    - Atmospheric Wind: NOAA Global Forecast System (GFS) & ECMWF Integrated Forecasting System (IFS)
+    """
+    from backend.services.providers.ocean import OpenMeteoMarineCurrentProvider
+    from backend.services.providers.weather import OpenMeteoWeatherProvider
+
+    marine_prov = OpenMeteoMarineCurrentProvider()
+    weather_prov = OpenMeteoWeatherProvider()
+
+    obs_time = timestamp or datetime.now(timezone.utc)
+    marine_res = marine_prov.get_marine_conditions(latitude, longitude, obs_time)
+    weather_res = weather_prov.get_wind_conditions(latitude, longitude, obs_time)
+
+    return LiveEnvironmentResponse(
+        latitude=latitude,
+        longitude=longitude,
+        timestamp=obs_time.isoformat(),
+        marine=marine_res,
+        weather=weather_res,
+    )
 
 
 @router.post("/drift/simulate", response_model=DriftSimulationResponse, status_code=status.HTTP_200_OK)
@@ -27,6 +59,7 @@ def simulate_drift(payload: DriftSimulationRequest):
     
     Supports:
     - Preset Scenario simulation (e.g. 'scenario_a', 'scenario_b', 'scenario_c')
+    - Real-time live ocean currents and 10m surface winds via Open-Meteo
     - Custom coordinate and environmental vector parameters
     - Modular engine selection ('lagrangian' or 'opendrift')
     """
@@ -42,6 +75,8 @@ def simulate_drift(payload: DriftSimulationRequest):
                 wind_direction_deg=payload.wind_direction_deg,
                 current_speed_knots=payload.current_speed_knots,
                 current_direction_deg=payload.current_direction_deg,
+                integration_method=payload.integration_method or "rk4",
+                use_live_weather=bool(payload.use_live_weather),
             )
         else:
             if payload.spill_lat is None or payload.spill_lon is None:
@@ -58,12 +93,15 @@ def simulate_drift(payload: DriftSimulationRequest):
                 run_type=payload.run_type,
                 duration_hours=payload.duration_hours,
                 timestep_minutes=payload.timestep_minutes,
-                wind_speed_knots=payload.wind_speed_knots or 15.0,
-                wind_direction_deg=payload.wind_direction_deg or 240.0,
-                current_speed_knots=payload.current_speed_knots or 0.8,
-                current_direction_deg=payload.current_direction_deg or 40.0,
+                wind_speed_knots=payload.wind_speed_knots,
+                wind_direction_deg=payload.wind_direction_deg,
+                current_speed_knots=payload.current_speed_knots,
+                current_direction_deg=payload.current_direction_deg,
                 engine_type=payload.engine_type,
+                integration_method=payload.integration_method or "rk4",
+                use_live_weather=bool(payload.use_live_weather),
             )
+
 
         trajectory_response = [
             SimulationTrajectoryPoint(
@@ -75,6 +113,10 @@ def simulate_drift(payload: DriftSimulationRequest):
                 direction=p.direction,
                 uncertainty_radius_m=p.uncertainty_radius_m,
                 timestep_index=p.timestep_index,
+                evaporated_percentage=getattr(p, "evaporated_percentage", None),
+                water_content_percentage=getattr(p, "water_content_percentage", None),
+                viscosity_cst=getattr(p, "viscosity_cst", None),
+                weathering_stage=getattr(p, "weathering_stage", None),
             )
             for p in result.trajectory_points
         ]

@@ -11,12 +11,16 @@ from backend.services.providers.ais import (
 from backend.services.providers.weather import (
     WeatherProvider,
     MockWeatherProvider,
+    OpenMeteoWeatherProvider,
     NOAAWeatherProvider,
+    get_weather_provider,
 )
 from backend.services.providers.ocean import (
     OceanCurrentProvider,
     MockOceanCurrentProvider,
+    OpenMeteoMarineCurrentProvider,
     CopernicusMarineProvider,
+    get_ocean_provider,
 )
 
 __all__ = [
@@ -28,8 +32,13 @@ __all__ = [
     "SpireAISProvider",
     "WeatherProvider",
     "MockWeatherProvider",
+    "OpenMeteoWeatherProvider",
     "NOAAWeatherProvider",
+    "get_weather_provider",
     "OceanCurrentProvider",
     "MockOceanCurrentProvider",
+    "OpenMeteoMarineCurrentProvider",
     "CopernicusMarineProvider",
+    "get_ocean_provider",
 ]
+

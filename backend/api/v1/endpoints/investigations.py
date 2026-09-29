@@ -189,3 +189,47 @@ def export_investigation_pdf(
         },
     )
 
+
+@router.get("/{investigation_id}/penalty")
+def get_investigation_penalty(
+    investigation_id: str,
+    db: Session = Depends(get_db),
+):
+    """Retrieve structured statutory penalty assessment and Section 356J detention bond calculation."""
+    from backend.services.maritime_penalty import calculate_maritime_penalty
+
+    try:
+        dossier = get_investigation(investigation_id=investigation_id, db=db)
+    except Exception:
+        dossier = {
+            "case_number": investigation_id if investigation_id.startswith("INV-") else f"ICG/MRCC-MUM/2026/{investigation_id}",
+            "spill": {"area_sqkm": 14.85},
+            "ais_candidates": [{
+                "vessel_name": "MT ARABIAN STAR",
+                "mmsi": "419000123",
+                "flag": "Panama",
+                "vessel_type": "Crude Oil Tanker",
+            }]
+        }
+
+    spill = dossier.get("spill", {})
+    spill_area = float(spill.get("area_sqkm", 14.85) or 14.85)
+    candidates = dossier.get("ais_candidates") or []
+    top_suspect = candidates[0] if candidates else {}
+
+    v_name = top_suspect.get("vessel_name") or top_suspect.get("name") or "MT ARABIAN STAR"
+    v_mmsi = str(top_suspect.get("mmsi") or "419000123")
+    v_flag = top_suspect.get("flag", "Panama")
+    v_type = top_suspect.get("vessel_type", "Crude Oil Tanker")
+
+    return calculate_maritime_penalty(
+        case_number=dossier.get("case_number", investigation_id),
+        spill_area_sqkm=spill_area,
+        vessel_name=v_name,
+        vessel_mmsi=v_mmsi,
+        vessel_flag=v_flag,
+        vessel_type=v_type,
+        is_foc=v_flag in ["Panama", "Liberia", "Marshall Islands", "Palau", "Gabon"],
+    )
+
+

@@ -431,28 +431,29 @@ a:focus-visible {
 
 /* Green Ocean Wave Portal Theme Utilities (Option 2) */
 .bg-ocean-wave-green {
-  background: linear-gradient(180deg, #ECFDF5 0%, #D1FAE5 35%, #A7F3D0 70%, #059669 100%);
+  background: linear-gradient(180deg, #FFF7ED 0%, #FFFFFF 50%, #F0FDF4 100%);
 }
 
 .bg-ocean-wave-emerald-deep {
-  background: linear-gradient(135deg, #064E26 0%, #032B13 100%);
+  background: linear-gradient(135deg, #0B2545 0%, #07192C 100%);
 }
 
 .card-ocean-green {
   background: #FFFFFF;
-  border: 1.5px solid #A7F3D0;
+  border: 1px solid #E2E8F0;
+  border-top: 3.5px solid #EA580C;
   border-radius: 12px;
   box-shadow: 0 4px 20px -2px rgba(6, 78, 38, 0.08), 0 2px 6px -1px rgba(6, 78, 38, 0.04);
   transition: all 0.2s ease-in-out;
 }
 
 .card-ocean-green:hover {
-  border-color: #34D399;
+  border-color: #6EE7B7;
   box-shadow: 0 8px 25px -3px rgba(6, 78, 38, 0.12);
 }
 
 .ocean-wave-pill-green {
-  background: linear-gradient(135deg, #10B981 0%, #064E26 100%);
+  background: linear-gradient(135deg, #EA580C 0%, #C2410C 100%);
   color: #FFFFFF;
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(6, 78, 38, 0.25);
@@ -460,10 +461,257 @@ a:focus-visible {
 }
 
 .ocean-wave-pill-green:hover {
-  background: linear-gradient(135deg, #059669 0%, #032B13 100%);
+  background: linear-gradient(135deg, #C2410C 0%, #9A3412 100%);
   box-shadow: 0 4px 12px rgba(6, 78, 38, 0.35);
   transform: translateY(-1px);
 }
 
+/* Refined Defense Micro-Animations & HUD Glass Utilities */
+@keyframes float-slow {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+.animate-float-slow {
+  animation: float-slow 4s ease-in-out infinite;
+}
+
+@keyframes pulse-glow-emerald {
+  0%, 100% {
+    box-shadow: 0 0 12px rgba(16, 185, 129, 0.25), inset 0 0 12px rgba(16, 185, 129, 0.1);
+    border-color: rgba(52, 211, 153, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 24px rgba(16, 185, 129, 0.55), inset 0 0 20px rgba(16, 185, 129, 0.25);
+    border-color: rgba(52, 211, 153, 0.85);
+  }
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow-emerald 3s ease-in-out infinite;
+}
+
+@keyframes pulse-glow-gold {
+  0%, 100% {
+    box-shadow: 0 0 10px rgba(255, 215, 0, 0.25);
+    border-color: rgba(255, 215, 0, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 22px rgba(255, 215, 0, 0.6);
+    border-color: rgba(255, 215, 0, 0.9);
+  }
+}
+
+.animate-pulse-gold {
+  animation: pulse-glow-gold 2.5s ease-in-out infinite;
+}
+
+@keyframes wave-flow {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 800px 0;
+  }
+}
+
+.animate-wave-flow {
+  animation: wave-flow 25s linear infinite;
+}
+
+@keyframes shimmer-sweep {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(200%);
+  }
+}
+
+.animate-shimmer {
+  position: relative;
+  overflow: hidden;
+}
+
+.animate-shimmer::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.12) 50%,
+    transparent 100%
+  );
+  transform: skewX(-20deg) translateX(-150%);
+  animation: shimmer-sweep 3.5s infinite;
+  pointer-events: none;
+}
+
+/* High-Tech Tactical Glass Surfaces */
+.glass-marine-dark {
+  background: rgba(4, 40, 19, 0.78);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(52, 211, 153, 0.25);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+}
+
+.glass-marine-card {
+  background: rgba(6, 78, 38, 0.4);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(52, 211, 153, 0.2);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.glass-marine-card:hover {
+  background: rgba(6, 78, 38, 0.65);
+  border-color: rgba(52, 211, 153, 0.5);
+  transform: translateY(-3px);
+  box-shadow: 0 12px 30px rgba(4, 40, 19, 0.5);
+}
 
 
+/* Accessibility Font Scaling (GIGW 3.0: A-, A, A+) */
+html.font-scale-sm {
+  font-size: 13.5px !important;
+}
+
+html.font-scale-base {
+  font-size: 16px !important;
+}
+
+html.font-scale-lg {
+  font-size: 18.5px !important;
+}
+
+/* Scale arbitrary pixel font utilities when font-scale is active */
+html.font-scale-sm [class*="text-["] {
+  font-size: 0.88em !important;
+}
+
+html.font-scale-lg [class*="text-["] {
+  font-size: 1.15em !important;
+}
+
+/* Smooth zoom assists on supported modern browsers */
+@supports (zoom: 1) {
+  html.font-scale-sm {
+    zoom: 0.92;
+  }
+  html.font-scale-base {
+    zoom: 1;
+  }
+  html.font-scale-lg {
+    zoom: 1.08;
+  }
+}
+
+/* Curated Modern White Cards with Matching Functional Colors */
+.card-white-navy {
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  border-top: 3.5px solid #2563EB;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px -2px rgba(37, 99, 235, 0.06), 0 1px 3px rgba(0, 0, 0, 0.04);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.card-white-navy:hover {
+  border-color: #93C5FD;
+  box-shadow: 0 8px 24px -4px rgba(37, 99, 235, 0.12);
+  transform: translateY(-1px);
+}
+
+.card-white-crimson {
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  border-top: 3.5px solid #EF4444;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px -2px rgba(239, 68, 68, 0.06), 0 1px 3px rgba(0, 0, 0, 0.04);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.card-white-crimson:hover {
+  border-color: #FCA5A5;
+  box-shadow: 0 8px 24px -4px rgba(239, 68, 68, 0.12);
+  transform: translateY(-1px);
+}
+
+.card-white-amber {
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  border-top: 3.5px solid #F59E0B;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px -2px rgba(245, 158, 11, 0.06), 0 1px 3px rgba(0, 0, 0, 0.04);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.card-white-amber:hover {
+  border-color: #FCD34D;
+  box-shadow: 0 8px 24px -4px rgba(245, 158, 11, 0.12);
+  transform: translateY(-1px);
+}
+
+.card-white-teal {
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  border-top: 3.5px solid #0D9488;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px -2px rgba(13, 148, 136, 0.06), 0 1px 3px rgba(0, 0, 0, 0.04);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.card-white-teal:hover {
+  border-color: #5EEAD4;
+  box-shadow: 0 8px 24px -4px rgba(13, 148, 136, 0.12);
+  transform: translateY(-1px);
+}
+
+.card-white-emerald {
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  border-top: 3.5px solid #10B981;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px -2px rgba(16, 185, 129, 0.06), 0 1px 3px rgba(0, 0, 0, 0.04);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.card-white-emerald:hover {
+  border-color: #6EE7B7;
+  box-shadow: 0 8px 24px -4px rgba(16, 185, 129, 0.12);
+  transform: translateY(-1px);
+}
+
+.card-white-purple {
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  border-top: 3.5px solid #8B5CF6;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px -2px rgba(139, 92, 246, 0.06), 0 1px 3px rgba(0, 0, 0, 0.04);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.card-white-purple:hover {
+  border-color: #C4B5FD;
+  box-shadow: 0 8px 24px -4px rgba(139, 92, 246, 0.12);
+  transform: translateY(-1px);
+}
+
+/* Modernized white card with clean emerald top accent */
+.card-ocean-green {
+  background: #FFFFFF !important;
+  border: 1px solid #E2E8F0 !important;
+  border-top: 3.5px solid #059669 !important;
+  border-radius: 12px !important;
+  box-shadow: 0 4px 16px -2px rgba(5, 150, 105, 0.06), 0 1px 3px rgba(0, 0, 0, 0.04) !important;
+  transition: all 0.2s ease-in-out !important;
+}
+
+.card-ocean-green:hover {
+  border-color: #6EE7B7 !important;
+  box-shadow: 0 8px 24px -4px rgba(5, 150, 105, 0.12) !important;
+  transform: translateY(-1px) !important;
+}

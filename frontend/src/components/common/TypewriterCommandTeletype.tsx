@@ -143,17 +143,15 @@ export const TypewriterCommandTeletype: React.FC<TypewriterCommandTeletypeProps>
 
   return (
     <div
-      className={`w-full bg-gradient-to-r from-[#032B13] via-[#064E26] to-[#032B13] text-white border-b-2 border-[#10B981]/50 flex items-center overflow-hidden h-8 select-none text-[11px] shadow-sm relative z-20 ${className}`}
+      className={`w-full bg-gradient-to-r from-[#9A3412] via-[#0B2545] to-[#064E26] text-white border-b-2 border-[#EA580C] flex items-center overflow-hidden h-8 select-none text-[11px] shadow-sm relative z-20 ${className}`}
       role="region"
       aria-label="Live Maritime Command Teleprinter"
     >
-      {/* 1. Left Teleprinter Badge with Animated Blinking Pulse */}
-      <div className="flex-shrink-0 bg-[#02210F] text-[#FFD700] px-3 h-full flex items-center space-x-1.5 border-r border-[#10B981]/40 font-mono font-bold text-[10px] uppercase tracking-wider z-10 shadow-sm">
-        <div className="w-2 h-2 rounded-full bg-[#10B981] animate-ping" />
+      {/* 1. Left Teleprinter Badge with Saffron Accent */}
+      <div className="flex-shrink-0 bg-[#7C2D12] text-[#FFD700] px-3 h-full flex items-center space-x-1.5 border-r border-orange-500/40 font-mono font-bold text-[10px] uppercase tracking-wider z-10 shadow-sm">
+        <div className="w-2 h-2 rounded-full bg-[#EA580C] animate-ping" />
         <Terminal className="w-3.5 h-3.5 text-[#FFD700]" />
-        <span className="font-serif hidden sm:inline">तटरक्षक टेलीप्रिंटर</span>
-        <span className="text-emerald-400 hidden sm:inline">|</span>
-        <span className="text-white">COMMAND TELETYPE</span>
+        <span className="text-white tracking-wider">COMMAND TELETYPE</span>
       </div>
 
       {/* 2. Message Category Tag Pill */}
@@ -167,7 +165,7 @@ export const TypewriterCommandTeletype: React.FC<TypewriterCommandTeletypeProps>
       {/* 3. Real-Time Typing Text Canvas */}
       <div
         onClick={() => onMessageClick && onMessageClick(currentMessage)}
-        className="flex-1 overflow-hidden px-3 flex items-center font-mono text-[11.5px] text-emerald-100 truncate cursor-pointer hover:text-white transition-colors"
+        className="flex-1 overflow-hidden px-3 flex items-center font-mono text-[11.5px] text-white truncate cursor-pointer hover:text-[#FFD700] transition-colors"
         title="Click to inspect this operational alert"
       >
         <span className="text-[#FFD700] font-bold mr-1.5 flex-shrink-0">››</span>
@@ -182,7 +180,7 @@ export const TypewriterCommandTeletype: React.FC<TypewriterCommandTeletypeProps>
       </div>
 
       {/* 4. Controls: Prev / Next / Pause / Audio Toggle */}
-      <div className="flex-shrink-0 flex items-center space-x-1.5 pr-2.5 pl-2 bg-[#02210F]/90 h-full border-l border-[#10B981]/30 font-mono text-[10px]">
+      <div className="flex-shrink-0 flex items-center space-x-1.5 pr-2.5 pl-2 bg-[#021B0F]/90 h-full border-l border-emerald-500/30 font-mono text-[10px]">
         {/* Classification Tag */}
         <span className="hidden xl:inline-block px-1.5 py-0.5 rounded-[2px] bg-red-950/80 text-red-300 border border-red-700/60 font-bold text-[9px] mr-1">
           {currentMessage.classification}
@@ -191,7 +189,7 @@ export const TypewriterCommandTeletype: React.FC<TypewriterCommandTeletypeProps>
         {/* Prev Alert */}
         <button
           onClick={handlePrev}
-          className="p-1 rounded hover:bg-emerald-800/60 text-emerald-300 hover:text-white transition-colors cursor-pointer"
+          className="p-1 rounded hover:bg-white/10 text-orange-200 hover:text-white transition-colors cursor-pointer"
           title="Previous Command Teleprinter Alert"
         >
           <ChevronLeft className="w-3 h-3" />
@@ -200,7 +198,7 @@ export const TypewriterCommandTeletype: React.FC<TypewriterCommandTeletypeProps>
         {/* Pause / Play */}
         <button
           onClick={() => setIsPaused(!isPaused)}
-          className="p-1 rounded hover:bg-emerald-800/60 text-emerald-300 hover:text-white transition-colors cursor-pointer"
+          className="p-1 rounded hover:bg-white/10 text-orange-200 hover:text-white transition-colors cursor-pointer"
           title={isPaused ? 'Resume Teleprinter' : 'Pause Teleprinter'}
         >
           {isPaused ? <Play className="w-3 h-3 text-[#FFD700]" /> : <Pause className="w-3 h-3" />}
@@ -209,14 +207,14 @@ export const TypewriterCommandTeletype: React.FC<TypewriterCommandTeletypeProps>
         {/* Next Alert */}
         <button
           onClick={handleNext}
-          className="p-1 rounded hover:bg-emerald-800/60 text-emerald-300 hover:text-white transition-colors cursor-pointer"
+          className="p-1 rounded hover:bg-white/10 text-orange-200 hover:text-white transition-colors cursor-pointer"
           title="Next Command Teleprinter Alert"
         >
           <ChevronRight className="w-3 h-3" />
         </button>
 
         {/* Index Indicator */}
-        <span className="text-emerald-400 font-bold pl-1 hidden sm:inline">
+        <span className="text-[#FFD700] font-bold pl-1 hidden sm:inline">
           {currentMessageIndex + 1}/{TELEPRINTER_MESSAGES.length}
         </span>
       </div>

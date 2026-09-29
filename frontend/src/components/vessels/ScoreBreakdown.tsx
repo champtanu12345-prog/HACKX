@@ -93,7 +93,7 @@ export const ScoreBreakdown: React.FC<ScoreBreakdownProps> = ({
   ];
 
   return (
-    <div className={`bg-white border border-gray-200 rounded-[2px] p-3 shadow-xs space-y-3 font-sans text-xs ${className}`}>
+    <div className={`card-white-amber p-3.5 space-y-3 font-sans text-xs ${className}`}>
       {/* Top Header: Total Score & Priority Badge */}
       <div className="flex items-center justify-between border-b border-gray-100 pb-2">
         <div>

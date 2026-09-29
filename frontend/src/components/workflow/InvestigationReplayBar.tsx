@@ -168,24 +168,27 @@ export const InvestigationReplayBar: React.FC<InvestigationReplayBarProps> = ({
 
   return (
     <div
-      className={`bg-white border border-gray-300 rounded-[2px] shadow-lg p-3 font-sans text-xs select-none z-30 transition-all ${className}`}
+      className={`bg-[#0a121e]/95 backdrop-blur-md border border-amber-500/40 rounded-xl shadow-2xl p-3 font-sans text-xs select-none z-30 ring-1 ring-white/10 text-slate-200 transition-all ${className}`}
+      style={{
+        boxShadow: '0 20px 40px -15px rgba(0, 0, 0, 0.7), 0 0 25px rgba(245, 158, 11, 0.1)',
+      }}
     >
       {/* Top Header: Step Indicator, Title & Close Button */}
-      <div className="flex items-start justify-between border-b border-gray-200 pb-2 mb-2">
+      <div className="flex items-start justify-between border-b border-slate-800 pb-2 mb-2">
         <div className="flex items-center space-x-2.5 min-w-0">
-          <div className="p-1 rounded-[2px] bg-blue-50 border border-blue-200 flex-shrink-0">
+          <div className="p-1.5 rounded-lg bg-amber-500/20 border border-amber-500/40 text-amber-400 flex-shrink-0">
             {activeStepDetail.icon}
           </div>
           <div className="min-w-0">
             <div className="flex items-center space-x-2">
-              <span className="font-bold text-xs text-charcoal-900 tracking-tight">
+              <span className="font-bold text-xs text-slate-100 tracking-tight">
                 {activeStepDetail.title}
               </span>
-              <span className="text-[10px] text-charcoal-600 bg-gray-100 px-1.5 py-0.5 rounded-[2px] border border-gray-200 font-mono font-semibold">
-                {currentStep} / 9
+              <span className="text-[10px] text-amber-300 bg-amber-950/70 px-1.5 py-0.5 rounded border border-amber-500/40 font-mono font-semibold">
+                STEP {currentStep} / 9
               </span>
             </div>
-            <div className="text-[11px] text-charcoal-500 truncate">
+            <div className="text-[11px] text-slate-400 truncate">
               {activeStepDetail.subheading}
             </div>
           </div>
@@ -194,26 +197,26 @@ export const InvestigationReplayBar: React.FC<InvestigationReplayBarProps> = ({
         <div className="flex items-center space-x-1.5 flex-shrink-0">
           <button
             onClick={cycleSpeed}
-            className="px-1.5 py-0.5 rounded-[2px] bg-gray-50 hover:bg-gray-100 text-charcoal-700 text-[10px] border border-gray-200 font-bold font-mono cursor-pointer"
+            className="px-2 py-0.5 rounded bg-slate-800/80 hover:bg-slate-700 text-amber-300 text-[10px] border border-slate-700 font-bold font-mono cursor-pointer"
             title="Toggle playback speed"
           >
             {playbackSpeed}x
           </button>
           <button
             onClick={handleExit}
-            className="px-2 py-0.5 rounded-[2px] bg-white hover:bg-red-50 text-red-700 text-[11px] font-semibold border border-red-200 flex items-center space-x-1 transition-colors cursor-pointer"
+            className="px-2 py-0.5 rounded bg-slate-800/80 hover:bg-red-950/80 text-red-300 text-[11px] font-semibold border border-slate-700 hover:border-red-500/60 flex items-center space-x-1 transition-colors cursor-pointer"
             title="Exit Investigation Replay"
           >
-            <X className="w-3 h-3 text-red-600" />
+            <X className="w-3 h-3 text-red-400" />
             <span>Exit Replay</span>
           </button>
         </div>
       </div>
 
       {/* Contextual Technical Explanation Banner */}
-      <div className="bg-blue-50/70 border border-blue-100 px-2.5 py-2 rounded-[2px] mb-2.5 text-[11px] leading-relaxed text-charcoal-800">
+      <div className="bg-slate-900/80 border border-slate-800 px-2.5 py-2 rounded-lg mb-2.5 text-[11px] leading-relaxed text-slate-300">
         <div className="flex items-start space-x-2">
-          <div className="w-1.5 h-1.5 rounded-full bg-blue-600 mt-1.5 flex-shrink-0" />
+          <div className="w-1.5 h-1.5 rounded-full bg-amber-400 mt-1.5 flex-shrink-0 animate-pulse" />
           <p className="flex-1">{activeStepDetail.explanation}</p>
         </div>
       </div>
@@ -231,12 +234,12 @@ export const InvestigationReplayBar: React.FC<InvestigationReplayBarProps> = ({
               setIsPlaying(false);
               onStepChange(Number(e.target.value));
             }}
-            className="w-full h-1.5 bg-gray-200 rounded appearance-none cursor-pointer accent-blue-600 z-10"
+            className="w-full h-1.5 bg-slate-800 rounded appearance-none cursor-pointer accent-amber-500 z-10"
           />
         </div>
 
         {/* Step Numbers Tick Markers */}
-        <div className="grid grid-cols-9 text-center text-[10px] font-mono text-charcoal-400 font-semibold">
+        <div className="grid grid-cols-9 text-center text-[10px] font-mono font-semibold">
           {REPLAY_STEPS.map((s) => {
             const isCompleted = s.step <= currentStep;
             const isCurrent = s.step === currentStep;
@@ -249,10 +252,10 @@ export const InvestigationReplayBar: React.FC<InvestigationReplayBarProps> = ({
                 }}
                 className={`py-0.5 transition-colors cursor-pointer ${
                   isCurrent
-                    ? 'text-blue-700 font-extrabold underline'
+                    ? 'text-amber-400 font-extrabold underline'
                     : isCompleted
-                    ? 'text-charcoal-800 hover:text-blue-700'
-                    : 'text-charcoal-400 hover:text-charcoal-600'
+                    ? 'text-slate-300 hover:text-amber-300'
+                    : 'text-slate-500 hover:text-slate-400'
                 }`}
                 title={s.title}
               >
@@ -264,42 +267,42 @@ export const InvestigationReplayBar: React.FC<InvestigationReplayBarProps> = ({
       </div>
 
       {/* Bottom Transport Controls */}
-      <div className="flex items-center justify-between pt-2 border-t border-gray-200 mt-2">
-        <div className="flex items-center space-x-1.5">
+      <div className="flex items-center justify-between pt-2 border-t border-slate-800 mt-2">
+        <div className="flex items-center space-x-2">
           <button
             onClick={handleResetToStart}
-            className="p-1 rounded-[2px] bg-white hover:bg-gray-100 text-charcoal-700 border border-gray-200 cursor-pointer"
+            className="p-1.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 cursor-pointer"
             title="Reset to Step 1"
           >
-            <RotateCcw className="w-3.5 h-3.5" />
+            <RotateCcw className="w-3.5 h-3.5 text-amber-400" />
           </button>
 
           <button
             onClick={handleStepBack}
             disabled={currentStep <= 1}
-            className="p-1 rounded-[2px] bg-white hover:bg-gray-100 disabled:opacity-40 text-charcoal-700 border border-gray-200 cursor-pointer"
+            className="p-1.5 rounded bg-slate-800 hover:bg-slate-700 disabled:opacity-30 text-slate-300 border border-slate-700 cursor-pointer"
             title="Step Backward"
           >
-            <SkipBack className="w-3.5 h-3.5" />
+            <SkipBack className="w-3.5 h-3.5 text-amber-400" />
           </button>
 
           <button
             onClick={handleTogglePlay}
-            className={`px-3 py-1 rounded-[2px] font-sans font-semibold text-[11px] flex items-center space-x-1.5 border transition-colors cursor-pointer ${
+            className={`px-3.5 py-1 rounded font-sans font-black text-[11px] flex items-center space-x-1.5 border transition-all cursor-pointer shadow-md ${
               isPlaying
-                ? 'bg-amber-600 text-white border-amber-700 hover:bg-amber-700'
-                : 'bg-blue-700 hover:bg-blue-800 text-white border-blue-800'
+                ? 'bg-amber-600 text-white border-amber-500 hover:bg-amber-700'
+                : 'bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 text-slate-950 border-amber-400 hover:from-amber-300 hover:to-amber-500'
             }`}
             title={isPlaying ? 'Pause Auto-Replay' : 'Play Auto-Replay'}
           >
             {isPlaying ? (
               <>
-                <Pause className="w-3 h-3 fill-current" />
+                <Pause className="w-3 h-3 fill-current text-white" />
                 <span>Pause</span>
               </>
             ) : (
               <>
-                <Play className="w-3 h-3 fill-current" />
+                <Play className="w-3 h-3 fill-current text-slate-950" />
                 <span>{currentStep >= 9 ? 'Replay' : 'Play'}</span>
               </>
             )}
@@ -308,16 +311,16 @@ export const InvestigationReplayBar: React.FC<InvestigationReplayBarProps> = ({
           <button
             onClick={handleStepForward}
             disabled={currentStep >= 9}
-            className="p-1 rounded-[2px] bg-white hover:bg-gray-100 disabled:opacity-40 text-charcoal-700 border border-gray-200 cursor-pointer"
+            className="p-1.5 rounded bg-slate-800 hover:bg-slate-700 disabled:opacity-30 text-slate-300 border border-slate-700 cursor-pointer"
             title="Step Forward"
           >
-            <SkipForward className="w-3.5 h-3.5" />
+            <SkipForward className="w-3.5 h-3.5 text-amber-400" />
           </button>
         </div>
 
-        <div className="text-[10px] font-sans text-charcoal-500 flex items-center space-x-1">
-          <span>Mode:</span>
-          <span className="text-emerald-700 font-semibold">Live Investigation Replay</span>
+        <div className="text-[10px] font-mono text-slate-400 flex items-center space-x-1.5">
+          <span>MODE:</span>
+          <span className="text-amber-300 font-bold">TACTICAL FOOTAGE REPLAY</span>
         </div>
       </div>
     </div>

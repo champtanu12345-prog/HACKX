@@ -37,48 +37,115 @@ class DriftService:
         run_type: str = "HINDCAST",
         duration_hours: float = 12.0,
         timestep_minutes: int = 60,
-        wind_speed_knots: float = 15.0,
-        wind_direction_deg: float = 240.0,
-        current_speed_knots: float = 0.8,
-        current_direction_deg: float = 40.0,
+        wind_speed_knots: Optional[float] = None,
+        wind_direction_deg: Optional[float] = None,
+        current_speed_knots: Optional[float] = None,
+        current_direction_deg: Optional[float] = None,
         wind_factor: float = 0.03,
         current_factor: float = 1.0,
         engine_type: str = "lagrangian",
+        use_live_weather: bool = False,
         **kwargs: Any,
     ) -> DriftSimulationResult:
-        """Executes a simulation using the chosen engine."""
+        """Executes a simulation using the chosen engine, resolving live Open-Meteo data when needed."""
+        ocean_meta: Dict[str, Any] = {}
+        weather_meta: Dict[str, Any] = {}
+
+        # If live weather requested or parameters omitted, query live Open-Meteo providers
+        if (
+            use_live_weather
+            or wind_speed_knots is None
+            or wind_direction_deg is None
+            or current_speed_knots is None
+            or current_direction_deg is None
+        ):
+            from backend.services.providers.ocean import OpenMeteoMarineCurrentProvider
+            from backend.services.providers.weather import OpenMeteoWeatherProvider
+
+            marine_prov = OpenMeteoMarineCurrentProvider()
+            weather_prov = OpenMeteoWeatherProvider()
+
+            if use_live_weather or current_speed_knots is None or current_direction_deg is None:
+                marine_cond = marine_prov.get_marine_conditions(spill_lat, spill_lon, observation_time)
+                ocean_meta = marine_cond
+                if use_live_weather or current_speed_knots is None:
+                    current_speed_knots = marine_cond.get("current_speed_knots", 0.8)
+                if use_live_weather or current_direction_deg is None:
+                    current_direction_deg = marine_cond.get("current_direction_deg", 40.0)
+
+            if use_live_weather or wind_speed_knots is None or wind_direction_deg is None:
+                wind_cond = weather_prov.get_wind_conditions(spill_lat, spill_lon, observation_time)
+                weather_meta = wind_cond
+                if use_live_weather or wind_speed_knots is None:
+                    wind_speed_knots = wind_cond.get("wind_speed_knots", 15.0)
+                if use_live_weather or wind_direction_deg is None:
+                    wind_direction_deg = wind_cond.get("wind_direction_deg", 240.0)
+
+        # Fallback safety defaults
+        final_wind_speed = wind_speed_knots if wind_speed_knots is not None else 15.0
+        final_wind_dir = wind_direction_deg if wind_direction_deg is not None else 240.0
+        final_curr_speed = current_speed_knots if current_speed_knots is not None else 0.8
+        final_curr_dir = current_direction_deg if current_direction_deg is not None else 40.0
+
         engine = self.get_engine(engine_type)
 
         if run_type.upper() == "HINDCAST":
-            return engine.run_hindcast(
+            result = engine.run_hindcast(
                 spill_lat=spill_lat,
                 spill_lon=spill_lon,
                 observation_time=observation_time,
                 duration_hours=duration_hours,
                 timestep_minutes=timestep_minutes,
-                wind_speed_knots=wind_speed_knots,
-                wind_direction_deg=wind_direction_deg,
-                current_speed_knots=current_speed_knots,
-                current_direction_deg=current_direction_deg,
+                wind_speed_knots=final_wind_speed,
+                wind_direction_deg=final_wind_dir,
+                current_speed_knots=final_curr_speed,
+                current_direction_deg=final_curr_dir,
                 wind_factor=wind_factor,
                 current_factor=current_factor,
                 **kwargs,
             )
         else:
-            return engine.run_forecast(
+            result = engine.run_forecast(
                 spill_lat=spill_lat,
                 spill_lon=spill_lon,
                 observation_time=observation_time,
                 duration_hours=duration_hours,
                 timestep_minutes=timestep_minutes,
-                wind_speed_knots=wind_speed_knots,
-                wind_direction_deg=wind_direction_deg,
-                current_speed_knots=current_speed_knots,
-                current_direction_deg=current_direction_deg,
+                wind_speed_knots=final_wind_speed,
+                wind_direction_deg=final_wind_dir,
+                current_speed_knots=final_curr_speed,
+                current_direction_deg=final_curr_dir,
                 wind_factor=wind_factor,
                 current_factor=current_factor,
                 **kwargs,
             )
+
+        if ocean_meta:
+            result.parameters["ocean_metadata"] = ocean_meta
+        if weather_meta:
+            result.parameters["weather_metadata"] = weather_meta
+        result.parameters["is_live_environmental_data"] = bool(
+            ocean_meta.get("is_live", False) and weather_meta.get("is_live", False)
+        )
+
+        # Attach coastal vulnerability & shoreline impact analysis for forward projections
+        if run_type.upper() == "FORECAST":
+            try:
+                from backend.services.coastal_vulnerability import coastal_vulnerability_engine
+                pts_dict = [
+                    {
+                        "latitude": pt.latitude,
+                        "longitude": pt.longitude,
+                        "timestamp": pt.timestamp,
+                        "timestep_index": pt.timestep_index,
+                    }
+                    for pt in result.trajectory_points
+                ]
+                result.parameters["coastal_vulnerability"] = coastal_vulnerability_engine.analyze_forecast_threat(pts_dict)
+            except Exception as cv_err:
+                result.parameters["coastal_vulnerability_error"] = str(cv_err)
+
+        return result
 
     def simulate_for_scenario(
         self,
@@ -91,8 +158,10 @@ class DriftService:
         wind_direction_deg: Optional[float] = None,
         current_speed_knots: Optional[float] = None,
         current_direction_deg: Optional[float] = None,
+        use_live_weather: bool = False,
+        **kwargs: Any,
     ) -> DriftSimulationResult:
-        """Simulates drift using scenario baseline, allowing interactive environmental overrides."""
+        """Simulates drift using scenario baseline, allowing interactive environmental overrides or live Open-Meteo data."""
         scenario = DEMO_SCENARIOS_DATA.get(scenario_id.lower())
         if not scenario:
             scenario = DEMO_SCENARIOS_DATA["scenario_a"]
@@ -102,10 +171,16 @@ class DriftService:
 
         obs_time = datetime.fromisoformat(spill["detection_time"].replace("Z", "+00:00"))
 
-        w_speed = wind_speed_knots if wind_speed_knots is not None else env["wind_speed_knots"]
-        w_dir = wind_direction_deg if wind_direction_deg is not None else env["wind_direction_deg"]
-        c_speed = current_speed_knots if current_speed_knots is not None else env["current_speed_knots"]
-        c_dir = current_direction_deg if current_direction_deg is not None else env["current_direction_deg"]
+        if not use_live_weather:
+            w_speed = wind_speed_knots if wind_speed_knots is not None else env["wind_speed_knots"]
+            w_dir = wind_direction_deg if wind_direction_deg is not None else env["wind_direction_deg"]
+            c_speed = current_speed_knots if current_speed_knots is not None else env["current_speed_knots"]
+            c_dir = current_direction_deg if current_direction_deg is not None else env["current_direction_deg"]
+        else:
+            w_speed = wind_speed_knots
+            w_dir = wind_direction_deg
+            c_speed = current_speed_knots
+            c_dir = current_direction_deg
 
         return self.simulate(
             spill_lat=spill["centroid_lat"],
@@ -119,6 +194,8 @@ class DriftService:
             current_speed_knots=c_speed,
             current_direction_deg=c_dir,
             engine_type=engine_type,
+            use_live_weather=use_live_weather,
+            **kwargs,
         )
 
     def persist_drift_run(

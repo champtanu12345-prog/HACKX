@@ -8,11 +8,15 @@ from backend.api.v1.endpoints import (
     demo,
     detections,
     alerts,
+    auth,
+    copilot,
 )
 
 api_router = APIRouter()
 
 api_router.include_router(health.router, tags=["System"])
+api_router.include_router(auth.router, prefix="/auth", tags=["User Authentication"])
+api_router.include_router(copilot.router, prefix="/copilot", tags=["AI Copilot / Sagar Mitra"])
 api_router.include_router(spills.router, prefix="/spills", tags=["Oil Spill Detections"])
 api_router.include_router(detections.router, prefix="/detections", tags=["ML Spill Segmentation"])
 api_router.include_router(drift.router, tags=["Drift Modeling"])

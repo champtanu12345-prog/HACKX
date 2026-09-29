@@ -35,7 +35,7 @@ const WORKFLOW_STEPS: WorkflowStep[] = [
   {
     stepNumber: 1,
     code: '01',
-    label: 'उपग्रह पहचान / SAR Detect',
+    label: '01 SAR Detect',
     description: 'Sentinel-1 SAR Slick Neural Segmentation',
     icon: <Waves className="w-3.5 h-3.5" />,
     matchingStages: ['SATELLITE_ANALYSIS', 'SPILL_DETECTED'],
@@ -43,7 +43,7 @@ const WORKFLOW_STEPS: WorkflowStep[] = [
   {
     stepNumber: 2,
     code: '02',
-    label: 'बहाव पूर्वगणना / Drift Hindcast',
+    label: '02 Drift Hindcast',
     description: 'Reverse Lagrangian Ocean Advection Modeling',
     icon: <Compass className="w-3.5 h-3.5" />,
     matchingStages: ['DRIFT_RECONSTRUCTION'],
@@ -51,7 +51,7 @@ const WORKFLOW_STEPS: WorkflowStep[] = [
   {
     stepNumber: 3,
     code: '03',
-    label: 'उद्गम स्थल / Source Origin',
+    label: '03 Source Origin',
     description: 'Probable Discharge Locus & Dispersion Envelope',
     icon: <MapPin className="w-3.5 h-3.5" />,
     matchingStages: ['SOURCE_ESTIMATED'],
@@ -59,7 +59,7 @@ const WORKFLOW_STEPS: WorkflowStep[] = [
   {
     stepNumber: 4,
     code: '04',
-    label: 'एआईएस मिलान / AIS Correlate',
+    label: '04 AIS Correlate',
     description: 'Spatiotemporal Vessel Track Interrogation',
     icon: <Radio className="w-3.5 h-3.5" />,
     matchingStages: ['AIS_CORRELATION', 'VESSEL_RANKING'],
@@ -67,7 +67,7 @@ const WORKFLOW_STEPS: WorkflowStep[] = [
   {
     stepNumber: 5,
     code: '05',
-    label: 'कानूनी डॉजियर / Legal Dossier',
+    label: '05 Legal Dossier',
     description: 'Tamper-Evident Coast Guard Evidence Dossier',
     icon: <FileCheck className="w-3.5 h-3.5" />,
     matchingStages: ['INVESTIGATION_READY'],

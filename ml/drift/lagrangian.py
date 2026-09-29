@@ -1,6 +1,7 @@
 """Deterministic Lagrangian Particle Drift Simulator.
 
-Implements vector-based numerical hydrodynamic drift modeling for oil slicks.
+Implements Runge-Kutta 4th Order (RK4) hydrodynamic drift modeling and
+NOAA ADIOS / Mackay empirical oil weathering kinetics for marine oil slicks.
 Supports forward forecasting and reverse-time origin hindcasting.
 """
 
@@ -13,10 +14,11 @@ from ml.drift.base import (
     DriftTrajectoryPoint,
     DriftSimulationResult,
 )
+from backend.services.oil_weathering import ADIOSOilWeatheringEngine
 
 
 class LagrangianDriftSimulator(DriftEngine):
-    """Deterministic Lagrangian particle advection simulator.
+    """Deterministic Lagrangian particle advection simulator with RK4 integration.
     
     Advection is governed by surface ocean current and wind drag (windage):
     V_drift = C_current * V_current + C_wind * R(theta_deflect) * V_wind
@@ -35,10 +37,17 @@ class LagrangianDriftSimulator(DriftEngine):
         default_wind_factor: float = 0.03,
         default_current_factor: float = 1.0,
         default_wind_deflection_deg: float = 0.0,
+        default_integration_method: str = "rk4",
     ):
         self.default_wind_factor = default_wind_factor
         self.default_current_factor = default_current_factor
         self.default_wind_deflection_deg = default_wind_deflection_deg
+        self.default_integration_method = default_integration_method
+        self.weathering_engine = ADIOSOilWeatheringEngine()
+
+    def _meters_per_deg_lon(self, lat_deg: float) -> float:
+        """Computes longitude scale metric at given latitude."""
+        return max(1.0, self.METERS_PER_DEGREE_LAT * math.cos(math.radians(lat_deg)))
 
     def _compute_drift_vector(
         self,
@@ -56,9 +65,7 @@ class LagrangianDriftSimulator(DriftEngine):
             (u_total_ms, v_total_ms, speed_knots, heading_deg)
         """
         # 1. Wind vector: Meteorological convention (direction FROM which wind blows)
-        # Vector towards which wind is blowing is (dir + 180) % 360
         wind_towards_rad = math.radians((wind_direction_deg + 180.0) % 360.0)
-        # Apply Coriolis deflection angle
         wind_effective_rad = wind_towards_rad + math.radians(wind_deflection_deg)
 
         wind_speed_ms = wind_speed_knots * self.KNOTS_TO_MS
@@ -83,6 +90,45 @@ class LagrangianDriftSimulator(DriftEngine):
 
         return u_total_ms, v_total_ms, total_speed_knots, heading_deg
 
+    def _step_rk4(
+        self,
+        lat: float,
+        lon: float,
+        u_ms: float,
+        v_ms: float,
+        dt_seconds: float,
+        reverse: bool = False,
+    ) -> Tuple[float, float]:
+        """Performs 4th-Order Runge-Kutta numerical advection step across spherical grid."""
+        sign = -1.0 if reverse else 1.0
+        u = u_ms * sign
+        v = v_ms * sign
+
+        # Stage 1
+        k1_lat = (v * dt_seconds) / self.METERS_PER_DEGREE_LAT
+        k1_lon = (u * dt_seconds) / self._meters_per_deg_lon(lat)
+
+        # Stage 2 (midpoint)
+        lat_k2 = lat + 0.5 * k1_lat
+        k2_lat = (v * dt_seconds) / self.METERS_PER_DEGREE_LAT
+        k2_lon = (u * dt_seconds) / self._meters_per_deg_lon(lat_k2)
+
+        # Stage 3 (midpoint)
+        lat_k3 = lat + 0.5 * k2_lat
+        k3_lat = (v * dt_seconds) / self.METERS_PER_DEGREE_LAT
+        k3_lon = (u * dt_seconds) / self._meters_per_deg_lon(lat_k3)
+
+        # Stage 4 (endpoint)
+        lat_k4 = lat + k3_lat
+        k4_lat = (v * dt_seconds) / self.METERS_PER_DEGREE_LAT
+        k4_lon = (u * dt_seconds) / self._meters_per_deg_lon(lat_k4)
+
+        # Simpson's weighted average
+        d_lat = (k1_lat + 2.0 * k2_lat + 2.0 * k3_lat + k4_lat) / 6.0
+        d_lon = (k1_lon + 2.0 * k2_lon + 2.0 * k3_lon + k4_lon) / 6.0
+
+        return lat + d_lat, lon + d_lon
+
     def run_hindcast(
         self,
         spill_lat: float,
@@ -98,12 +144,14 @@ class LagrangianDriftSimulator(DriftEngine):
         wind_deflection_deg: Optional[float] = None,
         current_factor: Optional[float] = None,
         particle_id: int = 1,
+        integration_method: Optional[str] = None,
         **kwargs: Any,
     ) -> DriftSimulationResult:
         """Backtracks spill trajectory into the past to reconstruct probable release origin."""
         w_factor = wind_factor if wind_factor is not None else self.default_wind_factor
         c_factor = current_factor if current_factor is not None else self.default_current_factor
         w_deflect = wind_deflection_deg if wind_deflection_deg is not None else self.default_wind_deflection_deg
+        method = (integration_method or self.default_integration_method).lower()
 
         u_ms, v_ms, speed_knots, heading_deg = self._compute_drift_vector(
             wind_speed_knots=wind_speed_knots,
@@ -116,14 +164,18 @@ class LagrangianDriftSimulator(DriftEngine):
         )
 
         dt_seconds = timestep_minutes * 60.0
+        dt_hours = timestep_minutes / 60.0
         total_steps = int(max(1, round((duration_hours * 60.0) / timestep_minutes)))
 
         trajectory_points: List[DriftTrajectoryPoint] = []
 
-        # T0: Initial observation point
+        # T0: Initial observation point (slick at its oldest observed age)
         current_lat = spill_lat
         current_lon = spill_lon
         current_time = observation_time
+
+        wind_speed_ms = wind_speed_knots * self.KNOTS_TO_MS
+        w0 = self.weathering_engine.compute_state(duration_hours, wind_speed_ms=wind_speed_ms)
 
         trajectory_points.append(
             DriftTrajectoryPoint(
@@ -135,6 +187,10 @@ class LagrangianDriftSimulator(DriftEngine):
                 direction=round(heading_deg, 1),
                 uncertainty_radius_m=300.0,
                 timestep_index=0,
+                evaporated_percentage=w0.evaporated_percentage,
+                water_content_percentage=w0.water_content_percentage,
+                viscosity_cst=w0.dynamic_viscosity_cst,
+                weathering_stage=w0.weathering_stage,
             )
         )
 
@@ -142,15 +198,23 @@ class LagrangianDriftSimulator(DriftEngine):
         for step in range(1, total_steps + 1):
             current_time = current_time - timedelta(seconds=dt_seconds)
 
-            # Move backwards: dx = -u * dt, dy = -v * dt
-            meters_lon_per_deg = self.METERS_PER_DEGREE_LAT * math.cos(math.radians(current_lat))
-            d_lat = (-v_ms * dt_seconds) / self.METERS_PER_DEGREE_LAT
-            d_lon = (-u_ms * dt_seconds) / max(1.0, meters_lon_per_deg)
-
-            current_lat += d_lat
-            current_lon += d_lon
+            if method == "euler":
+                meters_lon = self._meters_per_deg_lon(current_lat)
+                d_lat = (-v_ms * dt_seconds) / self.METERS_PER_DEGREE_LAT
+                d_lon = (-u_ms * dt_seconds) / max(1.0, meters_lon)
+                current_lat += d_lat
+                current_lon += d_lon
+            else:
+                # RK4 advection
+                current_lat, current_lon = self._step_rk4(
+                    current_lat, current_lon, u_ms, v_ms, dt_seconds, reverse=True
+                )
 
             uncertainty_m = 300.0 + (step * 75.0)
+
+            # Weathering age steps backwards towards release origin (age = 0 at terminal)
+            step_age = max(0.0, duration_hours - (step * dt_hours))
+            w_step = self.weathering_engine.compute_state(step_age, wind_speed_ms=wind_speed_ms)
 
             trajectory_points.append(
                 DriftTrajectoryPoint(
@@ -162,6 +226,10 @@ class LagrangianDriftSimulator(DriftEngine):
                     direction=round(heading_deg, 1),
                     uncertainty_radius_m=round(uncertainty_m, 1),
                     timestep_index=step,
+                    evaporated_percentage=w_step.evaporated_percentage,
+                    water_content_percentage=w_step.water_content_percentage,
+                    viscosity_cst=w_step.dynamic_viscosity_cst,
+                    weathering_stage=w_step.weathering_stage,
                 )
             )
 
@@ -170,7 +238,7 @@ class LagrangianDriftSimulator(DriftEngine):
 
         return DriftSimulationResult(
             run_type="HINDCAST",
-            model_source="Deterministic Lagrangian Simulator (Demo Engine)",
+            model_source=f"Deterministic Lagrangian Simulator ({method.upper()} + ADIOS Kinetics)",
             start_time=observation_time,
             end_time=terminal_origin.timestamp,
             duration_hours=duration_hours,
@@ -187,6 +255,7 @@ class LagrangianDriftSimulator(DriftEngine):
                 "current_factor": c_factor,
                 "wind_deflection_deg": w_deflect,
                 "timestep_minutes": timestep_minutes,
+                "integration_method": method.upper(),
             },
         )
 
@@ -205,12 +274,14 @@ class LagrangianDriftSimulator(DriftEngine):
         wind_deflection_deg: Optional[float] = None,
         current_factor: Optional[float] = None,
         particle_id: int = 1,
+        integration_method: Optional[str] = None,
         **kwargs: Any,
     ) -> DriftSimulationResult:
         """Projects future spill trajectory forward in time for coastal threat containment."""
         w_factor = wind_factor if wind_factor is not None else self.default_wind_factor
         c_factor = current_factor if current_factor is not None else self.default_current_factor
         w_deflect = wind_deflection_deg if wind_deflection_deg is not None else self.default_wind_deflection_deg
+        method = (integration_method or self.default_integration_method).lower()
 
         u_ms, v_ms, speed_knots, heading_deg = self._compute_drift_vector(
             wind_speed_knots=wind_speed_knots,
@@ -223,6 +294,7 @@ class LagrangianDriftSimulator(DriftEngine):
         )
 
         dt_seconds = timestep_minutes * 60.0
+        dt_hours = timestep_minutes / 60.0
         total_steps = int(max(1, round((duration_hours * 60.0) / timestep_minutes)))
 
         trajectory_points: List[DriftTrajectoryPoint] = []
@@ -231,6 +303,9 @@ class LagrangianDriftSimulator(DriftEngine):
         current_lat = spill_lat
         current_lon = spill_lon
         current_time = observation_time
+
+        wind_speed_ms = wind_speed_knots * self.KNOTS_TO_MS
+        w0 = self.weathering_engine.compute_state(0.0, wind_speed_ms=wind_speed_ms)
 
         trajectory_points.append(
             DriftTrajectoryPoint(
@@ -242,6 +317,10 @@ class LagrangianDriftSimulator(DriftEngine):
                 direction=round(heading_deg, 1),
                 uncertainty_radius_m=300.0,
                 timestep_index=0,
+                evaporated_percentage=w0.evaporated_percentage,
+                water_content_percentage=w0.water_content_percentage,
+                viscosity_cst=w0.dynamic_viscosity_cst,
+                weathering_stage=w0.weathering_stage,
             )
         )
 
@@ -249,14 +328,23 @@ class LagrangianDriftSimulator(DriftEngine):
         for step in range(1, total_steps + 1):
             current_time = current_time + timedelta(seconds=dt_seconds)
 
-            meters_lon_per_deg = self.METERS_PER_DEGREE_LAT * math.cos(math.radians(current_lat))
-            d_lat = (v_ms * dt_seconds) / self.METERS_PER_DEGREE_LAT
-            d_lon = (u_ms * dt_seconds) / max(1.0, meters_lon_per_deg)
-
-            current_lat += d_lat
-            current_lon += d_lon
+            if method == "euler":
+                meters_lon = self._meters_per_deg_lon(current_lat)
+                d_lat = (v_ms * dt_seconds) / self.METERS_PER_DEGREE_LAT
+                d_lon = (u_ms * dt_seconds) / max(1.0, meters_lon)
+                current_lat += d_lat
+                current_lon += d_lon
+            else:
+                # RK4 advection
+                current_lat, current_lon = self._step_rk4(
+                    current_lat, current_lon, u_ms, v_ms, dt_seconds, reverse=False
+                )
 
             uncertainty_m = 300.0 + (step * 85.0)
+
+            # Weathering age progresses forward
+            step_age = step * dt_hours
+            w_step = self.weathering_engine.compute_state(step_age, wind_speed_ms=wind_speed_ms)
 
             trajectory_points.append(
                 DriftTrajectoryPoint(
@@ -268,12 +356,16 @@ class LagrangianDriftSimulator(DriftEngine):
                     direction=round(heading_deg, 1),
                     uncertainty_radius_m=round(uncertainty_m, 1),
                     timestep_index=step,
+                    evaporated_percentage=w_step.evaporated_percentage,
+                    water_content_percentage=w_step.water_content_percentage,
+                    viscosity_cst=w_step.dynamic_viscosity_cst,
+                    weathering_stage=w_step.weathering_stage,
                 )
             )
 
         return DriftSimulationResult(
             run_type="FORECAST",
-            model_source="Deterministic Lagrangian Simulator (Demo Engine)",
+            model_source=f"Deterministic Lagrangian Simulator ({method.upper()} + ADIOS Kinetics)",
             start_time=observation_time,
             end_time=current_time,
             duration_hours=duration_hours,
@@ -290,5 +382,6 @@ class LagrangianDriftSimulator(DriftEngine):
                 "current_factor": c_factor,
                 "wind_deflection_deg": w_deflect,
                 "timestep_minutes": timestep_minutes,
+                "integration_method": method.upper(),
             },
         )

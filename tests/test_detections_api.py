@@ -55,3 +55,17 @@ def test_post_detection_trained_missing_weights():
     )
     assert response.status_code == 404
     assert "Trained model checkpoint not found" in response.json()["detail"]
+
+
+def test_detection_characterisation_endpoint():
+    """Verify GET /api/v1/detections/{id}/characterisation returns BAOAC volume, Look-Alike, and age inversion."""
+    response = client.get("/api/v1/detections/scenario_a/characterisation")
+    assert response.status_code == 200
+    data = response.json()
+    assert "baoac_volume" in data
+    assert "sar_look_alike" in data
+    assert "slick_age_estimation" in data
+    assert data["baoac_volume"]["nominal_volume_m3"] > 0
+    assert "verdict" in data["sar_look_alike"]
+    assert data["slick_age_estimation"]["estimated_age_hours"] > 0
+

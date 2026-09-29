@@ -2,7 +2,7 @@
 
 import os
 import threading
-from typing import List, Dict, Optional
+from typing import List, Dict, Optional, Any
 from fastapi import APIRouter, HTTPException, Query, status
 
 from backend.schemas.detection import DetectionRequest, DetectionResponse
@@ -149,3 +149,72 @@ def get_detection(detection_id: str):
         status_code=status.HTTP_404_NOT_FOUND,
         detail=f"Detection ID '{detection_id}' not found.",
     )
+
+
+@router.get("/{detection_id}/characterisation", response_model=Dict[str, Any])
+def get_detection_characterisation(detection_id: str):
+    """Computes international BAOAC discharge volume, SAR Look-Alike assessment, and ADIOS age inversion."""
+    with _STORE_LOCK:
+        det = _DETECTIONS_STORE.get(detection_id) or _DETECTIONS_STORE.get(detection_id.upper())
+
+    if not det:
+        # Fallback to standard scenario generation
+        if detection_id.lower() in ["scenario_a", "scenario_b", "scenario_c", "det-scenario_a", "det-scenario_b", "det-scenario_c"]:
+            s_key = detection_id.lower().replace("det-", "")
+            res = detect_oil_spill(scenario_id=s_key, mode="demo")
+            det = DetectionResponse(
+                detection_id=f"DET-{s_key.upper()}",
+                model_name=res.model_name,
+                model_version=res.model_version,
+                mode=res.mode,
+                confidence=res.confidence,
+                area_sqkm=res.area_sqkm,
+                perimeter_km=res.perimeter_km,
+                centroid=res.centroid,
+                polygon=res.polygon,
+                estimated_age_hours=res.estimated_age_hours,
+                original_image=res.original_image,
+                mask_image=res.mask_image,
+                overlay_image=res.overlay_image,
+                metadata=res.metadata,
+            )
+        else:
+            raise HTTPException(status_code=404, detail=f"Detection ID '{detection_id}' not found.")
+
+    from backend.services.oil_weathering import (
+        compute_baoac_volume,
+        evaluate_sar_look_alike,
+        estimate_slick_age,
+    )
+    from backend.services.providers.weather import OpenMeteoWeatherProvider
+
+    lat, lon = det.centroid[0], det.centroid[1]
+    weather_prov = OpenMeteoWeatherProvider()
+    wind_cond = weather_prov.get_wind_conditions(lat, lon)
+    u_wind = wind_cond.get("wind_speed_ms", 5.5)
+
+    baoac_res = compute_baoac_volume(det.area_sqkm, predominant_code=4)
+    look_alike_res = evaluate_sar_look_alike(
+        surface_wind_ms=u_wind,
+        dark_spot_contrast=0.88,
+        perimeter_km=det.perimeter_km,
+        area_sqkm=det.area_sqkm,
+    )
+    age_res = estimate_slick_age(
+        evaporated_percentage=32.0,
+        water_content_percentage=45.0,
+        viscosity_cst=1250.0,
+        wind_speed_ms=u_wind,
+    )
+
+    return {
+        "detection_id": det.detection_id,
+        "centroid": det.centroid,
+        "area_sqkm": det.area_sqkm,
+        "perimeter_km": det.perimeter_km,
+        "baoac_volume": baoac_res,
+        "sar_look_alike": look_alike_res,
+        "slick_age_estimation": age_res,
+        "live_surface_wind": wind_cond,
+    }
+

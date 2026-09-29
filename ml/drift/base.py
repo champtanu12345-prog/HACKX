@@ -16,6 +16,10 @@ class DriftTrajectoryPoint(BaseModel):
     direction: float = Field(..., description="Drift velocity direction in compass degrees (0-360)")
     uncertainty_radius_m: float = Field(300.0, description="Uncertainty radius in meters")
     timestep_index: int = Field(0, description="Chronological or sequential step index")
+    evaporated_percentage: Optional[float] = Field(None, description="Cumulative evaporated percentage")
+    water_content_percentage: Optional[float] = Field(None, description="Water-in-oil emulsification percentage")
+    viscosity_cst: Optional[float] = Field(None, description="Oil kinematic viscosity in centistokes")
+    weathering_stage: Optional[str] = Field(None, description="Forensic weathering stage classification")
 
 
 class DriftSimulationResult(BaseModel):

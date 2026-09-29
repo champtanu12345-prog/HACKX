@@ -74,11 +74,11 @@ export const MapLayerControls: React.FC<MapLayerControlsProps> = ({
       >
         <div className="flex items-center space-x-1.5">
           <Layers className="w-3.5 h-3.5 text-[#FFD700]" />
-          <span>मानचित्र परतें / GIS LAYERS</span>
+          <span>GIS LAYERS</span>
         </div>
         <div className="flex items-center space-x-1.5 text-[10px] font-mono text-emerald-200">
           <span className="w-1.5 h-1.5 rounded-full bg-[#22C55E]" />
-          <span>{isExpanded ? '▲ बन्द करें' : '▾ खोलें'}</span>
+          <span>{isExpanded ? '▲ Close' : '▾ Open'}</span>
         </div>
       </button>
 

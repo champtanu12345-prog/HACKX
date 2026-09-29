@@ -126,6 +126,10 @@ export interface DriftSimulationPoint {
   direction: number;
   uncertainty_radius_m: number;
   timestep_index: number;
+  evaporated_percentage?: number;
+  water_content_percentage?: number;
+  viscosity_cst?: number;
+  weathering_stage?: string;
 }
 
 export interface DriftSimulationResult {
@@ -139,6 +143,7 @@ export interface DriftSimulationResult {
   estimated_origin_time?: string;
   confidence_score: number;
   parameters: Record<string, any>;
+  coastal_vulnerability?: any;
 }
 
 export type AnalysisStage =

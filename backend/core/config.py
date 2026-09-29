@@ -29,6 +29,20 @@ class Settings(BaseSettings):
     SPIRE_AIS_API_KEY: str = ""
     NOAA_GFS_API_URL: str = "https://nomads.ncep.noaa.gov/dods/gfs_0p25"
 
+    # Real Email (SMTP / Gmail) Delivery Configuration
+    SMTP_SERVER: str = "smtp.gmail.com"
+    SMTP_PORT: int = 587
+    SMTP_USER: str = ""
+    SMTP_PASSWORD: str = ""
+    SMTP_FROM_EMAIL: str = ""
+    SMTP_USE_TLS: bool = True
+
+    # Real SMS Gateway Delivery Configuration (Fast2SMS / Twilio)
+    FAST2SMS_API_KEY: str = ""
+    TWILIO_ACCOUNT_SID: str = ""
+    TWILIO_AUTH_TOKEN: str = ""
+    TWILIO_FROM_PHONE: str = ""
+
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",

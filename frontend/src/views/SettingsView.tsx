@@ -88,6 +88,31 @@ export const SettingsView: React.FC = () => {
           </div>
         </div>
 
+        {/* Warp-Drive Canvas Background */}
+        <div className="space-y-1 border-b border-gray-100 pb-3">
+          <label className="text-[11px] font-bold text-charcoal-800 uppercase tracking-wider flex items-center justify-between">
+            <span>Interactive HTML5 Canvas Warp-Drive Hyperspace Background</span>
+            <span className="text-[10px] text-cyan-700 bg-cyan-50 px-2 py-0.5 rounded border border-cyan-200">
+              #050505 Pitch Black • Cyan & Amber Streaks
+            </span>
+          </label>
+          <div className="flex items-center justify-between pt-1">
+            <span className="text-[11px] text-charcoal-600">
+              Renders 700+ high-speed glowing light streaks with radial motion blur and mouse perspective parallax steering.
+            </span>
+            <div className="flex items-center space-x-2">
+              <a
+                href="/warp-background.html"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-2.5 py-1 text-[11px] font-bold text-cyan-700 hover:text-cyan-900 bg-cyan-50 hover:bg-cyan-100 border border-cyan-300 rounded-[2px] transition-colors"
+              >
+                Open Demo HUD ↗
+              </a>
+            </div>
+          </div>
+        </div>
+
         {/* Save button */}
         <div className="pt-2 flex items-center justify-between">
           <button

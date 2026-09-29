@@ -204,24 +204,24 @@ export const InvestigationsView: React.FC<InvestigationsViewProps> = ({
   ];
 
   return (
-    <div className="flex-1 bg-[#F0FDF4] p-4 overflow-y-auto space-y-4 font-sans text-xs select-none">
+    <div className="flex-1 bg-[#F4F6F9] p-4 overflow-y-auto space-y-4 font-sans text-xs select-none">
       {/* 1. Header Strip: Official ICG Enforcement Dossier Header */}
-      <div className="card-ocean-green p-4 flex flex-wrap items-center justify-between gap-3">
+      <div className="card-white-navy p-4 flex flex-wrap items-center justify-between gap-3 border-t-2 border-t-[#EA580C]">
         <div className="flex items-center space-x-3">
-          <div className="p-1 bg-[#064E26] rounded-xl border border-emerald-400/40">
+          <div className="p-1 bg-gradient-to-br from-[#EA580C] to-[#C2410C] rounded-xl border border-orange-400/40">
             <StateEmblemIndia size="sm" variant="gold" />
           </div>
           <div>
             <div className="flex items-center space-x-2">
-              <h1 className="font-serif font-bold text-sm text-[#064E26]">
+              <h1 className="font-serif font-bold text-sm text-[#C2410C]">
                 कानूनी साक्ष्य एवं प्रवर्तन डोजियर
               </h1>
-              <span className="text-emerald-300 font-sans">|</span>
+              <span className="text-orange-300 font-sans">|</span>
               <span className="font-sans font-bold text-sm text-slate-800">
                 ICG ENFORCEMENT & EVIDENCE REGISTER
               </span>
             </div>
-            <p className="text-[10px] text-emerald-800 font-mono mt-0.5">
+            <p className="text-[10px] text-slate-600 font-mono mt-0.5">
               CHRONOLOGICAL SPILL ATTRIBUTION LEDGER // SECTION 356C MERCHANT SHIPPING ACT, 1958
             </p>
           </div>
@@ -234,7 +234,7 @@ export const InvestigationsView: React.FC<InvestigationsViewProps> = ({
           <button
             onClick={handleExportPdf}
             disabled={isExporting}
-            className="px-3 py-1.5 rounded-[2px] bg-[#064E26] hover:bg-[#0D5204] text-white font-bold text-xs flex items-center space-x-1.5 transition-colors border border-emerald-400/40 cursor-pointer shadow-xs"
+            className="px-3 py-1.5 rounded-[2px] bg-[#EA580C] hover:bg-[#C2410C] text-white font-bold text-xs flex items-center space-x-1.5 transition-colors border border-orange-500/40 cursor-pointer shadow-xs"
           >
             {isExporting ? (
               <Loader2 className="w-3.5 h-3.5 animate-spin text-[#FFD700]" />
@@ -250,14 +250,21 @@ export const InvestigationsView: React.FC<InvestigationsViewProps> = ({
       <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
         {cases.map((c) => {
           const isSelected = c.caseNumber === selectedCaseNumber;
+          const cardClass =
+            c.status === 'ESCALATED_TO_COAST_GUARD'
+              ? 'card-white-crimson'
+              : c.status === 'TRIAGED'
+              ? 'card-white-amber'
+              : 'card-white-teal';
+
           return (
             <div
               key={c.caseNumber}
               onClick={() => setSelectedCaseNumber(c.caseNumber)}
-              className={`p-3.5 rounded-xl cursor-pointer transition-all ${
+              className={`p-3.5 rounded-xl cursor-pointer transition-all ${cardClass} ${
                 isSelected
-                  ? 'card-ocean-green border-2 border-[#064E26] ring-2 ring-emerald-400/40 shadow-md bg-white'
-                  : 'card-ocean-green hover:border-emerald-400'
+                  ? 'ring-2 ring-slate-700 shadow-md scale-[1.01]'
+                  : 'hover:shadow-md'
               }`}
             >
               <div className="flex items-center justify-between pb-1 mb-1 border-b border-gray-100">
@@ -292,7 +299,7 @@ export const InvestigationsView: React.FC<InvestigationsViewProps> = ({
                       e.stopPropagation();
                       onReopenInvestigation(c.caseNumber);
                     }}
-                    className="text-[#064E26] font-bold hover:underline"
+                    className="text-[#EA580C] hover:text-[#C2410C] font-bold hover:underline"
                   >
                     Reopen on Map →
                   </button>
@@ -304,15 +311,15 @@ export const InvestigationsView: React.FC<InvestigationsViewProps> = ({
       </div>
 
       {/* 3. Timeline-Based Investigation Interface */}
-      <div className="card-ocean-green p-4 space-y-3">
-        <div className="pb-2 border-b border-emerald-100 flex items-center justify-between">
+      <div className="card-white-purple p-4 space-y-3">
+        <div className="pb-2 border-b border-purple-100 flex items-center justify-between">
           <div className="flex items-center space-x-2">
-            <Clock className="w-4 h-4 text-[#064E26]" />
-            <h2 className="font-bold text-xs uppercase tracking-wider text-[#064E26]">
+            <Clock className="w-4 h-4 text-purple-700" />
+            <h2 className="font-bold text-xs uppercase tracking-wider text-purple-900">
               Investigation Sequence Timeline — {selectedCase.caseNumber}
             </h2>
           </div>
-          <span className="text-[11px] text-emerald-800 font-medium">
+          <span className="text-[11px] text-purple-800 font-medium">
             Chronological reconstruction sequence
           </span>
         </div>
@@ -321,11 +328,11 @@ export const InvestigationsView: React.FC<InvestigationsViewProps> = ({
           {timelineMilestones.map((m) => (
             <div
               key={m.stepNumber}
-              className="flex items-start space-x-3 p-3 bg-white/90 border border-emerald-200/80 rounded-xl"
+              className="flex items-start space-x-3 p-3 bg-white border border-slate-200 rounded-xl shadow-2xs hover:border-purple-300 transition-all"
             >
               {/* Time Indicator */}
               <div className="w-20 flex-shrink-0 pt-0.5">
-                <span className="font-mono font-bold text-[#064E26] text-xs block">
+                <span className="font-mono font-bold text-purple-900 text-xs block">
                   {m.timeLabel}
                 </span>
                 <span className="text-[10px] text-charcoal-500 font-mono">

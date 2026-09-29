@@ -153,9 +153,48 @@ def test_vessel_api_endpoints():
     res_nearby = client.get("/api/v1/vessels/nearby?scenario_id=scenario_a")
     assert res_nearby.status_code == 200
     candidates = res_nearby.json()
-    assert len(candidates) > 0
     assert candidates[0]["mmsi"] == "419000123"
     assert "spatial_distance_nm" in candidates[0]
     assert "temporal_difference_hours" in candidates[0]
     assert "correlation_category" in candidates[0]
+
+
+def test_traffic_filtering_pipeline():
+    """Verify Two-Stage 4D Spatiotemporal Corridor Filtering pipeline logic and audit breakdown."""
+    provider = DemoAISProvider()
+    vessels_a = provider.get_vessels_for_scenario("scenario_a")
+
+    source_lat, source_lon = 19.040, 72.330
+    source_time = datetime(2026, 9, 13, 19, 30, 0)
+
+    pipe_res = correlation_engine.correlate_vessels_pipeline(
+        vessels=vessels_a,
+        source_lat=source_lat,
+        source_lon=source_lon,
+        source_time=source_time,
+        search_radius_nm=25.0,
+        time_window_hours=12.0,
+    )
+
+    assert "total_vessels_evaluated" in pipe_res
+    assert "stage1_filtered_count" in pipe_res
+    assert "stage2_retained_candidates_count" in pipe_res
+    assert pipe_res["total_vessels_evaluated"] == len(vessels_a)
+    assert len(pipe_res["candidates"]) == pipe_res["stage2_retained_candidates_count"]
+    assert "filter_reasons_breakdown" in pipe_res
+
+
+def test_traffic_pipeline_api_endpoint():
+    """Verify GET /api/v1/vessels/traffic-pipeline returns pipeline breakdown."""
+    res = client.get("/api/v1/vessels/traffic-pipeline?scenario_id=scenario_a")
+    assert res.status_code == 200
+    data = res.json()
+    assert "total_vessels_evaluated" in data
+    assert "stage1_filtered_count" in data
+    assert "stage2_retained_candidates_count" in data
+    assert "filtering_ratio_pct" in data
+    assert "candidates" in data
+    assert "filtered_vessels" in data
+    assert len(data["candidates"]) > 0
+
 

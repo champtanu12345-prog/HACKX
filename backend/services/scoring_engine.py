@@ -218,10 +218,22 @@ class TransparentVesselScoringEngine(VesselScoringEngine):
         has_speed_drop = False
         has_loitering = False
         has_course_change = False
+        has_speed_teleport = False
+        has_mmsi_collision = False
+        has_course_inconsistency = False
 
         for a in anomalies:
             a_type = (a.get("anomaly_type") or a.get("type") or "").upper()
-            if "AIS_GAP" in a_type:
+            if "TELEPORT" in a_type:
+                behavior_points += 50.0
+                has_speed_teleport = True
+            elif "MMSI_COLLISION" in a_type or "GHOST" in a_type:
+                behavior_points += 50.0
+                has_mmsi_collision = True
+            elif "COURSE_INCONSISTENCY" in a_type:
+                behavior_points += 40.0
+                has_course_inconsistency = True
+            elif "AIS_GAP" in a_type:
                 behavior_points += 45.0
                 has_ais_gap = True
             elif "DECELERATION" in a_type or "SPEED_DROP" in a_type:
@@ -246,6 +258,14 @@ class TransparentVesselScoringEngine(VesselScoringEngine):
         behavior_score = round(min(100.0, behavior_points), 1)
 
         # ---------------------------------------------------------
+        # 5. Flag State Paris/Tokyo MoU Inspection Risk Evaluation
+        # ---------------------------------------------------------
+        from backend.services.flag_state_risk import flag_state_service
+        flag_country_val = vessel.get("flag_country") or vessel.get("flag") or "Unknown"
+        mmsi_str = str(vessel.get("mmsi") or "")
+        flag_report = flag_state_service.evaluate_flag(flag_country_val, mmsi_str)
+
+        # ---------------------------------------------------------
         # Final Transparent Multi-Criteria Calculation
         # ---------------------------------------------------------
         # Formula: 0.40 * spatial + 0.25 * temporal + 0.20 * trajectory + 0.15 * behavior
@@ -257,6 +277,9 @@ class TransparentVesselScoringEngine(VesselScoringEngine):
             1,
         )
         overall_score = max(0.0, min(100.0, overall_score))
+
+        # Risk-adjusted score with Flag State multiplier
+        risk_adjusted_score = round(min(100.0, overall_score * flag_report.risk_multiplier), 1)
 
         investigation_priority = self.get_severity_level(overall_score)
         potential_source = overall_score >= 60.0
@@ -299,14 +322,29 @@ class TransparentVesselScoringEngine(VesselScoringEngine):
             {
                 "component": "behavioral_anomaly",
                 "reason": (
-                    "AIS transmission gap occurred near the source window."
-                    if has_ais_gap
-                    else ("Transit speed deceleration recorded without anchoring." if has_speed_drop else "Nominal transit kinematics observed.")
+                    "Kinematic transponder spoofing and/or AIS gaps detected."
+                    if (has_speed_teleport or has_mmsi_collision or has_course_inconsistency)
+                    else (
+                        "AIS transmission gap occurred near the source window."
+                        if has_ais_gap
+                        else ("Transit speed deceleration recorded without anchoring." if has_speed_drop else "Nominal transit kinematics observed.")
+                    )
                 ),
                 "anomaly_flags": [a.get("anomaly_type") or a.get("type") for a in anomalies],
                 "score": behavior_score,
                 "weight": self.w_behavior,
                 "contribution": round(self.w_behavior * behavior_score, 1),
+            },
+            {
+                "component": "flag_state_mou_risk",
+                "reason": flag_report.summary,
+                "flag_country": flag_report.flag_country,
+                "mou_status": flag_report.mou_status,
+                "risk_level": flag_report.risk_level,
+                "risk_multiplier": flag_report.risk_multiplier,
+                "foc_flag": flag_report.foc_flag,
+                "detention_ratio_pct": flag_report.detention_ratio_pct,
+                "score": 85.0 if flag_report.mou_status == "BLACK_LIST" else (55.0 if flag_report.mou_status == "GREY_LIST" else 10.0),
             },
         ]
 
@@ -327,12 +365,24 @@ class TransparentVesselScoringEngine(VesselScoringEngine):
             ),
         ]
 
+        if has_speed_teleport:
+            explanations.append("CRITICAL: Kinematically impossible speed teleportation (>35 kn) flagged on AIS transponder.")
+        if has_mmsi_collision:
+            explanations.append("CRITICAL: Dual disparate geographic positions recorded simultaneously (MMSI collision / ghost vessel).")
+        if has_course_inconsistency:
+            explanations.append("CRITICAL: Instantaneous 180° heading reversal without realistic turning radius indicates synthetic AIS injection.")
         if has_ais_gap:
             explanations.append("AIS transmission gap occurred near the source window.")
         elif has_speed_drop:
             explanations.append("Sudden speed reduction observed during passage across the discharge zone.")
         elif has_loitering:
             explanations.append("Loitering behavior detected along transit corridor.")
+
+        if flag_report.mou_status in ("BLACK_LIST", "GREY_LIST"):
+            explanations.append(
+                f"Flag State Notice: Registered under {flag_report.flag_country} ({flag_report.mou_status}) "
+                f"with {flag_report.detention_ratio_pct}% 3-year detention frequency (Risk Multiplier: {flag_report.risk_multiplier}x)."
+            )
 
         # Non-accusatory investigation disclaimer
         disclaimer = "Correlation score indicates investigation priority only; this metric does not constitute legal proof of discharge."
@@ -342,8 +392,10 @@ class TransparentVesselScoringEngine(VesselScoringEngine):
             "mmsi": vessel.get("mmsi"),
             "name": vessel.get("name", "Unknown"),
             "vessel_type": vessel.get("vessel_type", "Cargo"),
-            "flag_country": vessel.get("flag_country") or vessel.get("flag") or "Unknown",
+            "flag_country": flag_country_val,
             "overall_score": overall_score,
+            "risk_adjusted_score": risk_adjusted_score,
+            "flag_state_risk": flag_report.model_dump(),
             "composite_score": overall_score,  # Backwards compatibility alias
             "spatial_score": spatial_score,
             "proximity_score": spatial_score,  # Backwards compatibility alias

@@ -115,6 +115,62 @@ def get_nearby_vessels(
     return candidates
 
 
+@router.get("/traffic-pipeline", response_model=Dict[str, Any])
+def get_traffic_filtering_pipeline(
+    lat: Optional[float] = Query(None, description="Spill release latitude (WGS84)"),
+    lon: Optional[float] = Query(None, description="Spill release longitude (WGS84)"),
+    timestamp: Optional[datetime] = Query(None, description="Estimated discharge timestamp UTC"),
+    radius_nm: float = Query(30.0, ge=1.0, le=150.0, description="Correlation search radius in NM"),
+    time_window_hours: float = Query(24.0, ge=1.0, le=72.0, description="Time window in hours"),
+    scenario_id: Optional[str] = Query(None, description="Scenario ID context ('scenario_a', 'scenario_b', 'scenario_c')"),
+):
+    """Executes Two-Stage 4D Spatiotemporal Corridor Filtering.
+    
+    Stage 1: Rejects non-intersecting vessels outside temporal and distance envelopes.
+    Stage 2: Calculates fine Closest Point of Approach (CPA) and ranks suspects with behavioral analysis.
+    Returns complete filtering audit metrics and reasons.
+    """
+    if scenario_id and scenario_id.lower() in DEMO_SCENARIOS_DATA:
+        sc = DEMO_SCENARIOS_DATA[scenario_id.lower()]
+        spill = sc.get("spill_detection") or sc.get("spill", {})
+        drift = sc.get("drift_simulation") or sc.get("drift", {})
+        ref_lat = lat if lat is not None else (drift.get("estimated_origin_lat") or (drift.get("estimated_origin_coords", [spill.get("centroid_lat", 19.04)])[0]))
+        ref_lon = lon if lon is not None else (drift.get("estimated_origin_lon") or (drift.get("estimated_origin_coords", [spill.get("centroid_lon", 72.33), spill.get("centroid_lon", 72.33)])[1]))
+        if timestamp:
+            ref_time = timestamp
+        elif drift.get("estimated_origin_time"):
+            ref_time = datetime.fromisoformat(drift["estimated_origin_time"].replace("Z", "+00:00"))
+        elif "detection_time" in spill:
+            ref_time = datetime.fromisoformat(spill["detection_time"].replace("Z", "+00:00"))
+        else:
+            ref_time = datetime.utcnow()
+        vessels_data = demo_provider.get_vessels_for_scenario(scenario_id)
+    else:
+        if lat is None or lon is None:
+            sc = DEMO_SCENARIOS_DATA["scenario_a"]
+            ref_lat = 19.040
+            ref_lon = 72.330
+            ref_time = datetime(2026, 9, 13, 19, 30, 0)
+            vessels_data = demo_provider.get_vessels_for_scenario("scenario_a")
+        else:
+            ref_lat = lat
+            ref_lon = lon
+            ref_time = timestamp or datetime.utcnow()
+            vessels_data = demo_provider.get_all_vessels()
+
+    pipeline_result = correlation_engine.correlate_vessels_pipeline(
+        vessels=vessels_data,
+        source_lat=ref_lat,
+        source_lon=ref_lon,
+        source_time=ref_time,
+        search_radius_nm=radius_nm,
+        time_window_hours=time_window_hours,
+    )
+
+    return pipeline_result
+
+
+
 @router.get("/{vessel_id}", response_model=Dict[str, Any])
 def get_vessel(vessel_id: str, db: Session = Depends(get_db)):
     """Get vessel details by ID or Maritime Mobile Service Identity (MMSI)."""

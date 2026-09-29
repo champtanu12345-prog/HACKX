@@ -125,11 +125,14 @@ def test_structured_evidence_and_human_explanations():
 
     res = scorer.score_vessel(vessel, origin_lat, origin_lon, origin_time)
 
-    # Verify structured evidence
+    # Verify structured evidence (5 components: spatial, temporal, trajectory, behavior, flag state)
     evidence = res["evidence"]
-    assert len(evidence) == 4
+    assert len(evidence) == 5
     spatial_ev = next(e for e in evidence if e["component"] == "spatial_proximity")
     temporal_ev = next(e for e in evidence if e["component"] == "temporal_alignment")
+    flag_ev = next(e for e in evidence if e["component"] == "flag_state_mou_risk")
+    assert flag_ev["flag_country"] == "Panama"
+    assert flag_ev["mou_status"] == "GREY_LIST"
 
     assert "distance_km" in spatial_ev
     assert 3.5 <= spatial_ev["distance_km"] <= 5.0

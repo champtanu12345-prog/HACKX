@@ -112,6 +112,7 @@ export const simulateDrift = async (payload: {
   current_speed_knots?: number;
   current_direction_deg?: number;
   engine_type?: string;
+  integration_method?: string;
 }): Promise<DriftSimulationResult> => {
   const res = await api.post('/drift/simulate', payload);
   return res.data;
@@ -142,6 +143,29 @@ export const getNearbyVessels = async (params: {
   const res = await api.get('/vessels/nearby', { params });
   return res.data;
 };
+
+export const getTrafficPipeline = async (params: {
+  lat?: number;
+  lon?: number;
+  timestamp?: string;
+  radius_nm?: number;
+  time_window_hours?: number;
+  scenario_id?: string;
+}) => {
+  const res = await api.get('/vessels/traffic-pipeline', { params });
+  return res.data;
+};
+
+export const getDetectionCharacterisation = async (detectionId: string) => {
+  const res = await api.get(`/detections/${detectionId}/characterisation`);
+  return res.data;
+};
+
+export const getLiveEnvironment = async (lat: number, lon: number, timestamp?: string) => {
+  const res = await api.get('/drift/live-environment', { params: { latitude: lat, longitude: lon, timestamp } });
+  return res.data;
+};
+
 
 export interface AlertDispatchRequestPayload {
   case_number: string;
@@ -272,6 +296,81 @@ export const downloadInvestigationPdf = async (
     document.body.removeChild(link);
     window.URL.revokeObjectURL(url);
   }
+};
+
+export interface MaritimePenaltyData {
+  case_number: string;
+  target_vessel_name: string;
+  target_vessel_mmsi: string;
+  vessel_flag: string;
+  vessel_type: string;
+  is_foc: boolean;
+  spill_area_sqkm: number;
+  slick_appearance_code: string;
+  mean_thickness_microns: number;
+  estimated_volume_m3: number;
+  estimated_volume_mt: number;
+  hydrocarbon_type: string;
+  density_mt_per_m3: number;
+  base_statutory_fine_inr: number;
+  cleanup_mobilization_inr: number;
+  cleanup_per_tonne_inr: number;
+  total_cleanup_cost_inr: number;
+  sensitivity_zone: string;
+  sensitivity_multiplier: number;
+  ecological_damage_inr: number;
+  total_statutory_liability_inr: number;
+  total_statutory_liability_usd: number;
+  detention_security_bond_inr: number;
+  detention_security_bond_usd: number;
+  statutory_violations: Array<{
+    statute: string;
+    section: string;
+    title: string;
+    description: string;
+    penalty_provision: string;
+  }>;
+  recommended_enforcement_action: string;
+}
+
+export const getInvestigationPenalty = async (
+  investigationId: string
+): Promise<MaritimePenaltyData> => {
+  const res = await api.get(`/investigations/${investigationId}/penalty`);
+  return res.data;
+};
+
+export interface CopilotChatPayload {
+  query: string;
+  scenario_id?: string;
+  scenario_context?: Record<string, any>;
+  history?: Array<{ role: string; content: string }>;
+  lang?: 'en' | 'hi';
+  current_view?: string;
+}
+
+export interface CopilotChatResult {
+  reply: string;
+  action?: {
+    type: 'NAVIGATE' | 'OPEN_DOSSIER' | 'START_TOUR' | 'SWITCH_SCENARIO' | 'SELECT_VESSEL';
+    target_view?: string;
+    scenario_id?: string;
+    vessel_id?: string;
+    label: string;
+  };
+  suggestions: string[];
+  model_used: string;
+  timestamp_ist: string;
+}
+
+export const sendCopilotQuery = async (payload: CopilotChatPayload): Promise<CopilotChatResult> => {
+  const res = await api.post('/copilot/chat', payload);
+  return res.data;
+};
+
+export const getCopilotStatus = async () => {
+  const res = await api.get('/copilot/status');
+  return res.data;
 };
 
 export default api;

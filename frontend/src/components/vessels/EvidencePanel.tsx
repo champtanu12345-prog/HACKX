@@ -167,8 +167,8 @@ export const EvidencePanel: React.FC<EvidencePanelProps> = ({
       {/* Scrollable Content Body */}
       <div className="flex-1 overflow-y-auto p-3.5 space-y-3.5">
         {/* 1. VESSEL DETAILS PANEL */}
-        <div className="bg-white border border-gray-200 rounded-[2px] p-3 shadow-xs space-y-2">
-          <div className="font-bold text-charcoal-800 text-[11px] uppercase tracking-wider border-b border-gray-100 pb-1.5 flex items-center justify-between">
+        <div className="card-white-navy p-3 space-y-2">
+          <div className="font-bold text-blue-900 text-[11px] uppercase tracking-wider border-b border-blue-100 pb-1.5 flex items-center justify-between">
             <span>VESSEL DETAILS</span>
             <Badge variant="neutral" size="xs">
               {vessel.flag}
@@ -228,16 +228,16 @@ export const EvidencePanel: React.FC<EvidencePanelProps> = ({
         />
 
         {/* 3. "WHY THIS VESSEL?" EVIDENCE SECTION */}
-        <div className="bg-white border border-gray-200 rounded-[2px] p-3 shadow-xs space-y-2">
-          <div className="flex items-center space-x-1.5 text-charcoal-800 font-bold text-[11px] uppercase tracking-wider border-b border-gray-100 pb-1.5">
-            <HelpCircle className="w-3.5 h-3.5 text-blue-700" />
+        <div className="card-white-purple p-3 space-y-2">
+          <div className="flex items-center space-x-1.5 text-purple-900 font-bold text-[11px] uppercase tracking-wider border-b border-purple-100 pb-1.5">
+            <HelpCircle className="w-3.5 h-3.5 text-purple-700" />
             <span>WHY THIS VESSEL?</span>
           </div>
 
           <div className="space-y-1.5 pt-0.5">
             {conciseEvidence.map((ev, idx) => (
-              <div key={idx} className="flex items-start space-x-2 text-[11px] text-charcoal-800 bg-gray-50 p-1.5 rounded-[2px] border border-gray-200">
-                <CheckCircle2 className="w-3.5 h-3.5 text-blue-600 flex-shrink-0 mt-0.5" />
+              <div key={idx} className="flex items-start space-x-2 text-[11px] text-charcoal-800 bg-purple-50/40 p-1.5 rounded-[2px] border border-purple-100">
+                <CheckCircle2 className="w-3.5 h-3.5 text-purple-600 flex-shrink-0 mt-0.5" />
                 <span className="leading-snug font-medium">{ev}</span>
               </div>
             ))}
@@ -245,9 +245,9 @@ export const EvidencePanel: React.FC<EvidencePanelProps> = ({
         </div>
 
         {/* 4. Non-Accusatory Classification Notice */}
-        <div className="p-2 bg-blue-50/60 border border-blue-200 rounded-[2px] text-[10px] text-charcoal-600 leading-tight">
-          <span className="font-bold text-blue-900 uppercase">Investigative Notice:</span>{' '}
-          Classified as a <span className="font-semibold text-charcoal-900">Potential Source Vessel</span> for priority technical inspection. Does not constitute a declaration of legal culpability.
+        <div className="card-white-teal p-2.5 text-[10px] text-slate-600 leading-tight">
+          <span className="font-bold text-teal-900 uppercase">Investigative Notice:</span>{' '}
+          Classified as a <span className="font-semibold text-slate-900">Potential Source Vessel</span> for priority technical inspection. Does not constitute a declaration of legal culpability.
         </div>
 
         {/* 5. Investigation Actions */}
