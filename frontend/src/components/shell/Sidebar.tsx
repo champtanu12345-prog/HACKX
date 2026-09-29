@@ -13,6 +13,7 @@ import {
   Globe,
   Sparkles,
   Shield,
+  Bot,
 } from 'lucide-react';
 import { Badge, BadgeVariant } from '../common/Badge';
 
@@ -27,7 +28,8 @@ export type NavView =
   | 'sources'
   | 'settings'
   | 'hero'
-  | 'login';
+  | 'login'
+  | 'sagar-mitra';
 
 interface NavItem {
   id: NavView;
@@ -73,6 +75,14 @@ export const Sidebar: React.FC<SidebarProps> = ({
       shortLabel: 'Portal',
       icon: <Globe className="w-4 h-4 text-emerald-600" />,
       badge: 'OFFICIAL',
+      badgeVariant: 'info' as const,
+    },
+    {
+      id: 'sagar-mitra' as NavView,
+      label: '✦ Sagar Mitra AI',
+      shortLabel: 'Sagar Mitra',
+      icon: <Bot className="w-4 h-4 text-cyan-400" />,
+      badge: 'COPILOT',
       badgeVariant: 'info' as const,
     },
     {

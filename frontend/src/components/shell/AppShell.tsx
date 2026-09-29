@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Globe, Activity, Shield, Waves, Sparkles } from 'lucide-react';
+import { Globe, Activity, Shield, Waves, Sparkles, Bot } from 'lucide-react';
 import { TopBar } from './TopBar';
 import { Sidebar, NavView } from './Sidebar';
 import { ContextPanel } from './ContextPanel';
@@ -40,6 +40,7 @@ import { LoginModal } from '../auth/LoginModal';
 import { AnimatedDribbbleLoginPage } from '../auth/AnimatedDribbbleLoginPage';
 import { HackXHeroSection } from '../hero/HackXHeroSection';
 import { BantenGovPortalView } from '../../views/BantenGovPortalView';
+import { SagarMitraAIAssistantView } from '../../views/SagarMitraAIAssistantView';
 
 export const AppShell: React.FC = () => {
   const [isBooting, setIsBooting] = useState<boolean>(false);
@@ -379,12 +380,23 @@ export const AppShell: React.FC = () => {
     );
   }
 
+  if (currentView === 'sagar-mitra') {
+    return (
+      <SagarMitraAIAssistantView
+        onNavigate={(view) => setCurrentView(view)}
+        onOpenWorkstation={() => setCurrentView('overview')}
+        onOpenPortal={() => setCurrentView('portal')}
+      />
+    );
+  }
+
   if (currentView === 'portal') {
     return (
       <BantenGovPortalView
         onLaunchWorkstation={() => setCurrentView('overview')}
         onLaunchHero={() => setCurrentView('hero')}
         onOpenLogin={() => setIsLoginModalOpen(true)}
+        onLaunchSagarMitra={() => setCurrentView('sagar-mitra')}
       />
     );
   }
@@ -394,6 +406,14 @@ export const AppShell: React.FC = () => {
       <div className="relative w-screen h-screen overflow-x-hidden overflow-y-auto bg-[#EBF3F8]">
         {/* Floating Quick Navigation to Tactical Workstation & ICG Portal */}
         <div className="fixed top-4 right-5 z-50 flex items-center space-x-2.5">
+          <button
+            onClick={() => setCurrentView('sagar-mitra')}
+            className="px-3.5 py-1.5 rounded-full bg-cyan-950/85 hover:bg-cyan-900 text-cyan-300 hover:text-white text-xs font-mono border border-cyan-400/40 shadow-xl backdrop-blur-md flex items-center space-x-1.5 transition-all hover:scale-105 cursor-pointer"
+            title="Open Sagar Mitra AI Assistant"
+          >
+            <Bot className="w-3.5 h-3.5 text-cyan-300" />
+            <span>Sagar Mitra AI</span>
+          </button>
           <button
             onClick={() => setCurrentView('overview')}
             className="px-3.5 py-1.5 rounded-full bg-slate-900/85 hover:bg-slate-900 text-cyan-300 hover:text-white text-xs font-mono border border-cyan-400/40 shadow-xl backdrop-blur-md flex items-center space-x-1.5 transition-all hover:scale-105 cursor-pointer"
@@ -482,6 +502,13 @@ export const AppShell: React.FC = () => {
               <span>✨ HackX 3D Hero</span>
             </button>
             <button
+              onClick={() => setCurrentView('sagar-mitra')}
+              className="px-3 py-1 rounded-md font-bold text-xs transition-all cursor-pointer flex items-center space-x-1.5 text-cyan-200 hover:text-white hover:bg-cyan-900/60"
+            >
+              <Bot className="w-3.5 h-3.5 text-cyan-400" />
+              <span>✦ Sagar Mitra AI</span>
+            </button>
+            <button
               onClick={() => setCurrentView('overview')}
               className="px-3 py-1 rounded-md font-bold text-xs transition-all cursor-pointer flex items-center space-x-1.5 bg-gradient-to-r from-[#10B981] to-[#064E26] text-white shadow-md border border-emerald-300"
             >
@@ -557,6 +584,7 @@ export const AppShell: React.FC = () => {
             currentUser={currentUser}
             onOpenLogin={() => setIsLoginModalOpen(true)}
             onLogout={handleLogout}
+            onOpenSagarMitra={() => setCurrentView('sagar-mitra')}
           />
 
           {/* Subsystem Pipeline Execution Stepper HUD */}

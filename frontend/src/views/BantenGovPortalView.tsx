@@ -84,12 +84,14 @@ interface BantenGovPortalViewProps {
   onLaunchWorkstation?: () => void;
   onLaunchHero?: () => void;
   onOpenLogin?: () => void;
+  onLaunchSagarMitra?: () => void;
 }
 
 export const BantenGovPortalView: React.FC<BantenGovPortalViewProps> = ({
   onLaunchWorkstation,
   onLaunchHero,
   onOpenLogin,
+  onLaunchSagarMitra,
 }) => {
   // Mode: fullscreen browser mode (default for free scrolling) vs showcase frame
   const [viewMode, setViewMode] = useState<'showcase' | 'fullscreen'>('fullscreen');
@@ -528,6 +530,18 @@ export const BantenGovPortalView: React.FC<BantenGovPortalViewProps> = ({
 
         {/* Right Action Buttons */}
         <div className="flex items-center space-x-2">
+          {/* Sagar Mitra AI Assistant Launcher CTA */}
+          {onLaunchSagarMitra && (
+            <button
+              onClick={onLaunchSagarMitra}
+              className="bg-gradient-to-r from-cyan-600 via-teal-600 to-emerald-600 hover:from-cyan-500 hover:to-emerald-500 text-white px-3 py-1.5 rounded-lg text-xs font-bold shadow-md hover:shadow-cyan-500/25 transition-all flex items-center space-x-1.5 cursor-pointer transform hover:-translate-y-0.5 border border-cyan-400/40"
+              title="Launch Sagar Mitra AI Assistant (Maritime Intelligence Copilot)"
+            >
+              <Sparkles className="w-3.5 h-3.5 text-cyan-200 animate-pulse" />
+              <span>✦ Sagar Mitra AI</span>
+            </button>
+          )}
+
           {/* Workstation Launcher CTA */}
           {onLaunchWorkstation && (
             <button
@@ -2323,6 +2337,17 @@ export const BantenGovPortalView: React.FC<BantenGovPortalViewProps> = ({
           <span className="px-2 py-0.5 text-[10px] font-mono font-bold text-amber-400 border-r border-slate-700">
             {Math.round(scrollProgress)}%
           </span>
+          {onLaunchSagarMitra && (
+            <button
+              type="button"
+              onClick={onLaunchSagarMitra}
+              className="px-2.5 py-1 rounded-lg bg-cyan-900/60 hover:bg-cyan-800 text-cyan-200 hover:text-white transition-all border border-cyan-500/40 flex items-center space-x-1 cursor-pointer font-bold"
+              title="Open Sagar Mitra AI Assistant"
+            >
+              <Sparkles className="w-3 h-3 text-cyan-300 animate-pulse" />
+              <span>✦ Sagar Mitra</span>
+            </button>
+          )}
           <button
             type="button"
             onClick={() => scrollToSection('berita')}
