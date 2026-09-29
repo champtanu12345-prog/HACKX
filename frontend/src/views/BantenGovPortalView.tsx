@@ -270,57 +270,57 @@ export const BantenGovPortalView: React.FC<BantenGovPortalViewProps> = ({
     },
   ];
 
-  // News items matching uploaded screenshot
+  // News items matching uploaded screenshot with authentic Indian Coast Guard imagery
   const featuredArticle: ArticleItem = {
     id: 'featured-1',
     title:
-      'Director General Indian Coast Guard Inaugurates National Maritime Oil Spill Intelligence & Tracking Center at Mumbai HQ',
+      'Director General Indian Coast Guard Addresses National Maritime Security & Marine Environment Conference in New Delhi',
     category: 'HEADQUARTERS DISPATCH',
     timeAgo: '5 hours ago',
     date: '29 September 2026',
     image: '/portal/featured_leader.jpg',
     excerpt:
-      'The Director General of the Indian Coast Guard alongside senior delegates from the Ministry of Defence and DG Shipping officially commissioned the automated SAR satellite detection & AIS Lagrangian drift correlation facility at Regional HQ (West), Worli Sea Face, Mumbai. The facility monitors Arabian Sea tanker transit routes and automates MARPOL Annex I legal dossiers.',
+      'The Director General of the Indian Coast Guard alongside senior delegates from the Ministry of Defence announced the operational commissioning of the automated National Oil Spill Intelligence & Tracking System (NOS-DCP) and expanded EEZ satellite radar surveillance.',
     content:
-      'Mumbai - The Indian Coast Guard has operationalized the next-generation Maritime Oil Spill Intelligence & Attribution Workstation. Integrated with Sentinel-1 SAR constellation telemetry and INCOIS hydrodynamics v2.4, the platform correlates high-density shipping traffic corridors in Sector MH-4 (Offshore Mumbai High) with Lagrangian trajectory backward reconstruction to attribute illicit bilge dump incidents with court-admissible forensic certainty.',
+      'New Delhi - The Indian Coast Guard has operationalized the next-generation Maritime Oil Spill Intelligence & Attribution Workstation. Integrated with Sentinel-1 SAR constellation telemetry and INCOIS hydrodynamics v2.4, the platform correlates high-density shipping traffic corridors in Sector MH-4 (Offshore Mumbai High) with Lagrangian trajectory backward reconstruction to attribute illicit bilge dump incidents with court-admissible forensic certainty.',
   };
 
   const newsCards: ArticleItem[] = [
     {
       id: 'news-1',
       title:
-        'Indian Coast Guard Inducts Automated Coastal Monitoring and Real-Time Maritime Compliance Platform',
+        'Indian Coast Guard Ship (ICGS) CG-202 Deploys on Extended High-Seas EEZ Patrol & Ballast Compliance Interdiction',
       category: 'Operations',
       date: '29 September 2026',
       image: '/portal/news_launch.jpg',
       excerpt:
-        'New digital surveillance and environmental telemetry sensors deployed across western seaboard radar chains to verify tanker ballast discharge compliance.',
+        'Advanced Offshore Patrol Vessel CG-202 sets sail on anti-pollution and vessel compliance surveillance along western offshore petroleum transit routes.',
       content:
-        'The Indian Coast Guard has expanded its sensor matrix across Gujarat, Maharashtra, and Goa coastal radar stations. The automated audit pipeline identifies vessel trajectory anomalies and unannounced AIS transmission dropouts in critical marine protected zones.',
+        'The Indian Coast Guard has expanded its maritime patrol matrix across Gujarat, Maharashtra, and Goa coastal zones. The automated audit pipeline identifies vessel trajectory anomalies and unannounced AIS transmission dropouts in critical marine protected zones.',
     },
     {
       id: 'news-2',
       title:
-        'Indian Maritime Security Delegation Departs for International Maritime Organization (IMO) Assembly',
+        'Indian Coast Guard & Ministry of Defence Convene High-Level Indian Ocean Region Strategic Maritime Dialogue in New Delhi',
       category: 'National',
       date: '28 September 2026',
       image: '/portal/news_delegation.jpg',
       excerpt:
-        'Senior ICG command personnel and Ministry of External Affairs representatives depart to co-sponsor global MARPOL Annex I automated enforcement frameworks.',
+        'Senior commanders and maritime security delegates deliberate on real-time AIS vessel trajectory attribution, MARPOL compliance, and joint regional contingency protocols.',
       content:
-        'India is presenting its indigenously developed transparent suspicion scoring framework to member nations at the IMO Marine Environment Protection Committee (MEPC), demonstrating successful reverse-drift vessel attribution in congested sea lanes.',
+        'Senior ICG leadership and delegates discussed multilateral cooperation in the Indian Ocean Region, demonstrating successful reverse-drift vessel attribution and automated legal dossier generation for maritime pollution incidents.',
     },
     {
       id: 'news-3',
       title:
-        'Indian Coast Guard Recognized with National Environmental Excellence Award for Ocean Pollution Defense',
+        'Indian Coast Guard Pollution Response Team (PRT) Deploys High-Seas Oil Spill Containment Booms in Preparedness Drill',
       category: 'Environmental',
       date: '28 September 2026',
       image: '/portal/news_award.jpg',
       excerpt:
-        'Special national commendation conferred for zero-tolerance interdiction of unlawful high-seas oil discharges and protection of sensitive coastal ecosystems.',
+        'Specialized marine environment defense teams demonstrate rapid 24-hour containment boom deployment and oil recovery skimmer operations in coastal waters.',
       content:
-        'The Ministry of Environment, Forest and Climate Change presented the prestigious trophy in recognition of rapid 24-hour response readiness, deployment of Pollution Control Vessels (PCVs), and digital transparency under the National Oil Spill Disaster Contingency Plan (NOS-DCP).',
+        'Under the National Oil Spill Disaster Contingency Plan (NOS-DCP), dedicated Pollution Response Teams (PRTs) executed tactical sea trials deploying heavy-duty containment booms, absorbent sweeps, and dynamic skimmers to safeguard ecologically sensitive coastal corridors.',
     },
   ];
 
@@ -1293,8 +1293,8 @@ export const BantenGovPortalView: React.FC<BantenGovPortalViewProps> = ({
             <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-xs hover:shadow-md transition-shadow">
               <div className="h-56 overflow-hidden relative">
                 <img
-                  src="/portal/news_launch.jpg"
-                  alt="Directorate of Marine Environment Protection"
+                  src="/portal/news_award.jpg"
+                  alt="Directorate of Marine Environment Protection - Indian Coast Guard PRT"
                   className="w-full h-full object-cover"
                 />
                 <div className="absolute top-3 left-3 bg-amber-600 text-white text-[10px] font-bold px-2 py-0.5 rounded font-mono">
