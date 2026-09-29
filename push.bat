@@ -1,7 +1,7 @@
 @echo off
 echo ===================================================
 echo  Pushing HACKX to GitHub
-echo  Repository: https://github.com/soham18j5-jpg/HACKX.git
+echo  Repository: https://github.com/soham18j5-jpg/HackX.git
 echo ===================================================
 
 git branch -M main
