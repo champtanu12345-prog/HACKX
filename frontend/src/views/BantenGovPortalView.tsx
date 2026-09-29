@@ -41,6 +41,8 @@ import {
   ArrowUp,
   Filter,
 } from 'lucide-react';
+import { StateEmblemIndia } from '../components/common/StateEmblemIndia';
+import { IndianCoastGuardInsignia } from '../components/common/IndianCoastGuardInsignia';
 
 interface ArticleItem {
   id: string;
@@ -94,7 +96,6 @@ export const BantenGovPortalView: React.FC<BantenGovPortalViewProps> = ({
   const [selectedArticle, setSelectedArticle] = useState<ArticleItem | null>(null);
   const [selectedAnnouncement, setSelectedAnnouncement] = useState<AnnouncementItem | null>(null);
   const [activeAseanPage, setActiveAseanPage] = useState<number>(0);
-  const [edition, setEdition] = useState<'banten' | 'maritime'>('banten');
 
   // Profile Section Tabs
   const [profileTab, setProfileTab] = useState<'vision' | 'jurisdiction' | 'fleet'>('vision');
@@ -113,28 +114,28 @@ export const BantenGovPortalView: React.FC<BantenGovPortalViewProps> = ({
     name: '',
     email: '',
     phone: '',
-    category: 'Citizen',
+    category: 'Citizen of India',
     query: '',
   });
   const [rtiSubmittedId, setRtiSubmittedId] = useState<string | null>(null);
-  const [trackingInput, setTrackingInput] = useState<string>('RTI/2026/08492');
+  const [trackingInput, setTrackingInput] = useState<string>('RTI/ICG/2026/08492');
   const [trackingResult, setTrackingResult] = useState<any | null>(null);
   const [activeRtiTab, setActiveRtiTab] = useState<'submit' | 'track' | 'pio' | 'proactive'>('submit');
 
   // Press Release Category Filter
-  const [pressFilter, setPressFilter] = useState<'ALL' | 'Pemerintahan' | 'Nasional' | 'Prestasi'>('ALL');
+  const [pressFilter, setPressFilter] = useState<'ALL' | 'Operations' | 'National' | 'Environmental'>('ALL');
 
-  // Directory quick links matching uploaded screenshot
+  // Directory quick links matching uploaded screenshot layout (India Maritime Context)
   const directoryLinks = [
     {
       id: 'semua',
-      title: edition === 'banten' ? 'Semua' : 'All Services',
+      title: 'All Maritime Services',
       category: 'all',
       action: () => onLaunchWorkstation && onLaunchWorkstation(),
     },
     {
       id: 'lembaga_teknis',
-      title: edition === 'banten' ? 'Lembaga Teknis Daerah' : 'Regional Technical Agency',
+      title: 'Coast Guard Regional HQs & Stations',
       category: 'agency',
       action: () => {
         const el = document.getElementById('profile');
@@ -143,7 +144,7 @@ export const BantenGovPortalView: React.FC<BantenGovPortalViewProps> = ({
     },
     {
       id: 'sekretariat_daerah',
-      title: edition === 'banten' ? 'Sekretariat Daerah' : 'Regional Secretariat (SETDA)',
+      title: 'Ministry of Defence & DG Shipping',
       category: 'gov',
       action: () => {
         const el = document.getElementById('governance');
@@ -152,7 +153,7 @@ export const BantenGovPortalView: React.FC<BantenGovPortalViewProps> = ({
     },
     {
       id: 'layanan_publik',
-      title: edition === 'banten' ? 'Website Layanan Publik' : 'Public Service Portal',
+      title: 'Public Spill & Pollution Incident Portal',
       category: 'public',
       action: () => {
         const el = document.getElementById('public-info');
@@ -161,7 +162,7 @@ export const BantenGovPortalView: React.FC<BantenGovPortalViewProps> = ({
     },
     {
       id: 'satpol_pp',
-      title: edition === 'banten' ? 'Satuan Polisi Pamong Praja' : 'Coastal Security & Marine Police',
+      title: 'Coastal Marine Police & CISF Port Units',
       category: 'security',
       action: () => {
         const el = document.getElementById('announcements');
@@ -170,7 +171,7 @@ export const BantenGovPortalView: React.FC<BantenGovPortalViewProps> = ({
     },
     {
       id: 'dinas_daerah',
-      title: edition === 'banten' ? 'Dinas Daerah' : 'Department of Marine & Environment',
+      title: 'Pollution Response Teams (PRT)',
       category: 'dept',
       action: () => {
         const el = document.getElementById('governance');
@@ -179,14 +180,14 @@ export const BantenGovPortalView: React.FC<BantenGovPortalViewProps> = ({
     },
     {
       id: 'aplikasi_publik',
-      title: edition === 'banten' ? 'Aplikasi Publik dan Tata Kelola Pemerintah' : 'Tactical Workstation & AIS Analytics',
+      title: 'Tactical Workstation & AIS Analytics',
       category: 'apps',
       highlight: true,
       action: () => onLaunchWorkstation && onLaunchWorkstation(),
     },
     {
       id: 'sekretariat_dprd',
-      title: edition === 'banten' ? 'Sekretariat DPRD' : 'Regional Maritime Advisory Board',
+      title: 'INCOIS & DGLL Metocean Feeds',
       category: 'dprd',
       action: () => {
         const el = document.getElementById('rti-request');
@@ -199,65 +200,53 @@ export const BantenGovPortalView: React.FC<BantenGovPortalViewProps> = ({
   const featuredArticle: ArticleItem = {
     id: 'featured-1',
     title:
-      edition === 'banten'
-        ? "Pj Gubernur Banten Al Muktabar Sambut Kedatangan Wapres KH Ma'ruf Amin di Ponpes An Nawawi Tanara"
-        : 'State Leadership & Coast Guard Commander Inaugurate Advanced Maritime Surveillance Hub',
-    category: 'Berita Terkini',
+      'Director General Indian Coast Guard Inaugurates National Maritime Oil Spill Intelligence & Tracking Center at Mumbai HQ',
+    category: 'HEADQUARTERS DISPATCH',
     timeAgo: '5 hours ago',
-    date: '9 September 2026',
+    date: '29 September 2026',
     image: '/portal/featured_leader.jpg',
     excerpt:
-      edition === 'banten'
-        ? "Penjabat (Pj) Gubernur Banten Al Muktabar menyambut kedatangan Wakil Presiden Republik Indonesia KH Ma'ruf Amin di Pondok Pesantren An Nawawi Tanara, Kabupaten Serang, Banten (9/9/2026). Pada kesempatan itu, Al Muktabar sampaikan pembangunan di Provinsi Banten sekaligus mendapatkan arahan dari Wapres KH Ma'ruf Amin."
-        : 'The Executive Leadership alongside maritime security command reviewed live Sentinel-1 synthetic aperture radar feeds, automated oil spill attribution matrices, and integrated coastal protection workflows for regional waters.',
+      'The Director General of the Indian Coast Guard alongside senior delegates from the Ministry of Defence and DG Shipping officially commissioned the automated SAR satellite detection & AIS Lagrangian drift correlation facility at Regional HQ (West), Worli Sea Face, Mumbai. The facility monitors Arabian Sea tanker transit routes and automates MARPOL Annex I legal dossiers.',
     content:
-      edition === 'banten'
-        ? "Serang - Penjabat (Pj) Gubernur Banten Al Muktabar mendampingi agenda kerja Wakil Presiden RI KH Ma'ruf Amin dalam peresmian sentra digital informasi dan koordinasi pelayanan terpadu. Pemerintah Provinsi Banten terus memacu transformasi digital pelayanan publik, penguatan konektivitas maritim, serta transparansi tata kelola demi percepatan kesejahteraan masyarakat Banten secara menyeluruh."
-        : 'A joint review was convened on automated vessel tracking, Lagrangian drift simulation, and inter-agency maritime compliance.',
+      'Mumbai - The Indian Coast Guard has operationalized the next-generation Maritime Oil Spill Intelligence & Attribution Workstation. Integrated with Sentinel-1 SAR constellation telemetry and INCOIS hydrodynamics v2.4, the platform correlates high-density shipping traffic corridors in Sector MH-4 (Offshore Mumbai High) with Lagrangian trajectory backward reconstruction to attribute illicit bilge dump incidents with court-admissible forensic certainty.',
   };
 
   const newsCards: ArticleItem[] = [
     {
       id: 'news-1',
       title:
-        edition === 'banten'
-          ? 'Pj Gubernur Banten Al Muktabar Luncurkan TeDeSS, Situs Diskon Belanja Untuk Pembayar Pajak Kendaraan Bermotor'
-          : 'Launch of Integrated Automated Coastal Monitoring and Maritime Compliance Platform',
-      category: 'Pemerintahan',
-      date: '9 September 2026',
+        'Indian Coast Guard Inducts Automated Coastal Monitoring and Real-Time Maritime Compliance Platform',
+      category: 'Operations',
+      date: '29 September 2026',
       image: '/portal/news_launch.jpg',
       excerpt:
-        'Inovasi digital terbaru untuk mempermudah akses layanan publik dan memberikan apresiasi nyata kepada seluruh wajib pajak.',
+        'New digital surveillance and environmental telemetry sensors deployed across western seaboard radar chains to verify tanker ballast discharge compliance.',
       content:
-        'Pemerintah Provinsi Banten secara resmi meluncurkan platform digital terpadu untuk efisiensi pelayanan administrasi dan transparansi publik.',
+        'The Indian Coast Guard has expanded its sensor matrix across Gujarat, Maharashtra, and Goa coastal radar stations. The automated audit pipeline identifies vessel trajectory anomalies and unannounced AIS transmission dropouts in critical marine protected zones.',
     },
     {
       id: 'news-2',
       title:
-        edition === 'banten'
-          ? 'Pj Gubernur Al Muktabar Turut Antar Keberangkatan Presiden Joko Widodo ke India'
-          : 'High-Level Maritime Delegation Departs for International Summit Cooperation',
-      category: 'Nasional',
-      date: '8 September 2026',
+        'Indian Maritime Security Delegation Departs for International Maritime Organization (IMO) Assembly',
+      category: 'National',
+      date: '28 September 2026',
       image: '/portal/news_delegation.jpg',
       excerpt:
-        'Pj Gubernur Banten turut serta dalam rangkaian pelepasan delegasi kenegaraan dalam rangka KTT internasional.',
+        'Senior ICG command personnel and Ministry of External Affairs representatives depart to co-sponsor global MARPOL Annex I automated enforcement frameworks.',
       content:
-        'Delegasi kenegaraan bertolak untuk menghadiri rangkaian pertemuan strategis bilateral dan multilateral dalam penguatan ketahanan regional.',
+        'India is presenting its indigenously developed transparent suspicion scoring framework to member nations at the IMO Marine Environment Protection Committee (MEPC), demonstrating successful reverse-drift vessel attribution in congested sea lanes.',
     },
     {
       id: 'news-3',
       title:
-        edition === 'banten'
-          ? 'Pemprov Banten Raih Penghargaan 5 Besar Peningkatan Indeks Pembangunan Pemuda'
-          : 'Provincial Maritime Safety Board Recognized in Top 5 National Environmental Excellence',
-      category: 'Prestasi',
-      date: '8 September 2026',
+        'Indian Coast Guard Recognized with National Environmental Excellence Award for Ocean Pollution Defense',
+      category: 'Environmental',
+      date: '28 September 2026',
       image: '/portal/news_award.jpg',
       excerpt:
-        'Apresiasi tinggi atas capaian signifikan Provinsi Banten dalam peningkatan daya saing dan pembangunan sumber daya unggul.',
+        'Special national commendation conferred for zero-tolerance interdiction of unlawful high-seas oil discharges and protection of sensitive coastal ecosystems.',
       content:
-        'Penghargaan nasional diserahkan atas keberhasilan implementasi program strategis berbasis teknologi informasi dan tata kelola modern.',
+        'The Ministry of Environment, Forest and Climate Change presented the prestigious trophy in recognition of rapid 24-hour response readiness, deployment of Pollution Control Vessels (PCVs), and digital transparency under the National Oil Spill Disaster Contingency Plan (NOS-DCP).',
     },
   ];
 
@@ -267,97 +256,85 @@ export const BantenGovPortalView: React.FC<BantenGovPortalViewProps> = ({
       id: 'ann-1',
       refNo: 'NAVAREA-VIII/0482/26',
       title:
-        edition === 'banten'
-          ? 'Peringatan Dini Navigasi: Prakiraan Gelombang Tinggi & Angin Kencang di Selat Sunda Bagian Selatan'
-          : 'NAVAREA VIII Warning: Oceanographic Drift Locus & High Wind Advisory (Sector MH-4)',
+        'NAVAREA VIII Hazard Warning: Oceanographic Drift Locus & High Wind Advisory in Sector MH-4 (Offshore Mumbai High)',
       category: 'NAVAREA',
-      date: '28 September 2026',
-      deadline: 'Berlaku s/d 04 Okt 2026',
+      date: '29 September 2026',
+      deadline: 'Active Until 05 Oct 2026',
       urgent: true,
       excerpt:
-        'Seluruh nakhoda kapal niaga, nelayan tradisional, dan armada patroli dihimbau mewaspadai potensi gelombang 2.5 - 4.0 meter.',
+        'All merchant vessels, offshore petroleum installations, and fishing craft are advised to maintain vigilant watch. Unreported heavy fuel oil sheen detected 18 NM offshore; drifting southeast.',
       details:
-        'Berdasarkan pemantauan satelit oseanografi dan stasiun radar pantai, terpantau sistem tekanan rendah yang memicu peningkatan kecepatan angin barat daya hingga 28 knot. Dihimbau tidak melakukan lego jangkar pada koridor alur pelayaran utama.',
+        'Satellite radar pass Sentinel-1A detected an elongated surface slick of approximately 14.85 km² at Lat 19°06\'43"N, Lon 72°23\'42"E. Indian Coast Guard patrol vessels ICGS Samudra Prahari and Dornier CG-792 are deployed for containment and forensic sampling. Mariners are requested to report any sighting to MRCC Mumbai on VHF Ch-16 or Toll-Free 1554.',
     },
     {
       id: 'ann-2',
-      refNo: 'TND/ENV/ICG/2026/094',
+      refNo: 'TND/ICG/ENV/2026/094',
       title:
-        edition === 'banten'
-          ? 'Pengumuman Tender Terbuka: Pengadaan Perangkat Sensor Pemantau Kualitas Air Pesisir Otomatis'
-          : 'Open Tender: Supply & Integration of Airborne Hyperspectral Marine Pollution Sensors',
+        'Central Public Procurement Portal: Supply & Integration of High-Capacity Ocean Containment Booms & Disc Skimmers',
       category: 'Tender',
       date: '26 September 2026',
-      deadline: 'Batas Pendaftaran: 15 Okt 2026',
+      deadline: 'Bid Submission Deadline: 20 Oct 2026',
       excerpt:
-        'Pemerintah Provinsi mengundang penyedia jasa teknologi bersertifikasi untuk berpartisipasi dalam e-procurement.',
+        'Indian Coast Guard invites competitive e-tenders from certified defense & environmental engineering manufacturers for Tier-1 & Tier-2 pollution response inventory replenishment.',
       details:
-        'Paket pengadaan mencakup 12 unit sensor buoy telemetri dan sistem integrasi data berbasis IoT dengan stasiun darat pusat komando.',
+        'Procurement encompasses 1,200 meters of heavy-duty offshore inflatable boom systems, 6 units of high-viscosity oleophilic disc skimmers (150 m³/h rated), and biodegradable dispersant concentrate certified under IS 14660 standards.',
     },
     {
       id: 'ann-3',
-      refNo: 'ADV/SAR/2026/019',
+      refNo: 'ADV/DAT/2026/019',
       title:
-        edition === 'banten'
-          ? 'Sosialisasi Keselamatan Berlayar & Pemasangan Transponder AIS Gratis Bagi Nelayan Tradisional'
-          : 'Fishermen Safety Drive: Distribution & Calibration of NavIC Emergency Distress Beacons',
+        'Fishermen Coastal Safety Drive: Free Distribution & Calibration of Second-Generation NavIC Distress Alert Transmitters',
       category: 'Advisory',
       date: '24 September 2026',
-      deadline: 'Pelaksanaan: 01 - 10 Okt 2026',
+      deadline: 'Workshop Window: 02 - 12 Oct 2026',
       excerpt:
-        'Program bantuan terintegrasi dalam rangka meminimalisasi risiko kecelakaan laut dan mempermudah evakuasi darurat.',
+        'Comprehensive coastal outreach program distributing ISRO-developed NavIC satellite emergency transmitters to mechanized fishing vessels across Maharashtra and Gujarat.',
       details:
-        'Dinas Kelautan dan Badan Penyelamatan memberikan pelatihan gratis mengenai penggunaan alat komunikasi maritim dan penanganan pertama darurat di laut bagi perwakilan koperasi nelayan.',
+        'The Distress Alert Transmitter (DAT-SG) provides two-way emergency satellite messaging directly to the Maritime Rescue Coordination Centre (MRCC), transmitting boat registration, precise GPS fix, and nature of maritime emergency within 90 seconds of activation.',
     },
   ];
 
-  // ASEAN Indonesia 2023 Cards matching screenshot
-  const aseanReleases: MediaReleaseItem[] = [
+  // International & National Initiatives (Replica of ASEAN section with Indian maritime theme)
+  const nationalInitiatives: MediaReleaseItem[] = [
     {
-      id: 'asean-1',
-      badge: 'Rilis Media',
+      id: 'init-1',
+      badge: 'Press Release',
       title:
-        edition === 'banten'
-          ? 'Saatnya generasi muda ASEAN ambil peran strategis'
-          : 'Youth Innovators Take Strategic Leadership in Blue Economy & Ocean AI',
+        'Youth Innovators & Cadets Take Strategic Leadership in Blue Economy & Ocean AI Initiatives',
       date: '10 September 2026',
       excerpt:
-        'Generasi muda memegang peranan krusial sebagai katalisator inovasi teknologi digital, keberlanjutan maritim, dan integrasi ekonomi kawasan.',
+        'National maritime hackathon finalists deploy real-time satellite imagery segmentation and deep learning models to protect coastal coral reefs and marine sanctuaries.',
       content:
-        'Pertemuan pemuda tingkat ASEAN menyepakati roadmap kolaborasi pemanfaatan teknologi kecerdasan buatan dalam pemantauan lingkungan maritim.',
+        'The Smart India Hackathon initiative connects student research teams with defense scientists to develop court-admissible algorithmic attribution for maritime environmental law violations.',
     },
     {
-      id: 'asean-2',
-      badge: 'Rilis Media',
+      id: 'init-2',
+      badge: 'Press Release',
       title:
-        edition === 'banten'
-          ? 'Kesenik Indonesia curi perhatian Delegasi KTT ASEAN'
-          : 'Regional Ocean Observation Network Commended by International Delegates',
+        'Regional Ocean Observation Network Commended by International Maritime Delegates',
       date: '9 September 2026',
       excerpt:
-        'Kekayaan warisan budaya nusantara dipadukan dengan kesiapan infrastruktur maritim modern memikat perhatian delegasi mancanegara.',
+        'Delegates praise India’s seamless fusion of INCOIS ocean surface hydrodynamics, NOAA wind vectors, and coastal radar feeds for disaster mitigation.',
       content:
-        'Para delegasi mengapresiasi keharmonisan kearifan lokal bahari dengan kecanggihan sistem mitigasi tumpahan minyak terpadu.',
+        'International inspectors recognized the automated Runge-Kutta 4th Order (RK4) numerical drift calculation as a benchmark in regional ocean pollution mitigation.',
     },
     {
-      id: 'asean-3',
-      badge: 'Rilis Media',
+      id: 'init-3',
+      badge: 'Press Release',
       title:
-        edition === 'banten'
-          ? 'CelebKRIAN Expo 2023, bukti konkret kolaborasi pelaku ekonomi kreatif ASEAN'
-          : 'Maritime Technology Expo Showcases Concrete Regional Interoperability',
+        'Maritime India Expo 2026: Concrete Interoperability in Pollution Response and Coastal Safety',
       date: '8 September 2026',
       excerpt:
-        'Pameran akbar industri kreatif memperkuat sinergi lintas negara dalam mendorong pertumbuhan ekonomi berbasis kelautan dan kepemudaan.',
+        'Major exhibition demonstrates integrated response capabilities between Indian Navy, Coast Guard, Major Port Authorities, and DGLL.',
       content:
-        'Ekshibisi teknologi dan ekonomi kelautan menghubungkan pemangku kebijakan maritim dengan platform AI pelacakan kapal internasional.',
+        'Live pollution containment exercises in Mumbai Harbour validated rapid deployment protocols for oil skimmers, aerial dispersant spraying, and coastal exclusion booms.',
     },
   ];
 
   const handleRtiSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!rtiForm.name || !rtiForm.query) {
-      alert('Silakan lengkapi nama dan rincian permohonan informasi.');
+      alert('Please fill out your full name and details of information requested.');
       return;
     }
     const generatedId = `RTI/ICG/2026/${Math.floor(10000 + Math.random() * 90000)}`;
@@ -365,10 +342,10 @@ export const BantenGovPortalView: React.FC<BantenGovPortalViewProps> = ({
     setTrackingResult({
       id: generatedId,
       name: rtiForm.name,
-      status: 'Terdaftar & Diproses (Dalam Verifikasi PPID)',
-      date: new Date().toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' }),
-      estimatedCompletion: '10 Hari Kerja',
-      officer: 'Pejabat Pengelola Informasi dan Dokumentasi (PPID) Utama',
+      status: 'Registered & Assigned (Under CPIO Review)',
+      date: new Date().toLocaleDateString('en-IN', { year: 'numeric', month: 'long', day: 'numeric' }),
+      estimatedCompletion: '10 Working Days',
+      officer: 'Central Public Information Officer (CPIO), Coast Guard Headquarters',
     });
   };
 
@@ -376,17 +353,17 @@ export const BantenGovPortalView: React.FC<BantenGovPortalViewProps> = ({
     if (!trackingInput.trim()) return;
     setTrackingResult({
       id: trackingInput.toUpperCase(),
-      name: 'Pemohon Publik Terverifikasi',
-      status: 'Sedang Ditinjau Petugas PPID (Tahap Analisis Dokumen)',
+      name: 'Registered Citizen of India',
+      status: 'Under Active Scrutiny by Technical Information Section',
       date: '28 September 2026',
-      estimatedCompletion: '7 Hari Kerja Tersisa',
-      officer: 'Sub Bagian Tata Usaha & Keterbukaan Publik',
+      estimatedCompletion: '6 Working Days Remaining',
+      officer: 'Joint Directorate of Marine Environment & Law, Coast Guard HQ',
       timeline: [
-        { title: 'Permohonan Diterima Sistem', date: '28 Sept 2026, 09:14 WIB', done: true },
-        { title: 'Verifikasi Identitas & Syarat', date: '28 Sept 2026, 14:30 WIB', done: true },
-        { title: 'Penyiapan Informasi Teknis', date: '29 Sept 2026, 11:00 WIB', done: true },
-        { title: 'Penyusunan Salinan & Pengesahan', date: 'Dalam Proses', done: false },
-        { title: 'Pengiriman Jawaban Resmi', date: 'Estimasi 05 Okt 2026', done: false },
+        { title: 'Application Formally Received on RTI Portal', date: '28 Sept 2026, 09:14 IST', done: true },
+        { title: 'Verification of Identity & Statutory Fees', date: '28 Sept 2026, 14:30 IST', done: true },
+        { title: 'Technical Record Extraction from Workstation Archives', date: '29 Sept 2026, 11:00 IST', done: true },
+        { title: 'Legal Dossier Scrutiny under Section 8(1) Exemptions', date: 'In Progress', done: false },
+        { title: 'Certified Public Response Dispatch via Email & Speed Post', date: 'Estimated 06 Oct 2026', done: false },
       ],
     });
   };
@@ -402,55 +379,52 @@ export const BantenGovPortalView: React.FC<BantenGovPortalViewProps> = ({
 
   // The actual website body
   const PortalContent = (
-    <div className="w-full bg-white text-slate-800 font-sans selection:bg-[#008744] selection:text-white scroll-smooth">
-      {/* 1. TOP PORTAL NAVIGATION BAR (Matching screenshot with smooth section anchors) */}
-      <nav className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200/80 px-4 sm:px-8 py-3 flex items-center justify-between shadow-xs">
-        {/* Logo and Brand */}
-        <div className="flex items-center space-x-3">
-          {/* Provincial Shield Emblem */}
-          <div className="w-9 h-11 relative flex-shrink-0 flex items-center justify-center">
-            <svg viewBox="0 0 100 120" className="w-full h-full drop-shadow-sm">
-              <path
-                d="M50 0 C75 0 95 15 95 40 C95 85 50 115 50 115 C50 115 5 85 5 40 C5 15 25 0 50 0 Z"
-                fill="#008744"
-                stroke="#FFD700"
-                strokeWidth="4"
-              />
-              <path d="M50 15 L78 35 L78 70 L50 95 L22 70 L22 35 Z" fill="#FFFFFF" opacity="0.9" />
-              <circle cx="50" cy="50" r="18" fill="#FFB703" />
-              <path d="M50 34 L54 44 L64 45 L56 52 L59 62 L50 56 L41 62 L44 52 L36 45 L46 44 Z" fill="#FFFFFF" />
-              <path d="M30 75 Q50 65 70 75 Q50 82 30 75 Z" fill="#023E8A" />
-            </svg>
+    <div className="w-full bg-white text-slate-800 font-sans selection:bg-[#006837] selection:text-white scroll-smooth">
+      {/* 1. TOP PORTAL NAVIGATION BAR (Indian Government & Coast Guard Portal Style) */}
+      <nav className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200/80 px-4 sm:px-8 py-2.5 flex items-center justify-between shadow-xs">
+        {/* National Emblem & Indian Coast Guard Crest */}
+        <div className="flex items-center space-x-3.5">
+          <div className="flex items-center space-x-2 flex-shrink-0">
+            {/* Authentic Lion Capital of Ashoka (State Emblem of India) */}
+            <StateEmblemIndia size="sm" variant="gold" className="drop-shadow-xs" />
+            {/* Indian Coast Guard Official Insignia */}
+            <IndianCoastGuardInsignia size="sm" variant="color" className="drop-shadow-xs hidden sm:inline-block" />
           </div>
-          <div>
-            <div className="font-extrabold text-slate-900 tracking-tight text-xs sm:text-sm uppercase font-serif">
-              {edition === 'banten' ? 'Pemerintah Provinsi Banten' : 'Indian Coast Guard • Sagar Mitra'}
+
+          <div className="border-l border-slate-300 pl-3">
+            <div className="flex items-center space-x-2">
+              <span className="font-serif font-black text-slate-900 tracking-tight text-xs sm:text-sm uppercase">
+                INDIAN COAST GUARD • SAGAR MITRA
+              </span>
+              <span className="bg-amber-100 text-amber-900 border border-amber-300 text-[9px] font-bold px-1.5 py-0.2 rounded font-mono">
+                SIH 260143
+              </span>
             </div>
-            <div className="text-[10px] text-emerald-700 font-semibold tracking-wider uppercase">
-              {edition === 'banten' ? 'Portal Resmi Terpadu' : 'Maritime Intelligence Portal'}
+            <div className="text-[10px] text-[#006837] font-bold tracking-wider uppercase font-sans">
+              भारत सरकार • रक्षा मंत्रालय | GOVERNMENT OF INDIA • MINISTRY OF DEFENCE
             </div>
           </div>
         </div>
 
-        {/* Center Nav Links with smooth jump anchors */}
-        <div className="hidden lg:flex items-center space-x-6 text-[13px] font-medium text-slate-700">
-          <a href="#profile" className="hover:text-[#008744] transition-colors py-1">
-            {edition === 'banten' ? 'Profil Provinsi' : 'Profile'}
+        {/* Center Nav Links with Indian Government Font & Styling */}
+        <div className="hidden lg:flex items-center space-x-6 text-[13px] font-semibold text-slate-700 font-sans">
+          <a href="#profile" className="hover:text-[#006837] transition-colors py-1">
+            Profile
           </a>
-          <a href="#governance" className="hover:text-[#008744] transition-colors py-1">
-            {edition === 'banten' ? 'Profil Pemerintah' : 'Governance'}
+          <a href="#governance" className="hover:text-[#006837] transition-colors py-1">
+            Governance
           </a>
-          <a href="#public-info" className="hover:text-[#008744] transition-colors py-1">
-            {edition === 'banten' ? 'Informasi Publik' : 'Public Info'}
+          <a href="#public-info" className="hover:text-[#006837] transition-colors py-1">
+            Public Info
           </a>
-          <a href="#berita" className="hover:text-[#008744] transition-colors py-1">
+          <a href="#berita" className="hover:text-[#006837] transition-colors py-1">
             Press Release
           </a>
-          <a href="#announcements" className="hover:text-[#008744] transition-colors py-1">
-            {edition === 'banten' ? 'Pengumuman' : 'Announcements'}
+          <a href="#announcements" className="hover:text-[#006837] transition-colors py-1">
+            Announcements
           </a>
-          <a href="#rti-request" className="hover:text-[#008744] transition-colors py-1">
-            {edition === 'banten' ? 'Permohonan Informasi' : 'RTI Request'}
+          <a href="#rti-request" className="hover:text-[#006837] transition-colors py-1">
+            RTI Request
           </a>
         </div>
 
@@ -460,8 +434,8 @@ export const BantenGovPortalView: React.FC<BantenGovPortalViewProps> = ({
           {onLaunchWorkstation && (
             <button
               onClick={onLaunchWorkstation}
-              className="bg-gradient-to-r from-[#008744] to-[#005f30] hover:from-[#007038] hover:to-[#004724] text-white px-3.5 py-1.5 rounded-lg text-xs font-bold shadow-md hover:shadow-lg transition-all flex items-center space-x-1.5 cursor-pointer transform hover:-translate-y-0.5"
-              title="Launch Full Maritime Intelligence Tactical Workstation"
+              className="bg-gradient-to-r from-[#006837] to-[#044322] hover:from-[#007a41] hover:to-[#05532b] text-white px-3.5 py-1.5 rounded-lg text-xs font-bold shadow-md hover:shadow-lg transition-all flex items-center space-x-1.5 cursor-pointer transform hover:-translate-y-0.5"
+              title="Launch Full Indian Maritime Intelligence Tactical Workstation"
             >
               <Activity className="w-3.5 h-3.5 text-[#FFD700]" />
               <span className="hidden sm:inline">Tactical Workstation</span>
@@ -481,34 +455,41 @@ export const BantenGovPortalView: React.FC<BantenGovPortalViewProps> = ({
             </button>
           )}
 
-          {/* Edition Switcher */}
-          <button
-            onClick={() => setEdition(edition === 'banten' ? 'maritime' : 'banten')}
-            className="px-2.5 py-1.5 text-[11px] rounded-lg border border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100 transition-colors font-mono cursor-pointer"
-            title="Toggle between Original Banten Portal & Maritime English edition"
-          >
-            {edition === 'banten' ? '🇮🇩 Banten' : '🌐 Maritime'}
-          </button>
+          {/* National Tricolor Indicator Chip */}
+          <div className="hidden xl:flex items-center space-x-1 px-2 py-1 rounded bg-slate-50 border border-slate-200 text-[10.5px] font-bold">
+            <span className="w-2 h-2 rounded-full bg-[#FF9933]" />
+            <span className="w-2 h-2 rounded-full bg-white border border-slate-300" />
+            <span className="w-2 h-2 rounded-full bg-[#138808]" />
+            <span className="text-slate-700 ml-1 font-mono">INDIA</span>
+          </div>
         </div>
       </nav>
 
-      {/* 2. HERO SECTION WITH AERIAL HIGHWAY / PORT BACKGROUND (Exact match to screenshot) */}
+      {/* 2. HERO SECTION WITH AERIAL PORT BACKGROUND & INDIAN MARITIME HEADLINE */}
       <section className="relative w-full min-h-[460px] sm:min-h-[500px] flex flex-col justify-between overflow-hidden">
         {/* Background Image with Dark Vignette Overlay */}
         <div className="absolute inset-0 z-0">
           <img
             src="/portal/hero_bg.jpg"
-            alt="Aerial Highway and Coastal Port"
-            className="w-full h-full object-cover object-center filter brightness-[0.78] contrast-[1.08]"
+            alt="Aerial Coastal Highway and Maritime Port"
+            className="w-full h-full object-cover object-center filter brightness-[0.76] contrast-[1.10]"
           />
-          {/* Subtle gradient overlay to match screenshot's atmospheric contrast */}
-          <div className="absolute inset-0 bg-gradient-to-b from-slate-900/60 via-slate-900/40 to-slate-900/80" />
+          <div className="absolute inset-0 bg-gradient-to-b from-slate-900/65 via-slate-900/40 to-slate-900/85" />
         </div>
 
         {/* Floating Social Icons (Right side, matching screenshot) */}
         <div className="absolute right-4 sm:right-6 top-1/3 -translate-y-1/2 z-20 hidden md:flex flex-col space-y-3">
           <a
-            href="https://facebook.com"
+            href="https://twitter.com/IndiaCoastGuard"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="w-9 h-9 rounded-full bg-white/20 hover:bg-white/40 text-white backdrop-blur-md flex items-center justify-center transition-all hover:scale-110 shadow-lg border border-white/30 text-xs font-bold"
+            title="Twitter / X (@IndiaCoastGuard)"
+          >
+            𝕏
+          </a>
+          <a
+            href="https://facebook.com/IndiaCoastGuard"
             target="_blank"
             rel="noopener noreferrer"
             className="w-9 h-9 rounded-full bg-white/20 hover:bg-white/40 text-white backdrop-blur-md flex items-center justify-center transition-all hover:scale-110 shadow-lg border border-white/30 text-xs font-bold"
@@ -517,7 +498,7 @@ export const BantenGovPortalView: React.FC<BantenGovPortalViewProps> = ({
             f
           </a>
           <a
-            href="https://instagram.com"
+            href="https://instagram.com/indiancoastguard"
             target="_blank"
             rel="noopener noreferrer"
             className="w-9 h-9 rounded-full bg-white/20 hover:bg-white/40 text-white backdrop-blur-md flex items-center justify-center transition-all hover:scale-110 shadow-lg border border-white/30 text-xs font-bold"
@@ -525,48 +506,32 @@ export const BantenGovPortalView: React.FC<BantenGovPortalViewProps> = ({
           >
             📷
           </a>
-          <a
-            href="https://twitter.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="w-9 h-9 rounded-full bg-white/20 hover:bg-white/40 text-white backdrop-blur-md flex items-center justify-center transition-all hover:scale-110 shadow-lg border border-white/30 text-xs font-bold"
-            title="Twitter / X"
-          >
-            𝕏
-          </a>
         </div>
 
-        {/* Floating Left Tag: "Wajib Tahu" (Matching screenshot) */}
+        {/* Floating Left Tag: Official Directive / NOS-DCP */}
         <div className="absolute left-4 sm:left-6 top-1/3 -translate-y-1/2 z-20 hidden md:flex items-center">
           <div className="transform -rotate-90 origin-center bg-white/25 backdrop-blur-md px-3 py-1 rounded-full text-white text-[11px] font-bold tracking-widest uppercase border border-white/30 shadow-md flex items-center space-x-1.5">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
-            <span>{edition === 'banten' ? 'Wajib Tahu' : 'Directives'}</span>
+            <span className="w-1.5 h-1.5 rounded-full bg-[#FF9933] animate-ping" />
+            <span>OFFICIAL DIRECTIVE</span>
           </div>
         </div>
 
-        {/* Center Main Headline (Exact words and typography from screenshot) */}
+        {/* Center Main Headline in Indian Government Typography */}
         <div className="relative z-10 pt-16 sm:pt-20 pb-20 px-4 text-center max-w-4xl mx-auto">
-          <h1 className="text-2xl sm:text-4xl md:text-5xl font-black text-white tracking-wide uppercase leading-tight drop-shadow-md font-sans">
-            {edition === 'banten' ? (
-              <>
-                Menjawab Kebutuhan Informasi <br />
-                <span className="text-white drop-shadow-lg">Warga Banten</span>
-              </>
-            ) : (
-              <>
-                Answering Information Needs <br />
-                <span className="text-white drop-shadow-lg">Of Maritime Citizens</span>
-              </>
-            )}
+          <div className="inline-flex items-center space-x-2 bg-black/40 backdrop-blur-md border border-white/20 px-3 py-1 rounded-full text-xs font-bold text-amber-300 uppercase tracking-widest mb-3">
+            <span>सत्यमेव जयते • वयम् रक्षामः</span>
+          </div>
+          <h1 className="text-2xl sm:text-4xl md:text-5xl font-serif font-black text-white tracking-wide uppercase leading-tight drop-shadow-md">
+            SAFEGUARDING INDIA&apos;S MARITIME HORIZONS <br />
+            <span className="text-[#FFD700] drop-shadow-lg">& CITIZEN DIRECTIVES</span>
           </h1>
-          <p className="mt-2 text-xs sm:text-sm text-slate-200 max-w-xl mx-auto drop-shadow-sm font-medium">
-            {edition === 'banten'
-              ? 'Layanan Informasi Terpadu Pemerintah Daerah Provinsi Banten'
-              : 'Integrated Public Maritime Gateway & Oil Spill Intelligence Attributor'}
+          <p className="mt-2.5 text-xs sm:text-sm text-slate-200 max-w-2xl mx-auto drop-shadow-sm font-medium leading-relaxed">
+            Official Integrated Public Gateway of the Indian Coast Guard & National Oil Spill Disaster Contingency System
+            (NOS-DCP) // Central Coordinating Authority for Marine Environmental Protection
           </p>
         </div>
 
-        {/* 3. CENTER FLOATING WHITE DIRECTORY CARD (Exact 8 links from screenshot) */}
+        {/* 3. CENTER FLOATING WHITE DIRECTORY CARD (Exact 8 links layout adapted to India) */}
         <div className="relative z-20 max-w-3xl lg:max-w-4xl w-[92%] mx-auto -mb-20 sm:-mb-24">
           <div className="bg-white rounded-2xl shadow-[0_15px_40px_-10px_rgba(0,0,0,0.22)] border border-slate-100 p-5 sm:p-7">
             {/* Search Input Bar */}
@@ -578,20 +543,16 @@ export const BantenGovPortalView: React.FC<BantenGovPortalViewProps> = ({
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder={
-                  edition === 'banten'
-                    ? 'Cari website resmi provinsi Banten...'
-                    : 'Search official government portal, vessel registry, spill reports...'
-                }
-                className="w-full pl-11 pr-24 py-3 bg-slate-50 hover:bg-slate-100/80 focus:bg-white text-slate-800 text-xs sm:text-sm rounded-xl border border-slate-200 focus:border-[#008744] focus:ring-2 focus:ring-[#008744]/20 outline-none transition-all placeholder:text-slate-400 font-medium"
+                placeholder="Search Indian Coast Guard services, vessel tracking, MARPOL compliance, spill bulletins..."
+                className="w-full pl-11 pr-24 py-3 bg-slate-50 hover:bg-slate-100/80 focus:bg-white text-slate-800 text-xs sm:text-sm rounded-xl border border-slate-200 focus:border-[#006837] focus:ring-2 focus:ring-[#006837]/20 outline-none transition-all placeholder:text-slate-400 font-medium"
               />
               <button
                 onClick={() => {
                   if (onLaunchWorkstation) onLaunchWorkstation();
                 }}
-                className="absolute right-1.5 top-1.5 bottom-1.5 bg-[#008744] hover:bg-[#007038] text-white px-4 rounded-lg text-xs font-semibold shadow-xs transition-all flex items-center space-x-1 cursor-pointer"
+                className="absolute right-1.5 top-1.5 bottom-1.5 bg-[#006837] hover:bg-[#00522c] text-white px-4 rounded-lg text-xs font-semibold shadow-xs transition-all flex items-center space-x-1 cursor-pointer"
               >
-                <span>Cari</span>
+                <span>Search</span>
               </button>
             </div>
 
@@ -607,30 +568,30 @@ export const BantenGovPortalView: React.FC<BantenGovPortalViewProps> = ({
                       setSelectedArticle({
                         id: item.id,
                         title: item.title,
-                        category: 'Direktori Resmi',
+                        category: 'Official Directorate',
                         date: '2026',
                         image: '/portal/hero_bg.jpg',
-                        excerpt: `Direktori Resmi Pemerintah Daerah: ${item.title}. Membuka integrasi data publik dan tata kelola terpadu.`,
-                        content: `Halaman informasi layanan terpusat untuk ${item.title}. Sistem terhubung langsung dengan pusat komando dan data operasional resmi.`,
+                        excerpt: `Official Indian Coast Guard Directorate: ${item.title}. Real-time public interface and operational coordination hub.`,
+                        content: `Centralized public directory for ${item.title}. Connected with Maritime Rescue Coordination Centres (MRCC) and national satellite telemetry streams.`,
                       });
                     }
                   }}
                   className={`flex items-center justify-between p-3 rounded-xl border text-left transition-all group cursor-pointer ${
                     item.highlight
-                      ? 'bg-emerald-50/70 border-emerald-300 hover:border-[#008744] hover:bg-emerald-100/60 shadow-xs'
-                      : 'bg-white hover:bg-slate-50 border-slate-200/90 hover:border-[#008744]/60'
+                      ? 'bg-emerald-50/70 border-emerald-300 hover:border-[#006837] hover:bg-emerald-100/60 shadow-xs'
+                      : 'bg-white hover:bg-slate-50 border-slate-200/90 hover:border-[#006837]/60'
                   }`}
                 >
                   <span
-                    className={`text-[12.5px] font-semibold line-clamp-1 pr-2 transition-colors ${
-                      item.highlight ? 'text-[#008744]' : 'text-slate-700 group-hover:text-[#008744]'
+                    className={`text-[12px] font-semibold line-clamp-1 pr-2 transition-colors ${
+                      item.highlight ? 'text-[#006837]' : 'text-slate-700 group-hover:text-[#006837]'
                     }`}
                   >
                     {item.title}
                   </span>
                   <ExternalLink
                     className={`w-3.5 h-3.5 flex-shrink-0 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 ${
-                      item.highlight ? 'text-[#008744]' : 'text-[#008744]/70 group-hover:text-[#008744]'
+                      item.highlight ? 'text-[#006837]' : 'text-[#006837]/70 group-hover:text-[#006837]'
                     }`}
                   />
                 </button>
@@ -640,27 +601,30 @@ export const BantenGovPortalView: React.FC<BantenGovPortalViewProps> = ({
         </div>
       </section>
 
-      {/* 4. SECTION: BERITA TERKINI (Matching screenshot with featured leader article & 3 news cards) */}
+      {/* 4. SECTION: LATEST MARITIME NEWS (India Maritime Context, Exact Screenshot Layout) */}
       <section id="berita" className="pt-28 sm:pt-36 pb-16 px-4 sm:px-8 max-w-5xl lg:max-w-6xl mx-auto">
         <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
           <div>
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight font-sans">
-              {edition === 'banten' ? 'Berita Terkini' : 'Latest Maritime News'}
+            <div className="text-[11px] font-bold text-[#006837] uppercase tracking-wider font-mono">
+              प्रेस विज्ञप्ति एवं नवीनतम समाचार
+            </div>
+            <h2 className="text-2xl sm:text-3xl font-serif font-bold text-slate-900 tracking-tight">
+              Latest Maritime News & Operational Bulletins
             </h2>
-            <div className="w-12 h-1 bg-[#008744] rounded-full mt-1.5" />
+            <div className="w-12 h-1 bg-[#006837] rounded-full mt-1.5" />
           </div>
 
           {/* Press Category Filters */}
           <div className="flex items-center space-x-1.5 bg-slate-100 p-1 rounded-xl text-xs font-semibold">
-            {(['ALL', 'Pemerintahan', 'Nasional', 'Prestasi'] as const).map((cat) => (
+            {(['ALL', 'Operations', 'National', 'Environmental'] as const).map((cat) => (
               <button
                 key={cat}
                 onClick={() => setPressFilter(cat)}
                 className={`px-3 py-1 rounded-lg transition-all cursor-pointer ${
-                  pressFilter === cat ? 'bg-[#008744] text-white shadow-xs' : 'text-slate-600 hover:text-slate-900'
+                  pressFilter === cat ? 'bg-[#006837] text-white shadow-xs' : 'text-slate-600 hover:text-slate-900'
                 }`}
               >
-                {cat === 'ALL' ? (edition === 'banten' ? 'Semua' : 'All') : cat}
+                {cat === 'ALL' ? 'All Releases' : cat}
               </button>
             ))}
           </div>
@@ -676,8 +640,8 @@ export const BantenGovPortalView: React.FC<BantenGovPortalViewProps> = ({
                 alt={featuredArticle.title}
                 className="w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-105"
               />
-              <div className="absolute top-3 left-3 bg-[#008744] text-white text-[10.5px] font-bold px-2.5 py-0.5 rounded shadow-xs uppercase tracking-wider">
-                {edition === 'banten' ? 'Utama' : 'Featured'}
+              <div className="absolute top-3 left-3 bg-[#006837] text-white text-[10px] font-bold px-2.5 py-0.5 rounded shadow-xs uppercase tracking-wider">
+                FEATURED DISPATCH
               </div>
             </div>
 
@@ -685,7 +649,7 @@ export const BantenGovPortalView: React.FC<BantenGovPortalViewProps> = ({
             <div className="md:col-span-7 p-6 sm:p-8 flex flex-col justify-between">
               <div>
                 {/* Timestamp */}
-                <div className="flex items-center space-x-2 text-[11px] text-slate-400 font-medium mb-2.5">
+                <div className="flex items-center space-x-2 text-[11px] text-slate-400 font-medium mb-2.5 font-mono">
                   <Clock className="w-3.5 h-3.5 text-slate-400" />
                   <span>{featuredArticle.timeAgo}</span>
                   <span>•</span>
@@ -695,7 +659,7 @@ export const BantenGovPortalView: React.FC<BantenGovPortalViewProps> = ({
                 {/* Title */}
                 <h3
                   onClick={() => setSelectedArticle(featuredArticle)}
-                  className="text-base sm:text-lg lg:text-xl font-bold text-slate-900 hover:text-[#008744] transition-colors leading-snug cursor-pointer line-clamp-2"
+                  className="text-base sm:text-lg lg:text-xl font-serif font-bold text-slate-900 hover:text-[#006837] transition-colors leading-snug cursor-pointer line-clamp-2"
                 >
                   {featuredArticle.title}
                 </h3>
@@ -706,22 +670,22 @@ export const BantenGovPortalView: React.FC<BantenGovPortalViewProps> = ({
                 </p>
               </div>
 
-              {/* Read More Link (Green with external arrow icon) */}
+              {/* Read More Link */}
               <div className="mt-5 pt-4 border-t border-slate-100 flex items-center justify-between">
                 <button
                   onClick={() => setSelectedArticle(featuredArticle)}
-                  className="text-xs sm:text-sm font-bold text-[#008744] hover:text-[#006432] flex items-center space-x-1 transition-colors cursor-pointer group"
+                  className="text-xs sm:text-sm font-bold text-[#006837] hover:text-[#004e29] flex items-center space-x-1 transition-colors cursor-pointer group"
                 >
-                  <span>{edition === 'banten' ? 'Selengkapnya' : 'Read Full Article'}</span>
+                  <span>Read Full Dispatch</span>
                   <ExternalLink className="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
                 </button>
                 <button
                   onClick={() => {
                     navigator.clipboard?.writeText(window.location.href);
-                    alert('Tautan disalin ke clipboard');
+                    alert('Official dispatch link copied to clipboard.');
                   }}
                   className="text-slate-400 hover:text-slate-600 p-1.5 rounded-md hover:bg-slate-100 transition-colors"
-                  title="Bagikan Berita"
+                  title="Share Dispatch"
                 >
                   <Share2 className="w-4 h-4" />
                 </button>
@@ -746,7 +710,7 @@ export const BantenGovPortalView: React.FC<BantenGovPortalViewProps> = ({
                   className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-80" />
-                <div className="absolute bottom-2.5 left-3 right-3 flex items-center justify-between text-white text-[11px] font-medium">
+                <div className="absolute bottom-2.5 left-3 right-3 flex items-center justify-between text-white text-[11px] font-medium font-mono">
                   <span className="bg-black/50 backdrop-blur-md px-2 py-0.5 rounded text-[10px]">
                     {news.category}
                   </span>
@@ -756,16 +720,16 @@ export const BantenGovPortalView: React.FC<BantenGovPortalViewProps> = ({
 
               {/* Card Body */}
               <div className="p-4 flex-1 flex flex-col justify-between">
-                <h4 className="text-xs sm:text-sm font-bold text-slate-900 group-hover:text-[#008744] transition-colors line-clamp-3 leading-snug">
+                <h4 className="text-xs sm:text-sm font-serif font-bold text-slate-900 group-hover:text-[#006837] transition-colors line-clamp-3 leading-snug">
                   {news.title}
                 </h4>
 
                 <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-[11px]">
-                  <span className="text-[#008744] font-bold flex items-center space-x-1">
-                    <span>{edition === 'banten' ? 'Selengkapnya' : 'Read More'}</span>
+                  <span className="text-[#006837] font-bold flex items-center space-x-1">
+                    <span>Read More</span>
                     <ExternalLink className="w-3 h-3" />
                   </span>
-                  <span className="text-slate-400">{news.date}</span>
+                  <span className="text-slate-400 font-mono">{news.date}</span>
                 </div>
               </div>
             </div>
@@ -773,22 +737,25 @@ export const BantenGovPortalView: React.FC<BantenGovPortalViewProps> = ({
         </div>
       </section>
 
-      {/* 5. SECTION: ASEAN INDONESIA 2023 (Matching screenshot carousel with red emblem badges) */}
+      {/* 5. SECTION: MARITIME INDIA VISION 2030 (Matching screenshot carousel with Red Emblem Badges) */}
       <section className="bg-slate-50/70 border-t border-b border-slate-200/80 py-16 px-4 sm:px-8">
         <div className="max-w-5xl lg:max-w-6xl mx-auto">
           {/* Section Heading */}
           <div className="mb-8 flex items-center justify-between">
             <div>
-              <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight font-sans">
-                {edition === 'banten' ? 'ASEAN Indonesia 2023' : 'ASEAN Maritime Cooperation'}
+              <div className="text-[11px] font-bold text-[#006837] uppercase tracking-wider font-mono">
+                सागर पहल एवं अंतर्राष्ट्रीय सहयोग
+              </div>
+              <h2 className="text-2xl sm:text-3xl font-serif font-bold text-slate-900 tracking-tight">
+                Maritime India Vision 2030 & Global Ocean Cooperation
               </h2>
-              <div className="w-12 h-1 bg-[#008744] rounded-full mt-1.5" />
+              <div className="w-12 h-1 bg-[#006837] rounded-full mt-1.5" />
             </div>
           </div>
 
           {/* Cards Row (3 Cards with Red Circular Emblem Badges) */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {aseanReleases.map((release) => (
+            {nationalInitiatives.map((release) => (
               <div
                 key={release.id}
                 className="bg-white rounded-2xl border border-slate-200/90 p-6 shadow-xs hover:shadow-md transition-all flex flex-col justify-between"
@@ -802,17 +769,17 @@ export const BantenGovPortalView: React.FC<BantenGovPortalViewProps> = ({
                   </div>
 
                   {/* Badge Label */}
-                  <div className="text-xs font-bold text-slate-800 uppercase tracking-wide">
+                  <div className="text-xs font-bold text-slate-800 uppercase tracking-wide font-mono">
                     {release.badge}
                   </div>
 
                   {/* Title Headline */}
-                  <h4 className="mt-2 text-sm sm:text-[15px] font-bold text-slate-900 leading-snug line-clamp-3">
+                  <h4 className="mt-2 text-sm sm:text-[15px] font-serif font-bold text-slate-900 leading-snug line-clamp-3">
                     {release.title}
                   </h4>
                 </div>
 
-                {/* Read More Link (Green) */}
+                {/* Read More Link */}
                 <div className="mt-6 pt-4 border-t border-slate-100">
                   <button
                     onClick={() =>
@@ -826,9 +793,9 @@ export const BantenGovPortalView: React.FC<BantenGovPortalViewProps> = ({
                         content: release.content,
                       })
                     }
-                    className="text-xs font-bold text-[#008744] hover:text-[#006432] flex items-center space-x-1 cursor-pointer group"
+                    className="text-xs font-bold text-[#006837] hover:text-[#004e29] flex items-center space-x-1 cursor-pointer group"
                   >
-                    <span>{edition === 'banten' ? 'Selengkapnya' : 'Read More'}</span>
+                    <span>Read Release</span>
                     <ExternalLink className="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
                   </button>
                 </div>
@@ -842,30 +809,30 @@ export const BantenGovPortalView: React.FC<BantenGovPortalViewProps> = ({
               <button
                 onClick={() => setActiveAseanPage(0)}
                 className={`w-2.5 h-2.5 rounded-full transition-all cursor-pointer ${
-                  activeAseanPage === 0 ? 'bg-[#008744] w-6' : 'border border-[#008744] bg-transparent'
+                  activeAseanPage === 0 ? 'bg-[#006837] w-6' : 'border border-[#006837] bg-transparent'
                 }`}
-                title="Halaman 1"
+                title="Page 1"
               />
               <button
                 onClick={() => setActiveAseanPage(1)}
                 className={`w-2.5 h-2.5 rounded-full transition-all cursor-pointer ${
-                  activeAseanPage === 1 ? 'bg-[#008744] w-6' : 'border border-[#008744] bg-transparent'
+                  activeAseanPage === 1 ? 'bg-[#006837] w-6' : 'border border-[#006837] bg-transparent'
                 }`}
-                title="Halaman 2"
+                title="Page 2"
               />
               <button
                 onClick={() => setActiveAseanPage(2)}
                 className={`w-2.5 h-2.5 rounded-full transition-all cursor-pointer ${
-                  activeAseanPage === 2 ? 'bg-[#008744] w-6' : 'border border-[#008744] bg-transparent'
+                  activeAseanPage === 2 ? 'bg-[#006837] w-6' : 'border border-[#006837] bg-transparent'
                 }`}
-                title="Halaman 3"
+                title="Page 3"
               />
             </div>
 
-            {/* Circular Green Arrow Button on Right (Matching screenshot) */}
+            {/* Circular Green Arrow Button on Right */}
             <button
               onClick={() => setActiveAseanPage((prev) => (prev + 1) % 3)}
-              className="w-10 h-10 rounded-full bg-[#008744] hover:bg-[#007038] text-white flex items-center justify-center shadow-md hover:shadow-lg transition-all cursor-pointer flex-shrink-0"
+              className="w-10 h-10 rounded-full bg-[#006837] hover:bg-[#00522c] text-white flex items-center justify-center shadow-md hover:shadow-lg transition-all cursor-pointer flex-shrink-0"
               title="Next Slide"
             >
               <ChevronRight className="w-5 h-5" />
@@ -875,21 +842,19 @@ export const BantenGovPortalView: React.FC<BantenGovPortalViewProps> = ({
       </section>
 
       {/* ========================================================================= */}
-      {/* 6. DEDICATED SECTION: PROFIL PROVINSI / AGENCY PROFILE (#profile) */}
+      {/* 6. DEDICATED SECTION: PROFILE / PROFIL (#profile) */}
       {/* ========================================================================= */}
       <section id="profile" className="py-20 px-4 sm:px-8 max-w-5xl lg:max-w-6xl mx-auto border-b border-slate-200">
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-4">
           <div>
-            <div className="inline-flex items-center space-x-2 bg-emerald-100/80 text-[#008744] px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider mb-2">
+            <div className="inline-flex items-center space-x-2 bg-emerald-100/80 text-[#006837] px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider mb-2 font-mono">
               <Shield className="w-3.5 h-3.5" />
-              <span>{edition === 'banten' ? 'Profil Wilayah & Lembaga' : 'Agency Profile & Mandate'}</span>
+              <span>भारतीय तटरक्षक • OFFICIAL AGENCY PROFILE</span>
             </div>
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight font-sans">
-              {edition === 'banten'
-                ? 'Profil Provinsi Banten: Gerbang Maritim Nusantara'
-                : 'Indian Coast Guard & Sagar Mitra Intelligence Profile'}
+            <h2 className="text-2xl sm:text-3xl font-serif font-bold text-slate-900 tracking-tight">
+              Indian Coast Guard: Mandate, Strategic Domain & Defense Assets
             </h2>
-            <div className="w-16 h-1 bg-[#008744] rounded-full mt-2" />
+            <div className="w-16 h-1 bg-[#006837] rounded-full mt-2" />
           </div>
 
           {/* Subtabs for Profile Section */}
@@ -897,101 +862,95 @@ export const BantenGovPortalView: React.FC<BantenGovPortalViewProps> = ({
             <button
               onClick={() => setProfileTab('vision')}
               className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer ${
-                profileTab === 'vision' ? 'bg-white text-[#008744] shadow-xs' : 'text-slate-600 hover:text-slate-900'
+                profileTab === 'vision' ? 'bg-white text-[#006837] shadow-xs' : 'text-slate-600 hover:text-slate-900'
               }`}
             >
-              {edition === 'banten' ? 'Visi & Misi' : 'Vision & Mission'}
+              Vision & Motto
             </button>
             <button
               onClick={() => setProfileTab('jurisdiction')}
               className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer ${
-                profileTab === 'jurisdiction' ? 'bg-white text-[#008744] shadow-xs' : 'text-slate-600 hover:text-slate-900'
+                profileTab === 'jurisdiction' ? 'bg-white text-[#006837] shadow-xs' : 'text-slate-600 hover:text-slate-900'
               }`}
             >
-              {edition === 'banten' ? 'Yurisdiksi Geografis' : 'Jurisdiction'}
+              Jurisdiction & EEZ
             </button>
             <button
               onClick={() => setProfileTab('fleet')}
               className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer ${
-                profileTab === 'fleet' ? 'bg-white text-[#008744] shadow-xs' : 'text-slate-600 hover:text-slate-900'
+                profileTab === 'fleet' ? 'bg-white text-[#006837] shadow-xs' : 'text-slate-600 hover:text-slate-900'
               }`}
             >
-              {edition === 'banten' ? 'Armada & Fasilitas' : 'Fleet & Assets'}
+              Fleet & Air Wings
             </button>
           </div>
         </div>
 
         {profileTab === 'vision' && (
           <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-center">
-            <div className="md:col-span-5 bg-gradient-to-br from-[#008744] to-[#01522b] text-white p-8 rounded-3xl shadow-xl relative overflow-hidden">
+            <div className="md:col-span-5 bg-gradient-to-br from-[#006837] via-[#044c26] to-[#01351b] text-white p-8 rounded-3xl shadow-xl relative overflow-hidden">
               <div className="absolute top-0 right-0 transform translate-x-8 -translate-y-8 opacity-10">
                 <Shield className="w-64 h-64" />
               </div>
               <Award className="w-10 h-10 text-amber-300 mb-4" />
-              <div className="text-xs uppercase tracking-widest text-emerald-200 font-bold mb-1">
-                {edition === 'banten' ? 'Visi Strategis 2026 - 2030' : 'Motto & Core Directive'}
+              <div className="text-xs uppercase tracking-widest text-emerald-200 font-bold mb-1 font-mono">
+                NATIONAL MOTTO & STATUTORY CREED
               </div>
-              <h3 className="text-xl font-bold leading-relaxed text-white">
-                {edition === 'banten'
-                  ? '"Banten yang Maju, Mandiri, Berdaya Saing, Sejahtera, dan Berakhlakul Karimah Berbasis Ekonomi Biru & Konektivitas Selat Sunda."'
-                  : '"Vayam Rakshamah (We Protect) — Safeguarding Maritime Borders, Preserving Coastal Ecology, and Upholding Rule of Law at Sea."'}
+              <h3 className="text-xl font-serif font-bold leading-relaxed text-white">
+                &ldquo;वयम् रक्षामः&rdquo; (Vayam Rakshamah — We Protect) <br />
+                <span className="text-sm font-sans font-normal text-emerald-100 block mt-2">
+                  Safeguarding India&apos;s 7,516 km coastline and 2.37 million km² Exclusive Economic Zone (EEZ) with
+                  uncompromising vigilance, pollution response readiness, and maritime sovereignty.
+                </span>
               </h3>
               <div className="mt-6 pt-6 border-t border-emerald-400/30 flex items-center space-x-3 text-xs text-emerald-100">
                 <CheckCircle2 className="w-4 h-4 text-emerald-300" />
-                <span>Terakreditasi Standar Pelayanan Publik Nasional & ISO 9001:2015</span>
+                <span>Central Coordinating Authority for National Oil Spill Disaster Contingency Plan (NOS-DCP)</span>
               </div>
             </div>
 
             <div className="md:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="p-5 rounded-2xl border border-slate-200 bg-white hover:border-[#008744] transition-all shadow-xs">
-                <div className="w-8 h-8 rounded-xl bg-emerald-100 text-[#008744] flex items-center justify-center mb-3">
+              <div className="p-5 rounded-2xl border border-slate-200 bg-white hover:border-[#006837] transition-all shadow-xs">
+                <div className="w-8 h-8 rounded-xl bg-emerald-100 text-[#006837] flex items-center justify-center mb-3">
                   <Waves className="w-4 h-4" />
                 </div>
-                <h4 className="font-bold text-slate-900 text-sm mb-1.5">
-                  {edition === 'banten' ? 'Perlindungan Ekosistem Pesisir' : 'Marine Environmental Defense'}
-                </h4>
+                <h4 className="font-serif font-bold text-slate-900 text-sm mb-1.5">Marine Ecological Defense</h4>
                 <p className="text-xs text-slate-600 leading-relaxed">
-                  Pemantauan 24/7 terhadap potensi tumpahan minyak, sampah plastik laut, dan perlindungan terumbu karang
-                  Taman Nasional Ujung Kulon.
+                  Active monitoring of illegal bilge discharging, offshore drilling compliance at Mumbai High, and
+                  preservation of sensitive coral reefs from toxic hydrocarbons.
                 </p>
               </div>
 
-              <div className="p-5 rounded-2xl border border-slate-200 bg-white hover:border-[#008744] transition-all shadow-xs">
-                <div className="w-8 h-8 rounded-xl bg-emerald-100 text-[#008744] flex items-center justify-center mb-3">
+              <div className="p-5 rounded-2xl border border-slate-200 bg-white hover:border-[#006837] transition-all shadow-xs">
+                <div className="w-8 h-8 rounded-xl bg-emerald-100 text-[#006837] flex items-center justify-center mb-3">
                   <Compass className="w-4 h-4" />
                 </div>
-                <h4 className="font-bold text-slate-900 text-sm mb-1.5">
-                  {edition === 'banten' ? 'Konektivitas Selat Sunda (ALKI I)' : 'Chokepoint Surveillance (ALKI I)'}
-                </h4>
+                <h4 className="font-serif font-bold text-slate-900 text-sm mb-1.5">Sea Lanes of Communication (SLOC)</h4>
                 <p className="text-xs text-slate-600 leading-relaxed">
-                  Menjamin kelancaran alur pelayaran internasional Selat Sunda dengan volume transit 65.000+ kapal niaga
-                  setiap tahunnya.
+                  Vigilant surveillance along international transit corridors across the Arabian Sea, Gulf of Kutch, and
+                  Bay of Bengal carrying over 100,000 tankers annually.
                 </p>
               </div>
 
-              <div className="p-5 rounded-2xl border border-slate-200 bg-white hover:border-[#008744] transition-all shadow-xs">
-                <div className="w-8 h-8 rounded-xl bg-emerald-100 text-[#008744] flex items-center justify-center mb-3">
+              <div className="p-5 rounded-2xl border border-slate-200 bg-white hover:border-[#006837] transition-all shadow-xs">
+                <div className="w-8 h-8 rounded-xl bg-emerald-100 text-[#006837] flex items-center justify-center mb-3">
                   <Radio className="w-4 h-4" />
                 </div>
-                <h4 className="font-bold text-slate-900 text-sm mb-1.5">
-                  {edition === 'banten' ? 'Kesiapsiagaan Darurat & SAR' : '24x7 Maritime Search & Rescue'}
-                </h4>
+                <h4 className="font-serif font-bold text-slate-900 text-sm mb-1.5">24x7 Search & Rescue (MRCC)</h4>
                 <p className="text-xs text-slate-600 leading-relaxed">
-                  Sinergi instan dengan Basarnas, MRCC, dan KPLP untuk evakuasi cepat bencana perairan dengan waktu tanggap
-                  di bawah 30 menit.
+                  Maritime Rescue Coordination Centres in Mumbai, Chennai, and Port Blair maintaining uninterrupted
+                  distress watch on 1554 and VHF Ch-16 with rapid airborne scramble.
                 </p>
               </div>
 
-              <div className="p-5 rounded-2xl border border-slate-200 bg-white hover:border-[#008744] transition-all shadow-xs">
-                <div className="w-8 h-8 rounded-xl bg-emerald-100 text-[#008744] flex items-center justify-center mb-3">
+              <div className="p-5 rounded-2xl border border-slate-200 bg-white hover:border-[#006837] transition-all shadow-xs">
+                <div className="w-8 h-8 rounded-xl bg-emerald-100 text-[#006837] flex items-center justify-center mb-3">
                   <Sparkles className="w-4 h-4" />
                 </div>
-                <h4 className="font-bold text-slate-900 text-sm mb-1.5">
-                  {edition === 'banten' ? 'Transformasi Birokrasi Digital' : 'Automated Satellite Radar AI'}
-                </h4>
+                <h4 className="font-serif font-bold text-slate-900 text-sm mb-1.5">AI Satellite Telemetry Fusion</h4>
                 <p className="text-xs text-slate-600 leading-relaxed">
-                  Integrasi algoritma AI untuk pelacakan kapal nakal, analisis noda minyak Sentinel-1, dan transparansi
-                  penegakan hukum maritim.
+                  Autonomous Sentinel-1 synthetic aperture radar (SAR) feature segmentation fused with AIS tracks and
+                  Lagrangian hindcast advection engines.
                 </p>
               </div>
             </div>
@@ -1001,24 +960,40 @@ export const BantenGovPortalView: React.FC<BantenGovPortalViewProps> = ({
         {profileTab === 'jurisdiction' && (
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             <div className="bg-slate-50 p-6 rounded-2xl border border-slate-200 text-center">
-              <div className="text-3xl font-extrabold text-[#008744] mb-1">509.6 km</div>
-              <div className="text-xs font-bold text-slate-800 uppercase tracking-wider mb-2">Panjang Garis Pantai</div>
-              <p className="text-[11px] text-slate-500">Mencakup pesisir utara Laut Jawa, Selat Sunda, dan Samudera Hindia.</p>
+              <div className="text-3xl font-serif font-extrabold text-[#006837] mb-1">7,516 km</div>
+              <div className="text-xs font-bold text-slate-800 uppercase tracking-wider mb-2 font-mono">
+                Total Indian Coastline
+              </div>
+              <p className="text-[11px] text-slate-500">
+                Spanning 9 coastal states and 4 union territories from Gujarat to the Andaman & Nicobar archipelago.
+              </p>
             </div>
             <div className="bg-slate-50 p-6 rounded-2xl border border-slate-200 text-center">
-              <div className="text-3xl font-extrabold text-[#008744] mb-1">9.662 km²</div>
-              <div className="text-xs font-bold text-slate-800 uppercase tracking-wider mb-2">Luas Wilayah Darat</div>
-              <p className="text-[11px] text-slate-500">Terdiri atas 4 Kabupaten dan 4 Kota dengan 155 Kecamatan.</p>
+              <div className="text-3xl font-serif font-extrabold text-[#006837] mb-1">2.37M km²</div>
+              <div className="text-xs font-bold text-slate-800 uppercase tracking-wider mb-2 font-mono">
+                Exclusive Economic Zone (EEZ)
+              </div>
+              <p className="text-[11px] text-slate-500">
+                Sovereign jurisdiction for resource exploration, environmental defense, and maritime law enforcement.
+              </p>
             </div>
             <div className="bg-slate-50 p-6 rounded-2xl border border-slate-200 text-center">
-              <div className="text-3xl font-extrabold text-[#008744] mb-1">65.000+</div>
-              <div className="text-xs font-bold text-slate-800 uppercase tracking-wider mb-2">Lalu Lintas Kapal/Tahun</div>
-              <p className="text-[11px] text-slate-500">Koridor Alur Laut Kepulauan Indonesia (ALKI I) dengan pengawasan ketat.</p>
+              <div className="text-3xl font-serif font-extrabold text-[#006837] mb-1">100,000+</div>
+              <div className="text-xs font-bold text-slate-800 uppercase tracking-wider mb-2 font-mono">
+                Annual Tanker Transits
+              </div>
+              <p className="text-[11px] text-slate-500">
+                Crucial international energy transit lane through the Arabian Sea and Malacca chokepoint gateway.
+              </p>
             </div>
             <div className="bg-slate-50 p-6 rounded-2xl border border-slate-200 text-center">
-              <div className="text-3xl font-extrabold text-[#008744] mb-1">12 Unit</div>
-              <div className="text-xs font-bold text-slate-800 uppercase tracking-wider mb-2">Stasiun Radar Pesisir</div>
-              <p className="text-[11px] text-slate-500">Jaringan radar pantai terpadu terhubung ke pusat kendali operasional.</p>
+              <div className="text-3xl font-serif font-extrabold text-[#006837] mb-1">46 Stations</div>
+              <div className="text-xs font-bold text-slate-800 uppercase tracking-wider mb-2 font-mono">
+                Coastal Radar Network Chain
+              </div>
+              <p className="text-[11px] text-slate-500">
+                Continuous radar integration fused with electro-optic thermal sensors and AIS base receivers.
+              </p>
             </div>
           </div>
         )}
@@ -1026,36 +1001,42 @@ export const BantenGovPortalView: React.FC<BantenGovPortalViewProps> = ({
         {profileTab === 'fleet' && (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="p-6 rounded-2xl border border-slate-200 bg-white shadow-xs">
-              <Ship className="w-8 h-8 text-[#008744] mb-3" />
-              <h4 className="font-bold text-slate-900 text-base mb-1">Kapal Penanggulangan Polusi (PCV)</h4>
+              <Ship className="w-8 h-8 text-[#006837] mb-3" />
+              <h4 className="font-serif font-bold text-slate-900 text-base mb-1">
+                Pollution Control Vessels (PCVs)
+              </h4>
               <p className="text-xs text-slate-600 mb-3">
-                Dilengkapi oil booms 500m, sweeping arms, disc skimmers berkekuatan 150m³/jam, dan tangki penampung emulsi
-                500 ton.
+                *ICGS Samudra Prahari*, *Samudra Paheredar*, and *Samudra Pavak* equipped with high-capacity sweeping arms,
+                disc skimmers (150 m³/h), ocean booms, and 500-tonne holding tanks.
               </p>
-              <span className="text-[10px] font-bold text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded">
-                Status: Siaga 24/7 di Pelabuhan Merak
+              <span className="text-[10px] font-bold text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded font-mono">
+                STATUS: 24/7 STANDBY AT MUMBAI & KOCHI
               </span>
             </div>
             <div className="p-6 rounded-2xl border border-slate-200 bg-white shadow-xs">
-              <Compass className="w-8 h-8 text-[#008744] mb-3" />
-              <h4 className="font-bold text-slate-900 text-base mb-1">Pesawat Patroli Maritim Dornier 228</h4>
+              <Compass className="w-8 h-8 text-[#006837] mb-3" />
+              <h4 className="font-serif font-bold text-slate-900 text-base mb-1">
+                Dornier 228 Maritime Patrol Aircraft
+              </h4>
               <p className="text-xs text-slate-600 mb-3">
-                Dilengkapi Synthetic Aperture Radar (SAR), Side-Looking Airborne Radar (SLAR), dan FLIR electro-optics
-                untuk deteksi malam hari.
+                Equipped with 360° surveillance radar, Side-Looking Airborne Radar (SLAR), and Forward-Looking Infrared
+                (FLIR) electro-optics for nocturnal slick detection.
               </p>
-              <span className="text-[10px] font-bold text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded">
-                Radius Patroli: 1.200 Mil Laut
+              <span className="text-[10px] font-bold text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded font-mono">
+                PATROL RANGE: 1,300 NAUTICAL MILES
               </span>
             </div>
             <div className="p-6 rounded-2xl border border-slate-200 bg-white shadow-xs">
-              <Anchor className="w-8 h-8 text-[#008744] mb-3" />
-              <h4 className="font-bold text-slate-900 text-base mb-1">Kapal Interseptor Cepat (Fast Patrol Craft)</h4>
+              <Anchor className="w-8 h-8 text-[#006837] mb-3" />
+              <h4 className="font-serif font-bold text-slate-900 text-base mb-1">
+                Fast Interceptor Craft & Offshore Patrol
+              </h4>
               <p className="text-xs text-slate-600 mb-3">
-                Kecepatan jelajah 45 knot untuk pencegatan kapal pelanggar regulasi MARPOL Annex I dan inspeksi kepatuhan
-                langsung di laut.
+                High-speed waterjet interceptors capable of 45+ knots for rapid vessel boarding, ship inspection under
+                MARPOL Annex I, and evidence collection.
               </p>
-              <span className="text-[10px] font-bold text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded">
-                Waktu Reaksi: &lt; 15 Menit
+              <span className="text-[10px] font-bold text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded font-mono">
+                INTERCEPTION REACTION: &lt; 15 MINUTES
               </span>
             </div>
           </div>
@@ -1063,45 +1044,45 @@ export const BantenGovPortalView: React.FC<BantenGovPortalViewProps> = ({
       </section>
 
       {/* ========================================================================= */}
-      {/* 7. DEDICATED SECTION: PROFIL PEMERINTAH / GOVERNANCE (#governance) */}
+      {/* 7. DEDICATED SECTION: GOVERNANCE / TATA KELOLA (#governance) */}
       {/* ========================================================================= */}
       <section id="governance" className="py-20 px-4 sm:px-8 max-w-5xl lg:max-w-6xl mx-auto border-b border-slate-200">
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-4">
           <div>
-            <div className="inline-flex items-center space-x-2 bg-emerald-100/80 text-[#008744] px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider mb-2">
+            <div className="inline-flex items-center space-x-2 bg-emerald-100/80 text-[#006837] px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider mb-2 font-mono">
               <Building className="w-3.5 h-3.5" />
-              <span>{edition === 'banten' ? 'Tata Kelola & Pimpinan' : 'Governance & Leadership'}</span>
+              <span>COMMAND STRUCTURE & OVERSIGHT</span>
             </div>
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight font-sans">
-              {edition === 'banten' ? 'Struktur Pemerintahan & Hierarki Kepemimpinan' : 'Executive Command & Legal Governance'}
+            <h2 className="text-2xl sm:text-3xl font-serif font-bold text-slate-900 tracking-tight">
+              Command Hierarchy, Statutory Bodies & Legal Mandates
             </h2>
-            <div className="w-16 h-1 bg-[#008744] rounded-full mt-2" />
+            <div className="w-16 h-1 bg-[#006837] rounded-full mt-2" />
           </div>
 
           <div className="flex items-center space-x-2 bg-slate-100 p-1.5 rounded-xl text-xs font-semibold">
             <button
               onClick={() => setGovernanceTab('leadership')}
               className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer ${
-                governanceTab === 'leadership' ? 'bg-white text-[#008744] shadow-xs' : 'text-slate-600 hover:text-slate-900'
+                governanceTab === 'leadership' ? 'bg-white text-[#006837] shadow-xs' : 'text-slate-600 hover:text-slate-900'
               }`}
             >
-              {edition === 'banten' ? 'Pimpinan Eksekutif' : 'Executive Roster'}
+              Executive Command
             </button>
             <button
               onClick={() => setGovernanceTab('committees')}
               className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer ${
-                governanceTab === 'committees' ? 'bg-white text-[#008744] shadow-xs' : 'text-slate-600 hover:text-slate-900'
+                governanceTab === 'committees' ? 'bg-white text-[#006837] shadow-xs' : 'text-slate-600 hover:text-slate-900'
               }`}
             >
-              {edition === 'banten' ? 'Komite Statuta' : 'Statutory Bodies'}
+              Statutory Bodies
             </button>
             <button
               onClick={() => setGovernanceTab('mandate')}
               className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer ${
-                governanceTab === 'mandate' ? 'bg-white text-[#008744] shadow-xs' : 'text-slate-600 hover:text-slate-900'
+                governanceTab === 'mandate' ? 'bg-white text-[#006837] shadow-xs' : 'text-slate-600 hover:text-slate-900'
               }`}
             >
-              {edition === 'banten' ? 'Dasar Hukum' : 'Legal Mandates'}
+              Legal Framework
             </button>
           </div>
         </div>
@@ -1113,25 +1094,25 @@ export const BantenGovPortalView: React.FC<BantenGovPortalViewProps> = ({
               <div className="h-56 overflow-hidden relative">
                 <img
                   src="/portal/featured_leader.jpg"
-                  alt="Pj Gubernur Banten"
+                  alt="Director General Indian Coast Guard"
                   className="w-full h-full object-cover object-top"
                 />
-                <div className="absolute top-3 left-3 bg-[#008744] text-white text-[10px] font-bold px-2 py-0.5 rounded">
-                  PIMPINAN TERTINGGI
+                <div className="absolute top-3 left-3 bg-[#006837] text-white text-[10px] font-bold px-2 py-0.5 rounded font-mono">
+                  APEX COMMAND
                 </div>
               </div>
               <div className="p-5">
-                <div className="text-xs text-emerald-700 font-bold uppercase tracking-wider mb-1">
-                  Penjabat (Pj) Gubernur
+                <div className="text-xs text-emerald-800 font-bold uppercase tracking-wider mb-1 font-mono">
+                  Director General Indian Coast Guard
                 </div>
-                <h3 className="font-bold text-slate-900 text-base mb-2">Al Muktabar, M.Sc., Ph.D</h3>
+                <h3 className="font-serif font-bold text-slate-900 text-base mb-2">Director General, PTM, TM</h3>
                 <p className="text-xs text-slate-600 leading-relaxed mb-4">
-                  Bertanggung jawab atas arah kebijakan umum, percepatan investasi strategis, ketahanan maritim, dan
-                  reformasi tata kelola pemerintahan berbasis digital di Provinsi Banten.
+                  Apex executive authority commanding all operational regional headquarters, strategic policy formulation
+                  with the Ministry of Defence, and national oil spill readiness coordination.
                 </p>
-                <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500">
-                  <span>Kantor: Gedung Negara KP3B</span>
-                  <span className="text-[#008744] font-semibold">Aktif</span>
+                <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500 font-mono">
+                  <span>Coast Guard HQ, New Delhi</span>
+                  <span className="text-[#006837] font-semibold">Active Command</span>
                 </div>
               </div>
             </div>
@@ -1141,25 +1122,25 @@ export const BantenGovPortalView: React.FC<BantenGovPortalViewProps> = ({
               <div className="h-56 overflow-hidden relative">
                 <img
                   src="/portal/news_delegation.jpg"
-                  alt="Komandan Wilayah Maritim"
+                  alt="Commander Coast Guard Region West"
                   className="w-full h-full object-cover"
                 />
-                <div className="absolute top-3 left-3 bg-blue-700 text-white text-[10px] font-bold px-2 py-0.5 rounded">
-                  KOMANDO OPERASIONAL
+                <div className="absolute top-3 left-3 bg-blue-700 text-white text-[10px] font-bold px-2 py-0.5 rounded font-mono">
+                  REGIONAL TACTICAL COMMAND
                 </div>
               </div>
               <div className="p-5">
-                <div className="text-xs text-blue-700 font-bold uppercase tracking-wider mb-1">
-                  Komandan Pengawasan Maritim & MRCC
+                <div className="text-xs text-blue-700 font-bold uppercase tracking-wider mb-1 font-mono">
+                  Commander Regional HQ (West), Mumbai
                 </div>
-                <h3 className="font-bold text-slate-900 text-base mb-2">Laksamana Pertama TNI (Purn) Suryadi</h3>
+                <h3 className="font-serif font-bold text-slate-900 text-base mb-2">Inspector General, TM</h3>
                 <p className="text-xs text-slate-600 leading-relaxed mb-4">
-                  Memimpin operasi pencegahan pencemaran laut, koordinasi lintas instansi dengan TNI AL, Polairud, serta
-                  penegakan hukum pidana maritim di Selat Sunda.
+                  Operational commander overseeing Arabian Sea maritime zones, Mumbai High Sector MH-4 offshore oil
+                  fields, MRCC Mumbai search and rescue desks, and pollution response teams.
                 </p>
-                <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500">
-                  <span>Kantor: Puskodal Maritim Merak</span>
-                  <span className="text-blue-700 font-semibold">Siaga Operasi</span>
+                <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500 font-mono">
+                  <span>Worli Sea Face, Mumbai</span>
+                  <span className="text-blue-700 font-semibold">Tactical Watch Active</span>
                 </div>
               </div>
             </div>
@@ -1169,25 +1150,25 @@ export const BantenGovPortalView: React.FC<BantenGovPortalViewProps> = ({
               <div className="h-56 overflow-hidden relative">
                 <img
                   src="/portal/news_launch.jpg"
-                  alt="Sekretaris Daerah"
+                  alt="Directorate of Marine Environment Protection"
                   className="w-full h-full object-cover"
                 />
-                <div className="absolute top-3 left-3 bg-amber-600 text-white text-[10px] font-bold px-2 py-0.5 rounded">
-                  ADMINISTRASI & PELAYANAN
+                <div className="absolute top-3 left-3 bg-amber-600 text-white text-[10px] font-bold px-2 py-0.5 rounded font-mono">
+                  ENVIRONMENT & LEGAL COMPLIANCE
                 </div>
               </div>
               <div className="p-5">
-                <div className="text-xs text-amber-700 font-bold uppercase tracking-wider mb-1">
-                  Sekretaris Daerah Provinsi Banten
+                <div className="text-xs text-amber-700 font-bold uppercase tracking-wider mb-1 font-mono">
+                  Chief of Marine Environment Protection (DMEP)
                 </div>
-                <h3 className="font-bold text-slate-900 text-base mb-2">Ir. H. Rahmat Jaya, M.T.</h3>
+                <h3 className="font-serif font-bold text-slate-900 text-base mb-2">Deputy Director General (MEP)</h3>
                 <p className="text-xs text-slate-600 leading-relaxed mb-4">
-                  Mengkoordinasikan 24 Organisasi Perangkat Daerah (OPD), pengelolaan anggaran publik terpadu, serta
-                  keterbukaan informasi dan pelayanan perizinan satu pintu.
+                  Directs national pollution response capacity, manages the NOS-DCP inventory database, and oversees legal
+                  dossier compilation for prosecution under the Merchant Shipping Act.
                 </p>
-                <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500">
-                  <span>Kantor: Setda KP3B Serang</span>
-                  <span className="text-amber-700 font-semibold">Aktif</span>
+                <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500 font-mono">
+                  <span>Directorate of Fisheries & MEP</span>
+                  <span className="text-amber-700 font-semibold">Operational</span>
                 </div>
               </div>
             </div>
@@ -1198,43 +1179,44 @@ export const BantenGovPortalView: React.FC<BantenGovPortalViewProps> = ({
           <div className="space-y-4">
             <div className="p-5 rounded-2xl border border-slate-200 bg-white flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
               <div>
-                <span className="text-[10px] font-bold uppercase tracking-wider bg-emerald-100 text-[#008744] px-2 py-0.5 rounded">
-                  Komite Tingkat Tinggi
+                <span className="text-[10px] font-bold uppercase tracking-wider bg-emerald-100 text-[#006837] px-2 py-0.5 rounded font-mono">
+                  APEX STATUTORY COMMITTEE
                 </span>
-                <h4 className="text-base font-bold text-slate-900 mt-1">
-                  Badan Koordinasi Kesiapsiagaan Tanggap Tumpahan Minyak (Tier-1 & Tier-2 NOS-DCP)
+                <h4 className="text-base font-serif font-bold text-slate-900 mt-1">
+                  National Oil Spill Disaster Contingency Plan (NOS-DCP) Apex Supervisory Board
                 </h4>
-                <p className="text-xs text-slate-600 mt-1 max-w-3xl">
-                  Forum koordinasi terpadu melibatkan SKK Migas, Pertamina, Otoritas Pelabuhan Cilegon-Merak, dan Dinas
-                  Lingkungan Hidup untuk mitigasi instan tumpahan minyak di laut.
+                <p className="text-xs text-slate-600 mt-1 max-w-3xl leading-relaxed">
+                  Inter-ministerial supervisory board bringing together the Ministry of Defence, Ministry of Petroleum &
+                  Natural Gas (MoPNG), Ministry of Ports, Shipping and Waterways, and INCOIS to coordinate nationwide
+                  Tier-1, Tier-2, and Tier-3 pollution incidents.
                 </p>
               </div>
               <button
                 onClick={() => onLaunchWorkstation && onLaunchWorkstation()}
-                className="bg-[#008744] hover:bg-[#007038] text-white px-3 py-1.5 rounded-lg text-xs font-bold transition-colors cursor-pointer flex-shrink-0"
+                className="bg-[#006837] hover:bg-[#00522c] text-white px-3.5 py-1.5 rounded-lg text-xs font-bold transition-colors cursor-pointer flex-shrink-0"
               >
-                Buka Peta Komite
+                Launch Workstation
               </button>
             </div>
 
             <div className="p-5 rounded-2xl border border-slate-200 bg-white flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
               <div>
-                <span className="text-[10px] font-bold uppercase tracking-wider bg-blue-100 text-blue-700 px-2 py-0.5 rounded">
-                  Pengawasan Hukum
+                <span className="text-[10px] font-bold uppercase tracking-wider bg-blue-100 text-blue-700 px-2 py-0.5 rounded font-mono">
+                  STATUTORY PORT STATE CONTROL
                 </span>
-                <h4 className="text-base font-bold text-slate-900 mt-1">
-                  Satuan Tugas Port State Control (PSC) & Kepatuhan Konvensi MARPOL 73/78
+                <h4 className="text-base font-serif font-bold text-slate-900 mt-1">
+                  Directorate General of Shipping Port State Control & MARPOL Adjudication Committee
                 </h4>
-                <p className="text-xs text-slate-600 mt-1 max-w-3xl">
-                  Audit berkala terhadap Oil Record Book kapal tangki, sertifikasi International Oil Pollution Prevention
-                  (IOPP), dan uji laboratorium bahan bakar minyak.
+                <p className="text-xs text-slate-600 mt-1 max-w-3xl leading-relaxed">
+                  Conducts rigorous physical boarding inspections of oil tankers calling on Indian ports, auditing Oil
+                  Record Books (Part I & II), IOPP Certificates, and verifying oily-water separator (OWS) sensor logs.
                 </p>
               </div>
               <button
                 onClick={() => onLaunchWorkstation && onLaunchWorkstation()}
-                className="bg-slate-100 hover:bg-slate-200 text-slate-800 px-3 py-1.5 rounded-lg text-xs font-bold transition-colors cursor-pointer flex-shrink-0"
+                className="bg-slate-100 hover:bg-slate-200 text-slate-800 px-3.5 py-1.5 rounded-lg text-xs font-bold transition-colors cursor-pointer flex-shrink-0"
               >
-                Lihat Standar Audit
+                View Audit Pipeline
               </button>
             </div>
           </div>
@@ -1243,19 +1225,23 @@ export const BantenGovPortalView: React.FC<BantenGovPortalViewProps> = ({
         {governanceTab === 'mandate' && (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="p-5 rounded-2xl border border-slate-200 bg-slate-50">
-              <FileCheck className="w-6 h-6 text-[#008744] mb-2" />
-              <h4 className="font-bold text-slate-900 text-sm mb-1">UU No. 32 Tahun 2009 tentang Perlindungan Lingkungan Hidup</h4>
+              <FileCheck className="w-6 h-6 text-[#006837] mb-2" />
+              <h4 className="font-serif font-bold text-slate-900 text-sm mb-1">
+                The Coast Guard Act, 1978 (Act No. 30 of 1978)
+              </h4>
               <p className="text-xs text-slate-600 leading-relaxed">
-                Pasal 98 & 99 menetapkan ancaman pidana hingga 10 tahun penjara dan denda Rp 10 Miliar bagi setiap korporasi
-                atau nakhoda yang sengaja membuang limbah minyak B3 ke laut.
+                Section 14 explicitly empowers the Coast Guard to take measures for preserving and protecting the marine
+                environment and preventing and controlling marine pollution within the maritime zones of India.
               </p>
             </div>
             <div className="p-5 rounded-2xl border border-slate-200 bg-slate-50">
-              <FileCheck className="w-6 h-6 text-[#008744] mb-2" />
-              <h4 className="font-bold text-slate-900 text-sm mb-1">Perpres No. 109 Tahun 2006 tentang Penanggulangan Keadaan Darurat Tumpahan Minyak</h4>
+              <FileCheck className="w-6 h-6 text-[#006837] mb-2" />
+              <h4 className="font-serif font-bold text-slate-900 text-sm mb-1">
+                The Merchant Shipping Act, 1958 (Part XIA - Prevention of Pollution)
+              </h4>
               <p className="text-xs text-slate-600 leading-relaxed">
-                Mengatur rantai komando penanggulangan keadaan darurat tumpahan minyak di laut dari level pelabuhan (Tier 1),
-                wilayah provinsi (Tier 2), hingga skala nasional (Tier 3).
+                Sections 356A through 356O prescribe mandatory criminal penalties, vessel detention powers, and unlimited civil
+                liability for damages and cleanup expenses caused by unlawful oil discharge in Indian waters.
               </p>
             </div>
           </div>
@@ -1263,45 +1249,45 @@ export const BantenGovPortalView: React.FC<BantenGovPortalViewProps> = ({
       </section>
 
       {/* ========================================================================= */}
-      {/* 8. DEDICATED SECTION: INFORMASI PUBLIK (#public-info) */}
+      {/* 8. DEDICATED SECTION: PUBLIC INFO (#public-info) */}
       {/* ========================================================================= */}
       <section id="public-info" className="py-20 px-4 sm:px-8 max-w-5xl lg:max-w-6xl mx-auto border-b border-slate-200">
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-4">
           <div>
-            <div className="inline-flex items-center space-x-2 bg-emerald-100/80 text-[#008744] px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider mb-2">
+            <div className="inline-flex items-center space-x-2 bg-emerald-100/80 text-[#006837] px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider mb-2 font-mono">
               <Radio className="w-3.5 h-3.5" />
-              <span>{edition === 'banten' ? 'Layanan Terbuka Warga' : 'Citizen Information & Hotlines'}</span>
+              <span>CITIZEN CHARTER & 24/7 HELPLINES</span>
             </div>
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight font-sans">
-              {edition === 'banten' ? 'Pusat Informasi Publik & Hotline Siaga 24 Jam' : 'Public Information & Emergency Hotlines'}
+            <h2 className="text-2xl sm:text-3xl font-serif font-bold text-slate-900 tracking-tight">
+              Emergency Hotlines, Safety Guidelines & Citizen Advisories
             </h2>
-            <div className="w-16 h-1 bg-[#008744] rounded-full mt-2" />
+            <div className="w-16 h-1 bg-[#006837] rounded-full mt-2" />
           </div>
 
           <div className="flex items-center space-x-2 bg-slate-100 p-1.5 rounded-xl text-xs font-semibold">
             <button
               onClick={() => setPublicInfoTab('hotlines')}
               className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer ${
-                publicInfoTab === 'hotlines' ? 'bg-white text-[#008744] shadow-xs' : 'text-slate-600 hover:text-slate-900'
+                publicInfoTab === 'hotlines' ? 'bg-white text-[#006837] shadow-xs' : 'text-slate-600 hover:text-slate-900'
               }`}
             >
-              {edition === 'banten' ? 'Hotline Darurat' : 'Hotlines'}
+              Emergency Hotlines
             </button>
             <button
               onClick={() => setPublicInfoTab('guidelines')}
               className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer ${
-                publicInfoTab === 'guidelines' ? 'bg-white text-[#008744] shadow-xs' : 'text-slate-600 hover:text-slate-900'
+                publicInfoTab === 'guidelines' ? 'bg-white text-[#006837] shadow-xs' : 'text-slate-600 hover:text-slate-900'
               }`}
             >
-              {edition === 'banten' ? 'Panduan Warga' : 'Guidelines'}
+              Safety Guidelines
             </button>
             <button
               onClick={() => setPublicInfoTab('reports')}
               className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer ${
-                publicInfoTab === 'reports' ? 'bg-white text-[#008744] shadow-xs' : 'text-slate-600 hover:text-slate-900'
+                publicInfoTab === 'reports' ? 'bg-white text-[#006837] shadow-xs' : 'text-slate-600 hover:text-slate-900'
               }`}
             >
-              {edition === 'banten' ? 'Dokumen Publik' : 'Reports'}
+              Official Publications
             </button>
           </div>
         </div>
@@ -1310,37 +1296,49 @@ export const BantenGovPortalView: React.FC<BantenGovPortalViewProps> = ({
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             <div className="p-6 rounded-2xl bg-rose-50 border border-rose-200">
               <Phone className="w-8 h-8 text-rose-600 mb-3" />
-              <div className="text-[11px] font-bold text-rose-700 uppercase tracking-wider">Hotline Darurat Maritim</div>
-              <div className="text-2xl font-black text-rose-900 mt-1 mb-2">1554 / 115</div>
+              <div className="text-[11px] font-bold text-rose-700 uppercase tracking-wider font-mono">
+                TOLL-FREE MARITIME EMERGENCY
+              </div>
+              <div className="text-2xl font-black text-rose-900 mt-1 mb-2 font-mono">1554</div>
               <p className="text-xs text-rose-800/80 leading-relaxed">
-                Bebas pulsa 24 jam untuk laporan kecelakaan kapal, orang hilang di laut, dan tanggap darurat tumpahan minyak.
+                National toll-free emergency helpline answered 24/7 across all coastal regions for distress, search and
+                rescue, and vessel collisions.
               </p>
             </div>
 
             <div className="p-6 rounded-2xl bg-blue-50 border border-blue-200">
               <Radio className="w-8 h-8 text-blue-600 mb-3" />
-              <div className="text-[11px] font-bold text-blue-700 uppercase tracking-wider">Kanal Radio VHF Maritim</div>
-              <div className="text-2xl font-black text-blue-900 mt-1 mb-2">CH-16 (156.8 MHz)</div>
+              <div className="text-[11px] font-bold text-blue-700 uppercase tracking-wider font-mono">
+                VHF MARINE DISTRESS CHANNEL
+              </div>
+              <div className="text-2xl font-black text-blue-900 mt-1 mb-2 font-mono">CH-16 (156.8 MHz)</div>
               <p className="text-xs text-blue-800/80 leading-relaxed">
-                Frekuensi internasional maritim dipantau nonstop oleh stasiun radio pantai untuk sinyal marabahaya (Mayday).
+                International maritime distress, safety and calling frequency continuously monitored by all Coast Guard
+                stations and vessels.
               </p>
             </div>
 
             <div className="p-6 rounded-2xl bg-emerald-50 border border-emerald-200">
               <Mail className="w-8 h-8 text-emerald-600 mb-3" />
-              <div className="text-[11px] font-bold text-emerald-700 uppercase tracking-wider">WhatsApp Cepat Lapor</div>
-              <div className="text-xl font-black text-emerald-900 mt-1 mb-2">+62 811-1900-1554</div>
+              <div className="text-[11px] font-bold text-emerald-700 uppercase tracking-wider font-mono">
+                RAPID POLLUTION ALERT DESK
+              </div>
+              <div className="text-xl font-black text-emerald-900 mt-1 mb-2 font-mono">+91 22 2437 1554</div>
               <p className="text-xs text-emerald-800/80 leading-relaxed">
-                Kirim foto dan koordinat GPS noda minyak atau limbah mencurigakan untuk respon cepat tim patroli.
+                Dedicated WhatsApp and direct telephone channel to transmit GPS coordinates, photographic evidence, and
+                sheen observations.
               </p>
             </div>
 
             <div className="p-6 rounded-2xl bg-amber-50 border border-amber-200">
               <Shield className="w-8 h-8 text-amber-600 mb-3" />
-              <div className="text-[11px] font-bold text-amber-700 uppercase tracking-wider">Sentra Pengaduan Pungli</div>
-              <div className="text-xl font-black text-amber-900 mt-1 mb-2">0800-1-BANTEN</div>
+              <div className="text-[11px] font-bold text-amber-700 uppercase tracking-wider font-mono">
+                CPGRAMS CITIZEN GRIEVANCE
+              </div>
+              <div className="text-xl font-black text-amber-900 mt-1 mb-2 font-mono">1800-11-4000</div>
               <p className="text-xs text-amber-800/80 leading-relaxed">
-                Saluran pengaduan terenkripsi untuk transparansi pelayanan izin tangkap nelayan dan kepelabuhanan.
+                Centralized Public Grievance Redress and Monitoring System for coastal transparency, licensing, and
+                service feedback.
               </p>
             </div>
           </div>
@@ -1349,33 +1347,39 @@ export const BantenGovPortalView: React.FC<BantenGovPortalViewProps> = ({
         {publicInfoTab === 'guidelines' && (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="p-5 rounded-2xl border border-slate-200 bg-white">
-              <div className="w-8 h-8 rounded-lg bg-emerald-100 text-[#008744] flex items-center justify-center font-bold mb-3">
+              <div className="w-8 h-8 rounded-lg bg-emerald-100 text-[#006837] flex items-center justify-center font-bold mb-3 font-mono">
                 1
               </div>
-              <h4 className="font-bold text-slate-900 text-sm mb-1.5">SOP Pelaporan Ceceran Minyak Bagi Nelayan</h4>
+              <h4 className="font-serif font-bold text-slate-900 text-sm mb-1.5">
+                SOP for Reporting Coastal Oil Slicks
+              </h4>
               <p className="text-xs text-slate-600 leading-relaxed">
-                Ambil titik koordinat pada GPS kapal, amati arah angin dan warna lapisan minyak (sheen/rainbow/mousse),
-                serta jauhi area jika tercium bau gas menyengat.
+                Log exact GPS coordinates on your boat plotter, note the approximate dimensions and appearance of the slick
+                (silvery sheen / rainbow sheen / brown mousse), and transmit immediately to MRCC on Ch-16.
               </p>
             </div>
             <div className="p-5 rounded-2xl border border-slate-200 bg-white">
-              <div className="w-8 h-8 rounded-lg bg-emerald-100 text-[#008744] flex items-center justify-center font-bold mb-3">
+              <div className="w-8 h-8 rounded-lg bg-emerald-100 text-[#006837] flex items-center justify-center font-bold mb-3 font-mono">
                 2
               </div>
-              <h4 className="font-bold text-slate-900 text-sm mb-1.5">Panduan Keselamatan Cuaca Ekstrem Pesisir</h4>
+              <h4 className="font-serif font-bold text-slate-900 text-sm mb-1.5">
+                Monsoon Fishing Ban & Cyclone Protocols
+              </h4>
               <p className="text-xs text-slate-600 leading-relaxed">
-                Pastikan jaket pelampung (life jacket) dipakai sebelum melaut, periksa baterai lampu suar darurat, dan
-                pantau pengumuman NAVAREA setiap 6 jam sekali.
+                Strict adherence to the 61-day uniform monsoon fishing ban along the West Coast (01 June to 31 July) and
+                East Coast (15 April to 14 June) for ecological breeding regeneration.
               </p>
             </div>
             <div className="p-5 rounded-2xl border border-slate-200 bg-white">
-              <div className="w-8 h-8 rounded-lg bg-emerald-100 text-[#008744] flex items-center justify-center font-bold mb-3">
+              <div className="w-8 h-8 rounded-lg bg-emerald-100 text-[#006837] flex items-center justify-center font-bold mb-3 font-mono">
                 3
               </div>
-              <h4 className="font-bold text-slate-900 text-sm mb-1.5">Standar Pembuangan Bilga Kapal Niaga</h4>
+              <h4 className="font-serif font-bold text-slate-900 text-sm mb-1.5">
+                Merchant Bilgewater Discharge Standards
+              </h4>
               <p className="text-xs text-slate-600 leading-relaxed">
-                Kandungan minyak air bilga tidak boleh melebihi 15 ppm melalui Oily Water Separator (OWS) terkalibrasi dan
-                dilarang keras membuang dalam jarak 50 mil dari garis pantai.
+                Discharge of oily mixture into Indian territorial waters is strictly prohibited unless passing through an
+                approved 15 ppm bilge alarm and oil-filtering equipment while underway.
               </p>
             </div>
           </div>
@@ -1383,56 +1387,56 @@ export const BantenGovPortalView: React.FC<BantenGovPortalViewProps> = ({
 
         {publicInfoTab === 'reports' && (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            <div className="p-4 rounded-xl border border-slate-200 bg-white hover:border-[#008744] transition-colors flex items-center justify-between">
+            <div className="p-4 rounded-xl border border-slate-200 bg-white hover:border-[#006837] transition-colors flex items-center justify-between">
               <div className="flex items-center space-x-3">
-                <FileText className="w-5 h-5 text-[#008744]" />
+                <FileText className="w-5 h-5 text-[#006837]" />
                 <div>
-                  <div className="font-bold text-xs text-slate-900">Laporan Lingkungan Hidup Pesisir 2026</div>
-                  <div className="text-[10px] text-slate-500">PDF • 4.8 MB • Diperbarui 15 Sept 2026</div>
+                  <div className="font-bold text-xs text-slate-900">National Oil Spill Disaster Plan (NOS-DCP) Manual</div>
+                  <div className="text-[10px] text-slate-500 font-mono">PDF • 8.4 MB • Certified National Standard</div>
                 </div>
               </div>
-              <Download className="w-4 h-4 text-slate-400 hover:text-[#008744] cursor-pointer" />
+              <Download className="w-4 h-4 text-slate-400 hover:text-[#006837] cursor-pointer" />
             </div>
 
-            <div className="p-4 rounded-xl border border-slate-200 bg-white hover:border-[#008744] transition-colors flex items-center justify-between">
+            <div className="p-4 rounded-xl border border-slate-200 bg-white hover:border-[#006837] transition-colors flex items-center justify-between">
               <div className="flex items-center space-x-3">
-                <FileText className="w-5 h-5 text-[#008744]" />
+                <FileText className="w-5 h-5 text-[#006837]" />
                 <div>
-                  <div className="font-bold text-xs text-slate-900">Dokumen Rencana Kontinjensi Daerah (NOS-DCP)</div>
-                  <div className="text-[10px] text-slate-500">PDF • 8.1 MB • Terakreditasi Nasional</div>
+                  <div className="font-bold text-xs text-slate-900">Annual Marine Environment Protection Review</div>
+                  <div className="text-[10px] text-slate-500 font-mono">PDF • 5.1 MB • Ministry of Defence</div>
                 </div>
               </div>
-              <Download className="w-4 h-4 text-slate-400 hover:text-[#008744] cursor-pointer" />
+              <Download className="w-4 h-4 text-slate-400 hover:text-[#006837] cursor-pointer" />
             </div>
 
-            <div className="p-4 rounded-xl border border-slate-200 bg-white hover:border-[#008744] transition-colors flex items-center justify-between">
+            <div className="p-4 rounded-xl border border-slate-200 bg-white hover:border-[#006837] transition-colors flex items-center justify-between">
               <div className="flex items-center space-x-3">
-                <FileText className="w-5 h-5 text-[#008744]" />
+                <FileText className="w-5 h-5 text-[#006837]" />
                 <div>
-                  <div className="font-bold text-xs text-slate-900">Maklumat Pelayanan & Standar Biaya PPID</div>
-                  <div className="text-[10px] text-slate-500">PDF • 1.2 MB • Bebas Biaya Layanan</div>
+                  <div className="font-bold text-xs text-slate-900">Indian Coast Guard Citizen Charter 2026</div>
+                  <div className="text-[10px] text-slate-500 font-mono">PDF • 1.6 MB • Public Disclosures</div>
                 </div>
               </div>
-              <Download className="w-4 h-4 text-slate-400 hover:text-[#008744] cursor-pointer" />
+              <Download className="w-4 h-4 text-slate-400 hover:text-[#006837] cursor-pointer" />
             </div>
           </div>
         )}
       </section>
 
       {/* ========================================================================= */}
-      {/* 9. DEDICATED SECTION: PENGUMUMAN (#announcements) */}
+      {/* 9. DEDICATED SECTION: ANNOUNCEMENTS / NOTICES (#announcements) */}
       {/* ========================================================================= */}
       <section id="announcements" className="py-20 px-4 sm:px-8 max-w-5xl lg:max-w-6xl mx-auto border-b border-slate-200">
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
           <div>
-            <div className="inline-flex items-center space-x-2 bg-emerald-100/80 text-[#008744] px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider mb-2">
+            <div className="inline-flex items-center space-x-2 bg-emerald-100/80 text-[#006837] px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider mb-2 font-mono">
               <Calendar className="w-3.5 h-3.5" />
-              <span>{edition === 'banten' ? 'Pemberitahuan Resmi' : 'Notices & Warnings'}</span>
+              <span>OFFICIAL NOTICES & WARNINGS</span>
             </div>
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight font-sans">
-              {edition === 'banten' ? 'Pengumuman Resmi & Warta Navigasi' : 'Official Announcements & NAVAREA Bulletins'}
+            <h2 className="text-2xl sm:text-3xl font-serif font-bold text-slate-900 tracking-tight">
+              Official Announcements & NAVAREA VIII Warnings
             </h2>
-            <div className="w-16 h-1 bg-[#008744] rounded-full mt-2" />
+            <div className="w-16 h-1 bg-[#006837] rounded-full mt-2" />
           </div>
 
           {/* Announcement Category Filter */}
@@ -1442,10 +1446,10 @@ export const BantenGovPortalView: React.FC<BantenGovPortalViewProps> = ({
                 key={cat}
                 onClick={() => setAnnouncementFilter(cat)}
                 className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer ${
-                  announcementFilter === cat ? 'bg-[#008744] text-white shadow-xs' : 'text-slate-600 hover:text-slate-900'
+                  announcementFilter === cat ? 'bg-[#006837] text-white shadow-xs' : 'text-slate-600 hover:text-slate-900'
                 }`}
               >
-                {cat === 'ALL' ? (edition === 'banten' ? 'Semua Warta' : 'All') : cat}
+                {cat === 'ALL' ? 'All Notices' : cat}
               </button>
             ))}
           </div>
@@ -1460,13 +1464,13 @@ export const BantenGovPortalView: React.FC<BantenGovPortalViewProps> = ({
               className={`p-5 rounded-2xl border transition-all cursor-pointer flex flex-col sm:flex-row sm:items-center justify-between gap-4 ${
                 ann.urgent
                   ? 'bg-rose-50/50 border-rose-200 hover:border-rose-400 hover:bg-rose-50'
-                  : 'bg-white border-slate-200 hover:border-[#008744] hover:shadow-xs'
+                  : 'bg-white border-slate-200 hover:border-[#006837] hover:shadow-xs'
               }`}
             >
               <div className="flex-1">
-                <div className="flex flex-wrap items-center gap-2 mb-2">
+                <div className="flex flex-wrap items-center gap-2 mb-2 font-mono">
                   <span
-                    className={`text-[10px] font-bold px-2 py-0.5 rounded font-mono ${
+                    className={`text-[10px] font-bold px-2 py-0.5 rounded ${
                       ann.urgent ? 'bg-rose-600 text-white animate-pulse' : 'bg-slate-200 text-slate-800'
                     }`}
                   >
@@ -1480,15 +1484,15 @@ export const BantenGovPortalView: React.FC<BantenGovPortalViewProps> = ({
                   )}
                 </div>
 
-                <h3 className="font-bold text-slate-900 text-sm sm:text-base hover:text-[#008744] transition-colors leading-snug">
+                <h3 className="font-serif font-bold text-slate-900 text-sm sm:text-base hover:text-[#006837] transition-colors leading-snug">
                   {ann.title}
                 </h3>
                 <p className="text-xs text-slate-600 mt-1 line-clamp-2">{ann.excerpt}</p>
               </div>
 
               <div className="flex items-center space-x-2 flex-shrink-0">
-                <button className="text-xs font-bold text-[#008744] hover:text-[#006432] flex items-center space-x-1 group">
-                  <span>Rincian</span>
+                <button className="text-xs font-bold text-[#006837] hover:text-[#004e29] flex items-center space-x-1 group">
+                  <span>View Details</span>
                   <ChevronRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
                 </button>
               </div>
@@ -1498,21 +1502,19 @@ export const BantenGovPortalView: React.FC<BantenGovPortalViewProps> = ({
       </section>
 
       {/* ========================================================================= */}
-      {/* 10. DEDICATED SECTION: PERMOHONAN INFORMASI & RTI (#rti-request) */}
+      {/* 10. DEDICATED SECTION: RIGHT TO INFORMATION ACT (#rti-request) */}
       {/* ========================================================================= */}
       <section id="rti-request" className="py-20 px-4 sm:px-8 max-w-5xl lg:max-w-6xl mx-auto border-b border-slate-200">
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-4">
           <div>
-            <div className="inline-flex items-center space-x-2 bg-emerald-100/80 text-[#008744] px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider mb-2">
+            <div className="inline-flex items-center space-x-2 bg-emerald-100/80 text-[#006837] px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider mb-2 font-mono">
               <FileCheck className="w-3.5 h-3.5" />
-              <span>{edition === 'banten' ? 'Keterbukaan Informasi Publik' : 'Right to Information (RTI)'}</span>
+              <span>RIGHT TO INFORMATION ACT, 2005</span>
             </div>
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight font-sans">
-              {edition === 'banten'
-                ? 'Layanan Permohonan Informasi Publik (PPID Terpadu)'
-                : 'Right to Information & Transparency Portal'}
+            <h2 className="text-2xl sm:text-3xl font-serif font-bold text-slate-900 tracking-tight">
+              Public Information Portal & Real-Time RTI Filing System
             </h2>
-            <div className="w-16 h-1 bg-[#008744] rounded-full mt-2" />
+            <div className="w-16 h-1 bg-[#006837] rounded-full mt-2" />
           </div>
 
           {/* RTI Subtabs */}
@@ -1520,34 +1522,34 @@ export const BantenGovPortalView: React.FC<BantenGovPortalViewProps> = ({
             <button
               onClick={() => setActiveRtiTab('submit')}
               className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer ${
-                activeRtiTab === 'submit' ? 'bg-white text-[#008744] shadow-xs' : 'text-slate-600 hover:text-slate-900'
+                activeRtiTab === 'submit' ? 'bg-white text-[#006837] shadow-xs' : 'text-slate-600 hover:text-slate-900'
               }`}
             >
-              {edition === 'banten' ? 'Formulir Permohonan' : 'Submit Request'}
+              Submit Request
             </button>
             <button
               onClick={() => setActiveRtiTab('track')}
               className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer ${
-                activeRtiTab === 'track' ? 'bg-white text-[#008744] shadow-xs' : 'text-slate-600 hover:text-slate-900'
+                activeRtiTab === 'track' ? 'bg-white text-[#006837] shadow-xs' : 'text-slate-600 hover:text-slate-900'
               }`}
             >
-              {edition === 'banten' ? 'Lacak Status' : 'Track Status'}
+              Track Status
             </button>
             <button
               onClick={() => setActiveRtiTab('pio')}
               className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer ${
-                activeRtiTab === 'pio' ? 'bg-white text-[#008744] shadow-xs' : 'text-slate-600 hover:text-slate-900'
+                activeRtiTab === 'pio' ? 'bg-white text-[#006837] shadow-xs' : 'text-slate-600 hover:text-slate-900'
               }`}
             >
-              {edition === 'banten' ? 'Kontak PPID' : 'PIO Contacts'}
+              CPIO Contacts
             </button>
             <button
               onClick={() => setActiveRtiTab('proactive')}
               className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer ${
-                activeRtiTab === 'proactive' ? 'bg-white text-[#008744] shadow-xs' : 'text-slate-600 hover:text-slate-900'
+                activeRtiTab === 'proactive' ? 'bg-white text-[#006837] shadow-xs' : 'text-slate-600 hover:text-slate-900'
               }`}
             >
-              {edition === 'banten' ? 'Informasi Berkala' : 'Proactive Info'}
+              Section 4(1)(b)
             </button>
           </div>
         </div>
@@ -1555,29 +1557,30 @@ export const BantenGovPortalView: React.FC<BantenGovPortalViewProps> = ({
         {activeRtiTab === 'submit' && (
           <div className="bg-slate-50 border border-slate-200 rounded-3xl p-6 sm:p-10 shadow-xs">
             <div className="max-w-2xl mb-6">
-              <h3 className="text-lg font-bold text-slate-900 mb-1">
-                {edition === 'banten' ? 'Pengajuan Permohonan Informasi Publik' : 'Online Information Request Filing'}
+              <h3 className="text-lg font-serif font-bold text-slate-900 mb-1">
+                Online Filing of Information Request (RTI Act 2005)
               </h3>
-              <p className="text-xs text-slate-600">
-                Sesuai Undang-Undang Keterbukaan Informasi Publik No. 14 Tahun 2008 & Right to Information Act, warga negara
-                berhak memperoleh data publik secara transparan, akurat, dan tanpa dipungut biaya.
+              <p className="text-xs text-slate-600 leading-relaxed">
+                Under the Right to Information Act, 2005, any citizen of India may request information from the Indian
+                Coast Guard. Applications are processed transparently and dispatched within statutory time limits.
               </p>
             </div>
 
             {rtiSubmittedId ? (
               <div className="p-6 bg-emerald-50 border border-emerald-300 rounded-2xl text-center">
-                <CheckCircle2 className="w-12 h-12 text-[#008744] mx-auto mb-3" />
-                <h4 className="text-base font-bold text-emerald-950 mb-1">
-                  Permohonan Berhasil Terdaftar di Sistem PPID!
+                <CheckCircle2 className="w-12 h-12 text-[#006837] mx-auto mb-3" />
+                <h4 className="text-base font-serif font-bold text-emerald-950 mb-1">
+                  RTI Application Successfully Registered with Central PIO!
                 </h4>
                 <p className="text-xs text-emerald-800 mb-3">
-                  Nomor Registrasi Resmi Anda:{' '}
-                  <span className="font-mono font-extrabold text-sm text-[#008744] bg-white px-2 py-0.5 rounded border border-emerald-300">
+                  Your Official Tracking Registration ID:{' '}
+                  <span className="font-mono font-extrabold text-sm text-[#006837] bg-white px-2 py-0.5 rounded border border-emerald-300">
                     {rtiSubmittedId}
                   </span>
                 </p>
                 <p className="text-[11px] text-slate-600 max-w-md mx-auto mb-4">
-                  Surat konfirmasi telah dikirimkan ke email Anda. Waktu penyelesaian standar adalah 10 hari kerja.
+                  An official acknowledgement receipt has been dispatched to your email address. Normal response window is
+                  within 30 days under Section 7(1).
                 </p>
                 <button
                   onClick={() => {
@@ -1585,9 +1588,9 @@ export const BantenGovPortalView: React.FC<BantenGovPortalViewProps> = ({
                     setActiveRtiTab('track');
                     handleTrackQuery();
                   }}
-                  className="bg-[#008744] hover:bg-[#007038] text-white px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer"
+                  className="bg-[#006837] hover:bg-[#00522c] text-white px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer"
                 >
-                  Lacak Progres Permohonan Ini ↗
+                  Track Application Status ↗
                 </button>
               </div>
             ) : (
@@ -1595,82 +1598,82 @@ export const BantenGovPortalView: React.FC<BantenGovPortalViewProps> = ({
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-xs font-bold text-slate-700 mb-1">
-                      Nama Lengkap Pemohon (Sesuai KTP/Identitas) *
+                      Full Name of Applicant (as per Aadhaar / Official ID) *
                     </label>
                     <input
                       type="text"
                       required
                       value={rtiForm.name}
                       onChange={(e) => setRtiForm({ ...rtiForm, name: e.target.value })}
-                      placeholder="Contoh: Budi Santoso / Dr. Rajesh Kumar"
-                      className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs focus:ring-2 focus:ring-[#008744]/20 focus:border-[#008744] outline-none"
+                      placeholder="e.g. Lt. Cdr. Rajesh Verma / Anita Deshmukh"
+                      className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs focus:ring-2 focus:ring-[#006837]/20 focus:border-[#006837] outline-none"
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-bold text-slate-700 mb-1">Alamat Email Aktif *</label>
+                    <label className="block text-xs font-bold text-slate-700 mb-1">Active Email Address *</label>
                     <input
                       type="email"
                       required
                       value={rtiForm.email}
                       onChange={(e) => setRtiForm({ ...rtiForm, email: e.target.value })}
-                      placeholder="nama@domain.com"
-                      className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs focus:ring-2 focus:ring-[#008744]/20 focus:border-[#008744] outline-none"
+                      placeholder="name@domain.gov.in"
+                      className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs focus:ring-2 focus:ring-[#006837]/20 focus:border-[#006837] outline-none"
                     />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-bold text-slate-700 mb-1">Nomor Telepon / WhatsApp *</label>
+                    <label className="block text-xs font-bold text-slate-700 mb-1">Contact Mobile Number *</label>
                     <input
                       type="tel"
                       required
                       value={rtiForm.phone}
                       onChange={(e) => setRtiForm({ ...rtiForm, phone: e.target.value })}
-                      placeholder="+62 812-xxxx-xxxx"
-                      className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs focus:ring-2 focus:ring-[#008744]/20 focus:border-[#008744] outline-none"
+                      placeholder="+91 98765 43210"
+                      className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs focus:ring-2 focus:ring-[#006837]/20 focus:border-[#006837] outline-none"
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-bold text-slate-700 mb-1">Kategori Pemohon</label>
+                    <label className="block text-xs font-bold text-slate-700 mb-1">Applicant Category</label>
                     <select
                       value={rtiForm.category}
                       onChange={(e) => setRtiForm({ ...rtiForm, category: e.target.value })}
-                      className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs focus:ring-2 focus:ring-[#008744]/20 focus:border-[#008744] outline-none bg-white"
+                      className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs focus:ring-2 focus:ring-[#006837]/20 focus:border-[#006837] outline-none bg-white"
                     >
-                      <option value="Citizen">Masyarakat Umum / Perorangan</option>
-                      <option value="Academic">Akademisi / Peneliti / Mahasiswa</option>
-                      <option value="Media">Jurnalis / Media Massa</option>
-                      <option value="NGO">Organisasi Non-Pemerintah (LSM / NGO)</option>
-                      <option value="Maritime">Pelaku Usaha Maritim / Perkapalan</option>
+                      <option value="Citizen of India">Citizen of India</option>
+                      <option value="Academic / Research">Academic / Marine Research Scholar</option>
+                      <option value="Media Representative">Media / Environmental Journalist</option>
+                      <option value="Maritime Industry">Maritime Industry / Port Seafarer</option>
+                      <option value="NGO / Ecology">Non-Governmental Environmental Body</option>
                     </select>
                   </div>
                 </div>
 
                 <div>
                   <label className="block text-xs font-bold text-slate-700 mb-1">
-                    Rincian Informasi Publik yang Dimohonkan *
+                    Details of Information / Records Requested *
                   </label>
                   <textarea
                     rows={4}
                     required
                     value={rtiForm.query}
                     onChange={(e) => setRtiForm({ ...rtiForm, query: e.target.value })}
-                    placeholder="Tuliskan secara spesifik data, dokumen, atau statistik yang Anda perlukan (Contoh: Data statistik pemantauan tumpahan minyak perairan Teluk Banten periode Januari - September 2026)."
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs focus:ring-2 focus:ring-[#008744]/20 focus:border-[#008744] outline-none leading-relaxed"
+                    placeholder="Specify the exact subject matter, date range, or environmental incident log requested (e.g. Statistical records of oil spill interdictions and penalties levied in Arabian Sea Sector MH-4 between Jan - Sep 2026)."
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs focus:ring-2 focus:ring-[#006837]/20 focus:border-[#006837] outline-none leading-relaxed"
                   />
                 </div>
 
                 <div className="pt-2 flex items-center justify-between">
-                  <span className="text-[11px] text-slate-500">
-                    Layanan terjamin bebas biaya retribusi resmi (Gratis).
+                  <span className="text-[11px] text-slate-500 font-mono">
+                    Statutory application fee: ₹10 (Exempt for BPL card holders).
                   </span>
                   <button
                     type="submit"
-                    className="bg-[#008744] hover:bg-[#007038] text-white px-6 py-2.5 rounded-xl text-xs font-bold shadow-md transition-all flex items-center space-x-2 cursor-pointer"
+                    className="bg-[#006837] hover:bg-[#00522c] text-white px-6 py-2.5 rounded-xl text-xs font-bold shadow-md transition-all flex items-center space-x-2 cursor-pointer"
                   >
                     <Send className="w-3.5 h-3.5" />
-                    <span>Kirim Permohonan Informasi</span>
+                    <span>Submit RTI Application</span>
                   </button>
                 </div>
               </form>
@@ -1680,9 +1683,9 @@ export const BantenGovPortalView: React.FC<BantenGovPortalViewProps> = ({
 
         {activeRtiTab === 'track' && (
           <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-10 shadow-xs">
-            <h3 className="text-lg font-bold text-slate-900 mb-2">Lacak Status Permohonan Informasi</h3>
+            <h3 className="text-lg font-serif font-bold text-slate-900 mb-2">Track RTI Application Status Online</h3>
             <p className="text-xs text-slate-600 mb-6">
-              Masukkan Nomor Registrasi yang Anda terima saat pendaftaran (format: RTI/ICG/2026/XXXXX).
+              Enter the Registration Number issued upon electronic filing (e.g., RTI/ICG/2026/08492).
             </p>
 
             <div className="flex gap-2 max-w-md mb-8">
@@ -1690,14 +1693,14 @@ export const BantenGovPortalView: React.FC<BantenGovPortalViewProps> = ({
                 type="text"
                 value={trackingInput}
                 onChange={(e) => setTrackingInput(e.target.value)}
-                placeholder="RTI/2026/08492"
-                className="flex-1 px-4 py-2.5 rounded-xl border border-slate-300 text-xs font-mono font-bold outline-none focus:border-[#008744]"
+                placeholder="RTI/ICG/2026/08492"
+                className="flex-1 px-4 py-2.5 rounded-xl border border-slate-300 text-xs font-mono font-bold outline-none focus:border-[#006837]"
               />
               <button
                 onClick={handleTrackQuery}
-                className="bg-[#008744] hover:bg-[#007038] text-white px-5 rounded-xl text-xs font-bold transition-colors cursor-pointer"
+                className="bg-[#006837] hover:bg-[#00522c] text-white px-5 rounded-xl text-xs font-bold transition-colors cursor-pointer"
               >
-                Cek Status
+                Track Status
               </button>
             </div>
 
@@ -1705,37 +1708,39 @@ export const BantenGovPortalView: React.FC<BantenGovPortalViewProps> = ({
               <div className="p-6 rounded-2xl bg-slate-50 border border-slate-200">
                 <div className="flex flex-wrap items-center justify-between gap-2 pb-4 border-b border-slate-200 mb-4">
                   <div>
-                    <span className="text-xs text-slate-500">Nomor Tiket:</span>
-                    <span className="ml-2 font-mono font-bold text-sm text-[#008744]">{trackingResult.id}</span>
+                    <span className="text-xs text-slate-500">Tracking Reference:</span>
+                    <span className="ml-2 font-mono font-bold text-sm text-[#006837]">{trackingResult.id}</span>
                   </div>
-                  <div className="text-xs font-semibold text-emerald-800 bg-emerald-100 px-2.5 py-1 rounded-full">
+                  <div className="text-xs font-semibold text-emerald-800 bg-emerald-100 px-2.5 py-1 rounded-full font-mono">
                     {trackingResult.status}
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs mb-6">
                   <div>
-                    <span className="text-slate-400 block">Tanggal Pengajuan:</span>
+                    <span className="text-slate-400 block font-mono">Filing Date:</span>
                     <span className="font-bold text-slate-800">{trackingResult.date}</span>
                   </div>
                   <div>
-                    <span className="text-slate-400 block">Pejabat Penanggung Jawab:</span>
+                    <span className="text-slate-400 block font-mono">Assigned CPIO:</span>
                     <span className="font-bold text-slate-800">{trackingResult.officer}</span>
                   </div>
                   <div>
-                    <span className="text-slate-400 block">Estimasi Selesai:</span>
+                    <span className="text-slate-400 block font-mono">Statutory Target:</span>
                     <span className="font-bold text-slate-800">{trackingResult.estimatedCompletion}</span>
                   </div>
                 </div>
 
                 {trackingResult.timeline && (
                   <div className="space-y-3 pt-2">
-                    <div className="text-xs font-bold text-slate-800 mb-2">Riwayat Proses Verifikasi:</div>
+                    <div className="text-xs font-bold text-slate-800 mb-2 font-mono">
+                      Statutory Progress Milestone History:
+                    </div>
                     {trackingResult.timeline.map((item: any, i: number) => (
                       <div key={i} className="flex items-center space-x-3 text-xs">
                         <div
                           className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold ${
-                            item.done ? 'bg-[#008744] text-white' : 'bg-slate-200 text-slate-500'
+                            item.done ? 'bg-[#006837] text-white' : 'bg-slate-200 text-slate-500'
                           }`}
                         >
                           {item.done ? '✓' : i + 1}
@@ -1744,7 +1749,7 @@ export const BantenGovPortalView: React.FC<BantenGovPortalViewProps> = ({
                           <span className={item.done ? 'font-bold text-slate-900' : 'text-slate-500'}>
                             {item.title}
                           </span>
-                          <span className="text-slate-400 text-[11px]">{item.date}</span>
+                          <span className="text-slate-400 text-[11px] font-mono">{item.date}</span>
                         </div>
                       </div>
                     ))}
@@ -1758,51 +1763,55 @@ export const BantenGovPortalView: React.FC<BantenGovPortalViewProps> = ({
         {activeRtiTab === 'pio' && (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="p-6 rounded-2xl border border-slate-200 bg-white">
-              <div className="text-xs font-bold uppercase tracking-wider text-emerald-700 mb-1">
-                Atasan Pejabat Pengelola Informasi (PPID Utama)
+              <div className="text-xs font-bold uppercase tracking-wider text-emerald-800 mb-1 font-mono">
+                FIRST APPELLATE AUTHORITY (FAA)
               </div>
-              <h4 className="text-base font-bold text-slate-900 mb-2">Kepala Dinas Komunikasi & Informatika Banten</h4>
+              <h4 className="text-base font-serif font-bold text-slate-900 mb-2">
+                Inspector General (Operations & MEP), Coast Guard Headquarters
+              </h4>
               <p className="text-xs text-slate-600 leading-relaxed mb-4">
-                Memimpin pengawasan penyelesaian sengketa informasi, penerbitan maklumat keterbukaan informasi, serta
-                pelaporan berkala ke Komisi Informasi Provinsi.
+                Designated First Appellate Authority for hearing appeals against orders passed by Central Public
+                Information Officers under Section 19(1) of the RTI Act.
               </p>
               <div className="space-y-1.5 text-xs text-slate-700">
                 <div className="flex items-center space-x-2">
-                  <MapPin className="w-3.5 h-3.5 text-[#008744]" />
-                  <span>Gedung Dinas Kominfo KP3B, Jl. Syech Nawawi Al-Bantani, Curug, Serang</span>
+                  <MapPin className="w-3.5 h-3.5 text-[#006837]" />
+                  <span>Coast Guard Headquarters, National Stadium Complex, New Delhi 110001</span>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <Mail className="w-3.5 h-3.5 text-[#008744]" />
-                  <span>ppid.utama@bantenprov.go.id</span>
+                  <Mail className="w-3.5 h-3.5 text-[#006837]" />
+                  <span>faa-icg@indiancoastguard.nic.in</span>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <Phone className="w-3.5 h-3.5 text-[#008744]" />
-                  <span>(0254) 267000 / Ext. 104</span>
+                  <Phone className="w-3.5 h-3.5 text-[#006837]" />
+                  <span>+91-11-2338-4934</span>
                 </div>
               </div>
             </div>
 
             <div className="p-6 rounded-2xl border border-slate-200 bg-white">
-              <div className="text-xs font-bold uppercase tracking-wider text-blue-700 mb-1">
-                Pejabat Informasi Teknis Maritim & Lingkungan
+              <div className="text-xs font-bold uppercase tracking-wider text-blue-700 mb-1 font-mono">
+                CENTRAL PUBLIC INFORMATION OFFICER (CPIO - WEST)
               </div>
-              <h4 className="text-base font-bold text-slate-900 mb-2">Biro Hukum & Informasi Keselamatan Pelayaran</h4>
+              <h4 className="text-base font-serif font-bold text-slate-900 mb-2">
+                Command Legal Officer, Coast Guard Regional HQ (West)
+              </h4>
               <p className="text-xs text-slate-600 leading-relaxed mb-4">
-                Melayani permintaan data riwayat nakhoda, catatan pemantauan tumpahan minyak, koordinat AIS, dan status
-                penyidikan MARPOL Annex I.
+                Assigned CPIO for marine pollution incidents, vessel tracking records, and NOS-DCP deployments in the
+                Arabian Sea jurisdiction.
               </p>
               <div className="space-y-1.5 text-xs text-slate-700">
                 <div className="flex items-center space-x-2">
                   <MapPin className="w-3.5 h-3.5 text-blue-700" />
-                  <span>Pusat Koordinasi Maritim (MRCC), Pelabuhan Merak</span>
+                  <span>Regional HQ (West), Worli Sea Face, Mumbai 400030</span>
                 </div>
                 <div className="flex items-center space-x-2">
                   <Mail className="w-3.5 h-3.5 text-blue-700" />
-                  <span>info.maritim@bantenprov.go.id</span>
+                  <span>cpio-west@indiancoastguard.nic.in</span>
                 </div>
                 <div className="flex items-center space-x-2">
                   <Phone className="w-3.5 h-3.5 text-blue-700" />
-                  <span>(0254) 571155</span>
+                  <span>+91-22-2437-1554</span>
                 </div>
               </div>
             </div>
@@ -1813,106 +1822,125 @@ export const BantenGovPortalView: React.FC<BantenGovPortalViewProps> = ({
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="p-4 rounded-xl border border-slate-200 bg-slate-50 flex items-center justify-between">
               <div>
-                <div className="font-bold text-xs text-slate-900">Daftar Informasi Publik Wajib Disediakan Berkala (Pasal 9 UU KIP)</div>
-                <div className="text-[10px] text-slate-500">Mencakup profil lembaga, ringkasan program strategis & kinerja</div>
+                <div className="font-bold text-xs text-slate-900">
+                  Section 4(1)(b)(i): Particulars of Organization, Functions and Duties
+                </div>
+                <div className="text-[10px] text-slate-500 font-mono">Statutory ICG Charter & NOS-DCP Mandate</div>
               </div>
-              <Download className="w-4 h-4 text-[#008744] cursor-pointer flex-shrink-0" />
+              <Download className="w-4 h-4 text-[#006837] cursor-pointer flex-shrink-0" />
             </div>
 
             <div className="p-4 rounded-xl border border-slate-200 bg-slate-50 flex items-center justify-between">
               <div>
-                <div className="font-bold text-xs text-slate-900">Daftar Informasi Publik Serta Merta (Keadaan Darurat Maritim)</div>
-                <div className="text-[10px] text-slate-500">Protokol peringatan dini tsunami, gelombang tinggi, dan bahaya bahan kimia</div>
+                <div className="font-bold text-xs text-slate-900">
+                  Section 4(1)(b)(ii): Powers and Duties of Officers and Employees
+                </div>
+                <div className="text-[10px] text-slate-500 font-mono">Powers under Coast Guard Act & Merchant Shipping Act</div>
               </div>
-              <Download className="w-4 h-4 text-[#008744] cursor-pointer flex-shrink-0" />
+              <Download className="w-4 h-4 text-[#006837] cursor-pointer flex-shrink-0" />
             </div>
 
             <div className="p-4 rounded-xl border border-slate-200 bg-slate-50 flex items-center justify-between">
               <div>
-                <div className="font-bold text-xs text-slate-900">Laporan Keuangan & Realisasi Anggaran Daerah TA 2025/2026</div>
-                <div className="text-[10px] text-slate-500">Opini WTP Badan Pemeriksa Keuangan (BPK) RI</div>
+                <div className="font-bold text-xs text-slate-900">
+                  Section 4(1)(b)(xi): Annual Budget Allocation & Expenditure Statement
+                </div>
+                <div className="text-[10px] text-slate-500 font-mono">Audited by Comptroller and Auditor General (CAG)</div>
               </div>
-              <Download className="w-4 h-4 text-[#008744] cursor-pointer flex-shrink-0" />
+              <Download className="w-4 h-4 text-[#006837] cursor-pointer flex-shrink-0" />
             </div>
 
             <div className="p-4 rounded-xl border border-slate-200 bg-slate-50 flex items-center justify-between">
               <div>
-                <div className="font-bold text-xs text-slate-900">Hasil Audit Kepatuhan Lingkungan Dermaga & Terminal BBM</div>
-                <div className="text-[10px] text-slate-500">Hasil uji sampel laboratorium kualitas baku mutu air laut</div>
+                <div className="font-bold text-xs text-slate-900">
+                  Section 4(1)(b)(xii): Execution of Subsidy Programs (DAT Transponders)
+                </div>
+                <div className="text-[10px] text-slate-500 font-mono">List of beneficiaries and coastal fishermen cooperatives</div>
               </div>
-              <Download className="w-4 h-4 text-[#008744] cursor-pointer flex-shrink-0" />
+              <Download className="w-4 h-4 text-[#006837] cursor-pointer flex-shrink-0" />
             </div>
           </div>
         )}
       </section>
 
-      {/* 11. EMERALD GREEN FOOTER: WEBSITE RESMI PROVINSI BANTEN (Exact match to screenshot) */}
-      <footer className="bg-[#008744] text-white pt-12 pb-8 px-4 sm:px-8">
+      {/* 11. EMERALD GREEN FOOTER: OFFICIAL PORTAL // INDIAN COAST GUARD (GOVERNMENT OF INDIA) */}
+      <footer className="bg-[#006837] text-white pt-12 pb-8 px-4 sm:px-8">
         <div className="max-w-5xl lg:max-w-6xl mx-auto">
-          {/* Top Title with Official Provincial Seal */}
-          <div className="flex items-center space-x-3 mb-10 pb-6 border-b border-white/20">
-            <div className="w-8 h-10 relative flex-shrink-0">
-              <svg viewBox="0 0 100 120" className="w-full h-full filter drop-shadow-md">
-                <path
-                  d="M50 0 C75 0 95 15 95 40 C95 85 50 115 50 115 C50 115 5 85 5 40 C5 15 25 0 50 0 Z"
-                  fill="#FFD700"
-                />
-                <path d="M50 10 L85 35 L85 65 L50 95 L15 65 L15 35 Z" fill="#008744" />
-                <circle cx="50" cy="50" r="16" fill="#FFFFFF" />
-              </svg>
+          {/* Top Title with National Emblem & Coast Guard Crest */}
+          <div className="flex flex-wrap items-center justify-between gap-4 mb-10 pb-6 border-b border-white/20">
+            <div className="flex items-center space-x-3.5">
+              <StateEmblemIndia size="md" variant="white" className="filter drop-shadow-md" />
+              <IndianCoastGuardInsignia size="md" variant="color" className="filter drop-shadow-md" />
+              <div>
+                <h3 className="font-serif font-black text-white text-base sm:text-lg tracking-wider uppercase">
+                  OFFICIAL PORTAL // INDIAN COAST GUARD (BHARATIYA TATRAKSHAK)
+                </h3>
+                <p className="text-[11px] text-emerald-100 font-medium tracking-wide">
+                  Ministry of Defence, Government of India • Maritime Rescue Coordination Centre (MRCC) Mumbai
+                </p>
+              </div>
             </div>
-            <div>
-              <h3 className="font-extrabold text-white text-base sm:text-lg tracking-wider uppercase">
-                {edition === 'banten' ? 'Website Resmi Provinsi Banten' : 'Official Portal • Indian Coast Guard'}
-              </h3>
-              <p className="text-[11px] text-emerald-100 font-medium tracking-wide">
-                {edition === 'banten'
-                  ? 'Kawasan Pusat Pemerintahan Provinsi Banten (KP3B)'
-                  : 'Maritime Rescue Coordination Centre (MRCC) Mumbai'}
-              </p>
+
+            <div className="flex items-center space-x-2 text-xs font-mono bg-emerald-950/60 border border-emerald-400/30 px-3 py-1.5 rounded-lg">
+              <span className="w-2 h-2 rounded-full bg-[#10B981] animate-pulse" />
+              <span>MRCC MUMBAI // SECTOR MH-4 LIVE WATCH</span>
             </div>
           </div>
 
-          {/* 4 Information Columns (Exact match to screenshot) */}
+          {/* 4 Information Columns (Exact match to screenshot structure, converted to India) */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-10 text-xs text-emerald-50">
-            {/* Column 1: Alamat (Address) */}
+            {/* Column 1: Headquarters Address */}
             <div>
-              <div className="flex items-center space-x-2 text-white font-bold text-sm mb-3">
+              <div className="text-white font-bold text-sm mb-3 flex items-center space-x-2">
                 <MapPin className="w-4 h-4 text-emerald-200" />
-                <span>Alamat</span>
+                <span>Headquarters Address</span>
               </div>
               <p className="leading-relaxed text-emerald-100/90 text-[11.5px]">
-                Jl. Syech Nawawi Al-Bantani No. 1, Kawasan Pusat Pemerintahan Provinsi Banten (KP3B) Kecamatan Curug, Kota
-                Serang, Provinsi Banten.
+                Coast Guard Regional Headquarters (West), Worli Sea Face, Mumbai 400030, Maharashtra, India.
+              </p>
+              <p className="leading-relaxed text-emerald-100/80 text-[11px] mt-2">
+                Apex HQ: National Stadium Complex, New Delhi 110001.
               </p>
             </div>
 
-            {/* Column 2: Email */}
+            {/* Column 2: Official Contact & Email */}
             <div>
-              <div className="flex items-center space-x-2 text-white font-bold text-sm mb-3">
+              <div className="text-white font-bold text-sm mb-3 flex items-center space-x-2">
                 <Mail className="w-4 h-4 text-emerald-200" />
-                <span>Email</span>
+                <span>Official Contact & Email</span>
               </div>
               <a
-                href="mailto:admin@bantenprov.go.id"
-                className="text-emerald-100 hover:text-white hover:underline transition-colors block text-[11.5px]"
+                href="mailto:mrcc-mumbai@indiancoastguard.nic.in"
+                className="text-emerald-100 hover:text-white hover:underline transition-colors block text-[11.5px] font-mono"
               >
-                admin@bantenprov.go.id
+                mrcc-mumbai@indiancoastguard.nic.in
               </a>
               <a
-                href="mailto:layanan@bantenprov.go.id"
-                className="text-emerald-100/80 hover:text-white hover:underline transition-colors block mt-1 text-[11.5px]"
+                href="mailto:dme-cg@indiancoastguard.nic.in"
+                className="text-emerald-100/80 hover:text-white hover:underline transition-colors block mt-1 text-[11.5px] font-mono"
               >
-                layanan@bantenprov.go.id
+                dme-cg@indiancoastguard.nic.in
               </a>
+              <div className="mt-2 text-[11px] text-emerald-200 font-mono">
+                Toll-Free Helpline: 1554
+              </div>
             </div>
 
-            {/* Column 3: Media Sosial */}
+            {/* Column 3: Social Media */}
             <div>
-              <div className="text-white font-bold text-sm mb-3">Media Sosial</div>
+              <div className="text-white font-bold text-sm mb-3">Official Media Handles</div>
               <div className="flex items-center space-x-3">
                 <a
-                  href="https://facebook.com"
+                  href="https://twitter.com/IndiaCoastGuard"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-8 h-8 rounded-full border border-white/60 hover:border-white hover:bg-white/10 flex items-center justify-center text-white transition-all text-xs font-bold"
+                  title="Twitter / X (@IndiaCoastGuard)"
+                >
+                  𝕏
+                </a>
+                <a
+                  href="https://facebook.com/IndiaCoastGuard"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="w-8 h-8 rounded-full border border-white/60 hover:border-white hover:bg-white/10 flex items-center justify-center text-white transition-all text-xs font-bold"
@@ -1921,7 +1949,7 @@ export const BantenGovPortalView: React.FC<BantenGovPortalViewProps> = ({
                   f
                 </a>
                 <a
-                  href="https://instagram.com"
+                  href="https://instagram.com/indiancoastguard"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="w-8 h-8 rounded-full border border-white/60 hover:border-white hover:bg-white/10 flex items-center justify-center text-white transition-all text-xs"
@@ -1929,56 +1957,50 @@ export const BantenGovPortalView: React.FC<BantenGovPortalViewProps> = ({
                 >
                   📷
                 </a>
-                <a
-                  href="https://twitter.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-8 h-8 rounded-full border border-white/60 hover:border-white hover:bg-white/10 flex items-center justify-center text-white transition-all text-xs font-bold"
-                  title="Twitter / X"
-                >
-                  𝕏
-                </a>
               </div>
+              <p className="text-[10.5px] text-emerald-200 mt-2 font-mono">
+                Verified: @IndiaCoastGuard
+              </p>
             </div>
 
-            {/* Column 4: Statistik Kunjungan (Visit Statistics matching screenshot) */}
+            {/* Column 4: Visit Statistics matching screenshot */}
             <div>
-              <div className="flex items-center space-x-2 text-white font-bold text-sm mb-3">
+              <div className="text-white font-bold text-sm mb-3 flex items-center space-x-2">
                 <BarChart3 className="w-4 h-4 text-emerald-200" />
-                <span>Statistik Kunjungan</span>
+                <span>Visitor Statistics</span>
               </div>
-              <ul className="space-y-1.5 text-[11.5px] text-emerald-100">
+              <ul className="space-y-1.5 text-[11.5px] text-emerald-100 font-mono">
                 <li className="flex items-center justify-between">
-                  <span>1.180 pengunjung hari ini</span>
+                  <span>1,180 visitors today</span>
                 </li>
                 <li className="flex items-center justify-between">
-                  <span>16.448 pengunjung bulan ini</span>
+                  <span>16,448 visitors this month</span>
                 </li>
                 <li className="flex items-center justify-between font-bold text-white">
-                  <span>3.665.382 jumlah hit</span>
+                  <span>3,665,382 total hits</span>
                 </li>
               </ul>
             </div>
           </div>
 
           {/* Bottom Copyright Strip */}
-          <div className="pt-6 border-t border-white/20 text-center text-[11px] text-emerald-100/80 flex flex-col sm:flex-row items-center justify-between gap-2">
-            <span>Copyright © 2026 Pemerintah Daerah Provinsi Banten. All Rights Reserved</span>
-            <div className="flex items-center space-x-4 text-[10.5px]">
+          <div className="pt-6 border-t border-white/20 text-center text-[11px] text-emerald-100/80 flex flex-col sm:flex-row items-center justify-between gap-2 font-sans">
+            <span>Copyright © 2026 Indian Coast Guard, Ministry of Defence, Government of India. All Rights Reserved.</span>
+            <div className="flex items-center space-x-4 text-[10.5px] font-semibold">
               <a href="#profile" className="hover:underline">
-                Profil
+                Profile
               </a>
               <a href="#governance" className="hover:underline">
-                Pemerintah
+                Governance
               </a>
               <a href="#public-info" className="hover:underline">
-                Layanan
+                Public Info
               </a>
               <a href="#announcements" className="hover:underline">
-                Pengumuman
+                Announcements
               </a>
               <a href="#rti-request" className="hover:underline">
-                PPID
+                RTI Request
               </a>
             </div>
           </div>
@@ -1990,27 +2012,24 @@ export const BantenGovPortalView: React.FC<BantenGovPortalViewProps> = ({
   return (
     <div className="w-full h-full min-h-screen bg-slate-900 flex flex-col overflow-y-auto">
       {/* Top Behance Showcase Presentation Bar (From user's uploaded screenshot) */}
-      <header className="sticky top-0 z-50 bg-[#0F172A]/95 backdrop-blur-md border-b border-slate-800 text-white px-4 sm:px-8 py-2.5 flex flex-wrap items-center justify-between gap-3 shadow-lg select-none">
+      <header className="sticky top-0 z-50 bg-[#0B1B2B]/95 backdrop-blur-md border-b border-slate-800 text-white px-4 sm:px-8 py-2.5 flex flex-wrap items-center justify-between gap-3 shadow-lg select-none font-sans">
         {/* Creator Profile / Brand from uploaded Behance shot */}
         <div className="flex items-center space-x-3">
-          <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-pink-500 via-rose-400 to-amber-300 p-0.5 shadow-md flex items-center justify-center">
-            <div className="w-full h-full rounded-full bg-slate-900 flex items-center justify-center text-xs font-bold text-rose-300">
-              SM
+          <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-[#FF9933] via-white to-[#138808] p-0.5 shadow-md flex items-center justify-center">
+            <div className="w-full h-full rounded-full bg-slate-900 flex items-center justify-center text-xs font-bold text-amber-300">
+              ICG
             </div>
           </div>
           <div>
-            <div className="text-xs font-bold text-slate-100 flex items-center space-x-1.5">
-              <span>Sabrina Misyell Aaliyah</span>
-              <span className="bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 text-[9px] px-1.5 py-0.2 rounded font-mono">
-                Official UI
+            <div className="text-xs font-serif font-bold text-slate-100 flex items-center space-x-1.5">
+              <span>National Maritime Intelligence Portal</span>
+              <span className="bg-[#006837]/30 text-emerald-300 border border-[#006837]/60 text-[9px] px-1.5 py-0.2 rounded font-mono">
+                Official GOI
               </span>
             </div>
-            <button
-              onClick={() => setEdition(edition === 'banten' ? 'maritime' : 'banten')}
-              className="text-[10px] text-slate-400 hover:text-emerald-400 transition-colors cursor-pointer"
-            >
-              Follow • {edition === 'banten' ? 'Provinsi Banten Portal' : 'Maritime Intelligence Edition'}
-            </button>
+            <div className="text-[10px] text-slate-400 font-mono">
+              Indian Coast Guard • Ministry of Defence • Government of India
+            </div>
           </div>
         </div>
 
@@ -2044,7 +2063,7 @@ export const BantenGovPortalView: React.FC<BantenGovPortalViewProps> = ({
           {onLaunchWorkstation && (
             <button
               onClick={onLaunchWorkstation}
-              className="bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1 rounded-lg text-xs font-bold shadow-md transition-all flex items-center space-x-1.5 cursor-pointer"
+              className="bg-[#006837] hover:bg-[#00522c] text-white px-3 py-1 rounded-lg text-xs font-bold shadow-md transition-all flex items-center space-x-1.5 cursor-pointer"
             >
               <Activity className="w-3.5 h-3.5 text-[#FFD700]" />
               <span>Launch Workstation</span>
@@ -2089,7 +2108,7 @@ export const BantenGovPortalView: React.FC<BantenGovPortalViewProps> = ({
 
       {/* Main Container: If Showcase mode, render in warm gradient backdrop like uploaded screenshot */}
       {viewMode === 'showcase' ? (
-        <div className="flex-1 w-full min-h-screen bg-gradient-to-tr from-[#EA580C] via-[#CA8A04] to-[#10B981] p-3 sm:p-8 lg:p-12 flex flex-col items-center justify-center">
+        <div className="flex-1 w-full min-h-screen bg-gradient-to-tr from-[#EA580C] via-[#CA8A04] to-[#006837] p-3 sm:p-8 lg:p-12 flex flex-col items-center justify-center">
           <div className="w-full max-w-6xl bg-white rounded-3xl shadow-[0_25px_70px_rgba(0,0,0,0.45)] overflow-hidden border border-white/40 ring-1 ring-black/10">
             {PortalContent}
           </div>
@@ -2114,19 +2133,19 @@ export const BantenGovPortalView: React.FC<BantenGovPortalViewProps> = ({
               >
                 <X className="w-4 h-4" />
               </button>
-              <div className="absolute bottom-3 left-4 bg-[#008744] text-white text-xs font-bold px-2.5 py-1 rounded">
+              <div className="absolute bottom-3 left-4 bg-[#006837] text-white text-xs font-bold px-2.5 py-1 rounded font-mono">
                 {selectedArticle.category}
               </div>
             </div>
 
             <div className="p-6 sm:p-8">
-              <div className="flex items-center space-x-2 text-xs text-slate-500 mb-2">
+              <div className="flex items-center space-x-2 text-xs text-slate-500 mb-2 font-mono">
                 <Calendar className="w-3.5 h-3.5" />
                 <span>{selectedArticle.date}</span>
                 {selectedArticle.timeAgo && <span>• {selectedArticle.timeAgo}</span>}
               </div>
 
-              <h2 className="text-xl sm:text-2xl font-bold text-slate-900 mb-4 leading-snug">
+              <h2 className="text-xl sm:text-2xl font-serif font-bold text-slate-900 mb-4 leading-snug">
                 {selectedArticle.title}
               </h2>
 
@@ -2137,8 +2156,9 @@ export const BantenGovPortalView: React.FC<BantenGovPortalViewProps> = ({
               <div className="text-sm text-slate-600 leading-relaxed space-y-3">
                 <p>{selectedArticle.content}</p>
                 <p>
-                  Sistem pemantauan ini terhubung langsung dengan National Maritime Command & Tactical Intelligence
-                  Workstation untuk pelacakan kapal, analisis tumpahan minyak, serta integrasi data satelit.
+                  This system integrates seamlessly with the Indian Coast Guard National Maritime Command & Tactical
+                  Intelligence Workstation for vessel trajectory reconstruction, satellite radar attribution, and MARPOL
+                  compliance auditing.
                 </p>
               </div>
 
@@ -2149,17 +2169,17 @@ export const BantenGovPortalView: React.FC<BantenGovPortalViewProps> = ({
                       setSelectedArticle(null);
                       onLaunchWorkstation();
                     }}
-                    className="bg-[#008744] hover:bg-[#007038] text-white px-4 py-2 rounded-xl text-xs font-bold shadow-md transition-all flex items-center space-x-1.5 cursor-pointer"
+                    className="bg-[#006837] hover:bg-[#00522c] text-white px-4 py-2 rounded-xl text-xs font-bold shadow-md transition-all flex items-center space-x-1.5 cursor-pointer"
                   >
                     <Activity className="w-3.5 h-3.5 text-[#FFD700]" />
-                    <span>Buka Tactical Workstation</span>
+                    <span>Open Tactical Workstation</span>
                   </button>
                 )}
                 <button
                   onClick={() => setSelectedArticle(null)}
                   className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-xl transition-colors cursor-pointer"
                 >
-                  Tutup
+                  Close
                 </button>
               </div>
             </div>
@@ -2183,9 +2203,9 @@ export const BantenGovPortalView: React.FC<BantenGovPortalViewProps> = ({
               </button>
             </div>
 
-            <h3 className="text-lg font-bold text-slate-900 mb-2">{selectedAnnouncement.title}</h3>
-            <div className="flex items-center space-x-3 text-xs text-slate-500 mb-4 pb-3 border-b border-slate-100">
-              <span>Tanggal Rilis: {selectedAnnouncement.date}</span>
+            <h3 className="text-lg font-serif font-bold text-slate-900 mb-2">{selectedAnnouncement.title}</h3>
+            <div className="flex items-center space-x-3 text-xs text-slate-500 mb-4 pb-3 border-b border-slate-100 font-mono">
+              <span>Issue Date: {selectedAnnouncement.date}</span>
               {selectedAnnouncement.deadline && <span>• {selectedAnnouncement.deadline}</span>}
             </div>
 
@@ -2196,18 +2216,18 @@ export const BantenGovPortalView: React.FC<BantenGovPortalViewProps> = ({
             <div className="flex items-center justify-between pt-2">
               <button
                 onClick={() => {
-                  alert('Mengunduh salinan resmi surat edaran (PDF)...');
+                  alert('Downloading official certified circular / tender document (PDF)...');
                 }}
-                className="bg-[#008744] hover:bg-[#007038] text-white px-4 py-2 rounded-xl text-xs font-bold flex items-center space-x-1.5 cursor-pointer shadow-xs"
+                className="bg-[#006837] hover:bg-[#00522c] text-white px-4 py-2 rounded-xl text-xs font-bold flex items-center space-x-1.5 cursor-pointer shadow-xs"
               >
                 <Download className="w-3.5 h-3.5" />
-                <span>Unduh Salinan PDF</span>
+                <span>Download Certified PDF</span>
               </button>
               <button
                 onClick={() => setSelectedAnnouncement(null)}
                 className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-xl cursor-pointer"
               >
-                Tutup
+                Close
               </button>
             </div>
           </div>
