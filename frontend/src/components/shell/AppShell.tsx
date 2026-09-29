@@ -394,7 +394,6 @@ export const AppShell: React.FC = () => {
       <BantenGovPortalView
         onLaunchWorkstation={() => setCurrentView('overview')}
         onOpenLogin={() => setIsLoginModalOpen(true)}
-        onLaunchSagarMitra={() => setCurrentView('sagar-mitra')}
       />
     );
   }
