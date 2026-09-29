@@ -37,6 +37,7 @@ import {
 import { AnalysisStage, InvestigationDetail } from '../../types';
 import { AuthUser, getStoredSession, clearSession } from '../../api/auth';
 import { LoginModal } from '../auth/LoginModal';
+import { AnimatedDribbbleLoginPage } from '../auth/AnimatedDribbbleLoginPage';
 import { HackXHeroSection } from '../hero/HackXHeroSection';
 import { BantenGovPortalView } from '../../views/BantenGovPortalView';
 
@@ -354,6 +355,30 @@ export const AppShell: React.FC = () => {
     highRiskCount: scenario.vessels.filter((v) => v.suspicionScore >= 70).length,
   };
 
+  if (currentView === 'login' || isLoginModalOpen) {
+    return (
+      <AnimatedDribbbleLoginPage
+        onSuccess={(user) => {
+          setCurrentUser(user);
+          setIsLoginModalOpen(false);
+          setCurrentView('overview');
+          setNotification(
+            lang === 'hi'
+              ? `लॉगिन सफल: ${user.name} (${user.role})`
+              : `Logged in successfully: ${user.name} (${user.role})`
+          );
+          setTimeout(() => setNotification(null), 5000);
+        }}
+        onBack={() => {
+          setIsLoginModalOpen(false);
+          if (currentView === 'login') {
+            setCurrentView('portal');
+          }
+        }}
+      />
+    );
+  }
+
   if (currentView === 'portal') {
     return (
       <BantenGovPortalView
@@ -529,6 +554,9 @@ export const AppShell: React.FC = () => {
               if (next) tacticalAudio.playSonarPing();
             }}
             onReplayStartup={() => setIsBooting(true)}
+            currentUser={currentUser}
+            onOpenLogin={() => setIsLoginModalOpen(true)}
+            onLogout={handleLogout}
           />
 
           {/* Subsystem Pipeline Execution Stepper HUD */}

@@ -12,8 +12,9 @@ import {
   ChevronRight,
   Globe,
   Sparkles,
+  Shield,
 } from 'lucide-react';
-import { Badge } from '../common/Badge';
+import { Badge, BadgeVariant } from '../common/Badge';
 
 export type NavView =
   | 'portal'
@@ -25,7 +26,17 @@ export type NavView =
   | 'petroleum'
   | 'sources'
   | 'settings'
-  | 'hero';
+  | 'hero'
+  | 'login';
+
+interface NavItem {
+  id: NavView;
+  label: string;
+  shortLabel: string;
+  icon: React.ReactNode;
+  badge?: string;
+  badgeVariant?: BadgeVariant;
+}
 
 interface SidebarProps {
   currentView: NavView;
@@ -47,7 +58,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onToggleCollapse,
   counts,
 }) => {
-  const primaryNavItems = [
+  const primaryNavItems: NavItem[] = [
     {
       id: 'hero' as NavView,
       label: '✨ HackX 3D Hero',
@@ -112,7 +123,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
     },
   ];
 
-  const secondaryNavItems = [
+  const secondaryNavItems: NavItem[] = [
     {
       id: 'sources' as NavView,
       label: '• Sensor Feeds',
@@ -125,9 +136,17 @@ export const Sidebar: React.FC<SidebarProps> = ({
       shortLabel: 'Settings',
       icon: <Settings className="w-4 h-4" />,
     },
+    {
+      id: 'login' as NavView,
+      label: '• Animated Login',
+      shortLabel: 'Login',
+      icon: <Shield className="w-4 h-4" />,
+      badge: 'Auth',
+      badgeVariant: 'neutral',
+    },
   ];
 
-  const renderNavButton = (item: (typeof primaryNavItems)[0]) => {
+  const renderNavButton = (item: NavItem) => {
     const isActive = currentView === item.id;
     return (
       <button

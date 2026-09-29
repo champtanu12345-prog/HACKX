@@ -553,6 +553,18 @@ export const BantenGovPortalView: React.FC<BantenGovPortalViewProps> = ({
             </button>
           )}
 
+          {/* Officer Animated Login Trigger */}
+          {onOpenLogin && (
+            <button
+              onClick={onOpenLogin}
+              className="bg-slate-900 hover:bg-black text-white px-3 py-1.5 rounded-lg text-xs font-bold shadow-xs transition-all flex items-center space-x-1.5 border border-slate-700 cursor-pointer"
+              title="Official Command / Officer Login"
+            >
+              <Shield className="w-3.5 h-3.5 text-amber-400" />
+              <span>Officer Login</span>
+            </button>
+          )}
+
           {/* National Tricolor Indicator Chip */}
           <div className="hidden xl:flex items-center space-x-1 px-2 py-1 rounded bg-slate-50 border border-slate-200 text-[10.5px] font-bold">
             <span className="w-2 h-2 rounded-full bg-[#FF9933]" />
@@ -2279,14 +2291,16 @@ export const BantenGovPortalView: React.FC<BantenGovPortalViewProps> = ({
             <Bookmark className={`w-4 h-4 ${isBookmarked ? 'fill-current' : ''}`} />
           </button>
 
-          {/* "Get in touch" pill button matching screenshot */}
+          {/* Officer Login pill button matching screenshot position */}
           <button
             onClick={() => {
-              if (onLaunchWorkstation) onLaunchWorkstation();
+              if (onOpenLogin) onOpenLogin();
+              else if (onLaunchWorkstation) onLaunchWorkstation();
             }}
-            className="bg-[#0B132B] hover:bg-[#1C2541] text-white border border-slate-700 px-3.5 py-1 rounded-full text-xs font-bold transition-all shadow-sm cursor-pointer"
+            className="bg-[#0B132B] hover:bg-[#1C2541] text-white border border-slate-700 px-3.5 py-1 rounded-full text-xs font-bold transition-all shadow-sm cursor-pointer flex items-center space-x-1.5"
           >
-            Get in touch
+            <Shield className="w-3 h-3 text-amber-400" />
+            <span>Officer Login</span>
           </button>
         </div>
       </header>

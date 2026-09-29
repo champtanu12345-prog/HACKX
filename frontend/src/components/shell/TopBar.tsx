@@ -13,11 +13,15 @@ import {
   Volume2,
   VolumeX,
   Workflow,
+  User,
+  LogIn,
+  LogOut,
 } from 'lucide-react';
 import { Badge } from '../common/Badge';
 import { StatusIndicator } from '../common/StatusIndicator';
 import { DEMO_SCENARIOS } from '../../data/maritimeDemoData';
 import { tacticalAudio } from '../../utils/audioAlerts';
+import { AuthUser } from '../../api/auth';
 
 interface TopBarProps {
   currentScenarioId: string;
@@ -33,6 +37,9 @@ interface TopBarProps {
   isSoundActive?: boolean;
   onToggleSound?: () => void;
   onReplayStartup?: () => void;
+  currentUser?: AuthUser | null;
+  onOpenLogin?: () => void;
+  onLogout?: () => void;
 }
 
 export const TopBar: React.FC<TopBarProps> = ({
@@ -49,6 +56,9 @@ export const TopBar: React.FC<TopBarProps> = ({
   isSoundActive,
   onToggleSound,
   onReplayStartup,
+  currentUser,
+  onOpenLogin,
+  onLogout,
 }) => {
   const [utcTime, setUtcTime] = useState<string>('');
   const [selectedScenarioInput, setSelectedScenarioInput] = useState<string>(currentScenarioId);
@@ -261,6 +271,34 @@ export const TopBar: React.FC<TopBarProps> = ({
           <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
           <span>प्रणाली सक्रिय (ACTIVE)</span>
         </div>
+
+        {/* User Login / Profile Button */}
+        {currentUser ? (
+          <div className="flex items-center space-x-1.5 bg-slate-900 text-white px-2.5 py-1 rounded-lg text-xs font-sans shadow-xs border border-slate-700">
+            <User className="w-3.5 h-3.5 text-cyan-400" />
+            <span className="font-semibold truncate max-w-[120px] text-[11px]">{currentUser.name}</span>
+            {onLogout && (
+              <button
+                onClick={onLogout}
+                className="ml-1 text-slate-400 hover:text-rose-400 p-0.5 rounded transition-colors cursor-pointer"
+                title="Logout"
+              >
+                <LogOut className="w-3 h-3" />
+              </button>
+            )}
+          </div>
+        ) : (
+          onOpenLogin && (
+            <button
+              onClick={onOpenLogin}
+              className="bg-slate-900 hover:bg-black text-white px-3 py-1 rounded-lg text-xs font-bold shadow-xs transition-all flex items-center space-x-1.5 border border-slate-700 cursor-pointer"
+              title="Official Command / Officer Login"
+            >
+              <Shield className="w-3.5 h-3.5 text-amber-400" />
+              <span>LOGIN</span>
+            </button>
+          )
+        )}
       </div>
     </header>
   );
