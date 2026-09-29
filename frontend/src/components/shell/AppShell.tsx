@@ -38,7 +38,6 @@ import { AnalysisStage, InvestigationDetail } from '../../types';
 import { AuthUser, getStoredSession, clearSession } from '../../api/auth';
 import { LoginModal } from '../auth/LoginModal';
 import { AnimatedDribbbleLoginPage } from '../auth/AnimatedDribbbleLoginPage';
-import { HackXHeroSection } from '../hero/HackXHeroSection';
 import { BantenGovPortalView } from '../../views/BantenGovPortalView';
 import { SagarMitraAIAssistantView } from '../../views/SagarMitraAIAssistantView';
 
@@ -394,50 +393,9 @@ export const AppShell: React.FC = () => {
     return (
       <BantenGovPortalView
         onLaunchWorkstation={() => setCurrentView('overview')}
-        onLaunchHero={() => setCurrentView('hero')}
         onOpenLogin={() => setIsLoginModalOpen(true)}
         onLaunchSagarMitra={() => setCurrentView('sagar-mitra')}
       />
-    );
-  }
-
-  if (currentView === 'hero') {
-    return (
-      <div className="relative w-screen h-screen overflow-x-hidden overflow-y-auto bg-[#EBF3F8]">
-        {/* Floating Quick Navigation to Tactical Workstation & ICG Portal */}
-        <div className="fixed top-4 right-5 z-50 flex items-center space-x-2.5">
-          <button
-            onClick={() => setCurrentView('sagar-mitra')}
-            className="px-3.5 py-1.5 rounded-full bg-cyan-950/85 hover:bg-cyan-900 text-cyan-300 hover:text-white text-xs font-mono border border-cyan-400/40 shadow-xl backdrop-blur-md flex items-center space-x-1.5 transition-all hover:scale-105 cursor-pointer"
-            title="Open Sagar Mitra AI Assistant"
-          >
-            <Bot className="w-3.5 h-3.5 text-cyan-300" />
-            <span>Sagar Mitra AI</span>
-          </button>
-          <button
-            onClick={() => setCurrentView('overview')}
-            className="px-3.5 py-1.5 rounded-full bg-slate-900/85 hover:bg-slate-900 text-cyan-300 hover:text-white text-xs font-mono border border-cyan-400/40 shadow-xl backdrop-blur-md flex items-center space-x-1.5 transition-all hover:scale-105 cursor-pointer"
-            title="Switch to Tactical Oil Spill Command Workstation"
-          >
-            <Activity className="w-3.5 h-3.5 text-cyan-400" />
-            <span>Tactical Workstation ↗</span>
-          </button>
-          <button
-            onClick={() => setCurrentView('portal')}
-            className="px-3.5 py-1.5 rounded-full bg-emerald-950/85 hover:bg-emerald-900 text-emerald-300 hover:text-white text-xs font-mono border border-emerald-500/40 shadow-xl backdrop-blur-md flex items-center space-x-1.5 transition-all hover:scale-105 cursor-pointer"
-            title="Switch to Indian Coast Guard Portal"
-          >
-            <Globe className="w-3.5 h-3.5 text-amber-400" />
-            <span>ICG Portal</span>
-          </button>
-        </div>
-
-        {/* The HackX Ultra-Modern Glassmorphic Hero UI */}
-        <HackXHeroSection
-          onLaunch={() => setCurrentView('overview')}
-          onConnect={() => setCurrentView('overview')}
-        />
-      </div>
     );
   }
 
@@ -493,13 +451,6 @@ export const AppShell: React.FC = () => {
             >
               <Globe className="w-3.5 h-3.5 text-[#FFD700]" />
               <span>🏛️ Public Portal</span>
-            </button>
-            <button
-              onClick={() => setCurrentView('hero')}
-              className="px-3 py-1 rounded-md font-bold text-xs transition-all cursor-pointer flex items-center space-x-1.5 text-cyan-200 hover:text-white hover:bg-cyan-900/50"
-            >
-              <Sparkles className="w-3.5 h-3.5 text-cyan-300" />
-              <span>✨ HackX 3D Hero</span>
             </button>
             <button
               onClick={() => setCurrentView('sagar-mitra')}

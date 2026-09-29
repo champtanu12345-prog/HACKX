@@ -27,7 +27,6 @@ export type NavView =
   | 'petroleum'
   | 'sources'
   | 'settings'
-  | 'hero'
   | 'login'
   | 'sagar-mitra';
 
@@ -61,14 +60,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
   counts,
 }) => {
   const primaryNavItems: NavItem[] = [
-    {
-      id: 'hero' as NavView,
-      label: '✨ HackX 3D Hero',
-      shortLabel: '3D Hero',
-      icon: <Sparkles className="w-4 h-4 text-cyan-500" />,
-      badge: 'CONCEPT',
-      badgeVariant: 'info' as const,
-    },
     {
       id: 'portal' as NavView,
       label: '🏛️ ICG Portal',

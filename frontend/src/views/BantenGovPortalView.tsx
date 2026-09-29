@@ -82,14 +82,12 @@ interface AnnouncementItem {
 
 interface BantenGovPortalViewProps {
   onLaunchWorkstation?: () => void;
-  onLaunchHero?: () => void;
   onOpenLogin?: () => void;
   onLaunchSagarMitra?: () => void;
 }
 
 export const BantenGovPortalView: React.FC<BantenGovPortalViewProps> = ({
   onLaunchWorkstation,
-  onLaunchHero,
   onOpenLogin,
   onLaunchSagarMitra,
 }) => {
@@ -552,18 +550,6 @@ export const BantenGovPortalView: React.FC<BantenGovPortalViewProps> = ({
               <Activity className="w-3.5 h-3.5 text-[#FFD700]" />
               <span className="hidden sm:inline">Tactical Workstation</span>
               <span className="sm:hidden">Workstation</span>
-            </button>
-          )}
-
-          {/* HackX 3D Hero launcher */}
-          {onLaunchHero && (
-            <button
-              onClick={onLaunchHero}
-              className="bg-slate-100 hover:bg-slate-200 text-slate-800 px-2.5 py-1.5 rounded-lg text-xs font-semibold border border-slate-300 transition-all flex items-center space-x-1 cursor-pointer"
-              title="View HackX 3D Glassmorphic Hero"
-            >
-              <Sparkles className="w-3.5 h-3.5 text-cyan-600" />
-              <span className="hidden md:inline">3D Hero</span>
             </button>
           )}
 
