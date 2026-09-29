@@ -40,7 +40,6 @@ interface TopBarProps {
   currentUser?: AuthUser | null;
   onOpenLogin?: () => void;
   onLogout?: () => void;
-  onOpenSagarMitra?: () => void;
 }
 
 export const TopBar: React.FC<TopBarProps> = ({
@@ -60,7 +59,6 @@ export const TopBar: React.FC<TopBarProps> = ({
   currentUser,
   onOpenLogin,
   onLogout,
-  onOpenSagarMitra,
 }) => {
   const [utcTime, setUtcTime] = useState<string>('');
   const [selectedScenarioInput, setSelectedScenarioInput] = useState<string>(currentScenarioId);
@@ -188,18 +186,6 @@ export const TopBar: React.FC<TopBarProps> = ({
           </button>
         )}
 
-        {/* Sagar Mitra AI Assistant Launcher Button */}
-        {onOpenSagarMitra && (
-          <button
-            onClick={onOpenSagarMitra}
-            className="px-3 py-1.5 rounded-lg bg-gradient-to-r from-cyan-600 to-teal-600 hover:from-cyan-500 hover:to-teal-500 text-white font-sans font-bold text-xs flex items-center space-x-1.5 shadow-sm hover:shadow-cyan-500/20 border border-cyan-400/40 transition-all cursor-pointer select-none"
-            title="Open Sagar Mitra AI Assistant (Autonomous Maritime Intelligence Copilot)"
-          >
-            <Sparkles className="w-3.5 h-3.5 text-cyan-200 animate-pulse" />
-            <span className="hidden sm:inline">✦ SAGAR MITRA AI</span>
-            <span className="sm:hidden">AI</span>
-          </button>
-        )}
 
         {/* Primary Action Button: RUN TACTICAL ANALYSIS (Emerald Action) */}
         <button

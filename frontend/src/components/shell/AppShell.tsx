@@ -528,7 +528,6 @@ export const AppShell: React.FC = () => {
             currentUser={currentUser}
             onOpenLogin={() => setIsLoginModalOpen(true)}
             onLogout={handleLogout}
-            onOpenSagarMitra={() => setCurrentView('sagar-mitra')}
           />
 
           {/* Subsystem Pipeline Execution Stepper HUD */}
