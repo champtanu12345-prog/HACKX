@@ -38,10 +38,11 @@ import { AnalysisStage, InvestigationDetail } from '../../types';
 import { AuthUser, getStoredSession, clearSession } from '../../api/auth';
 import { LoginModal } from '../auth/LoginModal';
 import { HackXHeroSection } from '../hero/HackXHeroSection';
+import { BantenGovPortalView } from '../../views/BantenGovPortalView';
 
 export const AppShell: React.FC = () => {
   const [isBooting, setIsBooting] = useState<boolean>(false);
-  const [currentView, setCurrentView] = useState<NavView>('hero');
+  const [currentView, setCurrentView] = useState<NavView>('portal');
   const [currentScenarioId, setCurrentScenarioId] = useState<string>('scenario_a');
   const [activeScenarioData, setActiveScenarioData] = useState<MaritimeScenario>(
     DEMO_SCENARIOS.scenario_a
@@ -353,6 +354,16 @@ export const AppShell: React.FC = () => {
     highRiskCount: scenario.vessels.filter((v) => v.suspicionScore >= 70).length,
   };
 
+  if (currentView === 'portal') {
+    return (
+      <BantenGovPortalView
+        onLaunchWorkstation={() => setCurrentView('overview')}
+        onLaunchHero={() => setCurrentView('hero')}
+        onOpenLogin={() => setIsLoginModalOpen(true)}
+      />
+    );
+  }
+
   if (currentView === 'hero') {
     return (
       <div className="relative w-screen h-screen overflow-x-hidden overflow-y-auto bg-[#EBF3F8]">
@@ -432,6 +443,13 @@ export const AppShell: React.FC = () => {
           </span>
           <div className="flex items-center bg-[#064E26] p-0.5 rounded-lg border border-emerald-400/40 shadow-inner">
             <button
+              onClick={() => setCurrentView('portal')}
+              className="px-3 py-1 rounded-md font-bold text-xs transition-all cursor-pointer flex items-center space-x-1.5 text-emerald-200 hover:text-white hover:bg-emerald-800/50"
+            >
+              <Globe className="w-3.5 h-3.5 text-[#FFD700]" />
+              <span>🏛️ Public Portal</span>
+            </button>
+            <button
               onClick={() => setCurrentView('hero')}
               className="px-3 py-1 rounded-md font-bold text-xs transition-all cursor-pointer flex items-center space-x-1.5 text-cyan-200 hover:text-white hover:bg-cyan-900/50"
             >
@@ -439,23 +457,8 @@ export const AppShell: React.FC = () => {
               <span>✨ HackX 3D Hero</span>
             </button>
             <button
-              onClick={() => setCurrentView('portal')}
-              className={`px-3 py-1 rounded-md font-bold text-xs transition-all cursor-pointer flex items-center space-x-1.5 ${
-                currentView === 'portal'
-                  ? 'bg-gradient-to-r from-[#10B981] to-[#064E26] text-white shadow-md border border-emerald-300'
-                  : 'text-emerald-200 hover:text-white hover:bg-emerald-800/50'
-              }`}
-            >
-              <Globe className="w-3.5 h-3.5 text-[#FFD700]" />
-              <span>🏛️ ICG Portal</span>
-            </button>
-            <button
               onClick={() => setCurrentView('overview')}
-              className={`px-3 py-1 rounded-md font-bold text-xs transition-all cursor-pointer flex items-center space-x-1.5 ${
-                currentView !== 'portal'
-                  ? 'bg-gradient-to-r from-[#10B981] to-[#064E26] text-white shadow-md border border-emerald-300'
-                  : 'text-emerald-200 hover:text-white hover:bg-emerald-800/50'
-              }`}
+              className="px-3 py-1 rounded-md font-bold text-xs transition-all cursor-pointer flex items-center space-x-1.5 bg-gradient-to-r from-[#10B981] to-[#064E26] text-white shadow-md border border-emerald-300"
             >
               <Activity className="w-3.5 h-3.5 text-[#FFD700]" />
               <span>⚡ Tactical Workstation</span>
@@ -496,26 +499,8 @@ export const AppShell: React.FC = () => {
         </div>
       </div>
 
-      {currentView === 'portal' ? (
-        /* Full-Screen Indian Coast Guard Green Ocean Wave Portal View */
-        <div className="flex-1 flex flex-col min-h-0 overflow-hidden relative">
-          <PublicPortalView
-            lang={lang}
-            currentUser={currentUser}
-            onOpenLogin={() => setIsLoginModalOpen(true)}
-            onLaunchWorkstation={() => setCurrentView('overview')}
-            onOpenGuidedTour={() => setIsTourModalOpen(true)}
-            onOpenDossier={() => setIsDossierModalOpen(true)}
-            onSelectScenario={(scId) => {
-              handleSelectScenario(scId);
-              setCurrentView('overview');
-            }}
-          />
-        </div>
-      ) : (
-        /* Tactical Maritime Intelligence Workstation View */
-        <>
-          {/* 2. Global Maritime Tactical TopBar (Sector Dispatch & Run Analysis) */}
+      {/* Tactical Maritime Intelligence Workstation View */}
+      {/* 2. Global Maritime Tactical TopBar (Sector Dispatch & Run Analysis) */}
           <TopBar
             currentScenarioId={currentScenarioId}
             onSelectScenario={handleSelectScenario}
@@ -640,8 +625,6 @@ export const AppShell: React.FC = () => {
               }}
             />
           </div>
-        </>
-      )}
 
       {/* 4. GIGW 3.0 Official Government Footer */}
       <GovFooter lang={lang} />
