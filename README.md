@@ -111,5 +111,24 @@ python -m pytest tests/ -v
 
 ---
 
+## 🌐 Public Cloud Deployment (Localhost to WWW & Google Indexing)
+
+To convert this project from `localhost` into a publicly accessible website (`https://...` or `www.yourdomain.com`) that anyone can search on **Google**:
+
+1. **Deploy Frontend on Vercel (Free & Instant)**:
+   - Import repository `champtanu12345-prog/HACKX` on [Vercel](https://vercel.com).
+   - Set Root Directory to `frontend` and click **Deploy**.
+   - Your site will be instantly live with a global HTTPS URL.
+2. **Connect Custom Domain (`www.yourdomain.com`)**:
+   - In Vercel Project Settings → **Domains**, add your custom domain.
+   - Point your DNS records (`A` to `76.76.21.21` and `CNAME` to `cname.vercel-dns.com`).
+3. **Google Search Indexing**:
+   - Register your live URL on [Google Search Console](https://search.google.com/search-console).
+   - Submit the included `sitemap.xml` for automated Google crawling.
+
+👉 **For the complete step-by-step production deployment guide, see [DEPLOYMENT.md](DEPLOYMENT.md).**
+
+---
+
 ## ⚖️ License
 Developed for Smart India Hackathon 2026. All rights reserved.
